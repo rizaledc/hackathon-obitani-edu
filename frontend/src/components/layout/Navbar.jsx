@@ -25,9 +25,14 @@ const Navbar = () => {
 
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-10">
-      <h1 className="text-xl font-semibold text-text-primary">
-        {getPageTitle(location.pathname)}
-      </h1>
+      <div className="flex items-center gap-3">
+        <h1 className="text-xl font-semibold text-text-primary">
+          {getPageTitle(location.pathname)}
+        </h1>
+        <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-100 text-text-secondary rounded-md border border-gray-200 uppercase tracking-wide">
+          Orbitani Edu v1.0
+        </span>
+      </div>
       
       <div className="flex items-center gap-4">
         <div className="flex flex-col items-end">
