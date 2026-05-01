@@ -13,6 +13,7 @@ const HistoryPage = lazy(() => import("./features/history/HistoryPage"));
 const ChatPage = lazy(() => import("./features/chat/ChatPage"));
 const AdminMLOps = lazy(() => import("./features/admin/AdminMLOps"));
 const AnalyticsPage = lazy(() => import("./features/analytics/AnalyticsPage"));
+const AdminOrganizations = lazy(() => import("./features/admin/AdminOrganizations"));
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, isAuthenticated } = useAuthStore();
@@ -63,7 +64,7 @@ function App() {
           } />
           <Route path="/admin/organizations" element={
             <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
-              <div className="p-6">Daftar Organisasi Placeholder</div>
+              <AdminOrganizations />
             </ProtectedRoute>
           } />
           <Route path="/admin/mlops" element={
