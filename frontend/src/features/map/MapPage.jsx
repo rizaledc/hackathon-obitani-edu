@@ -264,6 +264,26 @@ const MapPage = () => {
              </div>
            )}
 
+           {/* Custom Zoom Controls */}
+           {!isDrawingMode && (
+             <div className="bg-white/90 backdrop-blur-sm shadow-md rounded-xl flex flex-col border border-gray-100 overflow-hidden mt-1">
+                <button 
+                  onClick={() => mapRef.current?.zoomIn()}
+                  title="Zoom In"
+                  className="p-2.5 bg-white transition-colors text-gray-700 hover:bg-gray-100 hover:text-primary flex items-center justify-center border-b border-gray-100"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                </button>
+                <button 
+                  onClick={() => mapRef.current?.zoomOut()}
+                  title="Zoom Out"
+                  className="p-2.5 bg-white transition-colors text-gray-700 hover:bg-gray-100 hover:text-primary flex items-center justify-center"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" /></svg>
+                </button>
+             </div>
+           )}
+
            {/* Drawing Mode Actions */}
            {isDrawingMode && (
              <div className="bg-white/95 backdrop-blur-sm shadow-md rounded-xl p-3 flex flex-col gap-2 border border-primary/30 w-48 animate-fadeIn">
@@ -298,10 +318,6 @@ const MapPage = () => {
             Memuat data lahan...
           </div>
         )}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-md text-xs font-semibold text-text-secondary flex items-center gap-2 z-[400] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-          <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" /></svg>
-          Klik pada area peta atau marker untuk memilih lokasi
-        </div>
       </div>
       
       {selectedLocation && (
@@ -321,6 +337,7 @@ const MapPage = () => {
             onAnalyze={handleAnalyze}
             onAnalyzeAI={handleAnalyzeAI}
             onDemoMode={handleDemoMode}
+            onClose={() => setSelectedLocation(null)}
           />
         </div>
       )}

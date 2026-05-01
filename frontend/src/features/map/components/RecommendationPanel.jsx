@@ -13,7 +13,8 @@ const RecommendationPanel = ({
   aiError, 
   onAnalyze,
   onAnalyzeAI,
-  onDemoMode
+  onDemoMode,
+  onClose
 }) => {
   const isLoading = status !== 'idle' && status !== 'done';
   const [contextInput, setContextInput] = useState("");
@@ -23,12 +24,25 @@ const RecommendationPanel = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 flex flex-col min-h-full">
-      <h2 className="text-lg font-bold text-text-primary mb-4 flex items-center justify-between">
-        <span>Hasil Analisis</span>
-        {status === 'done' && <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded border border-green-200 uppercase tracking-widest font-bold">Rekomendasi Utama</span>}
-      </h2>
-      
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col min-h-full">
+      {/* Sticky Header */}
+      <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center sticky top-0 z-10 rounded-t-2xl">
+         <div className="flex items-center gap-2">
+           <h2 className="text-lg font-bold text-gray-800">Hasil Analisis</h2>
+           {status === 'done' && <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded border border-green-200 uppercase tracking-widest font-bold">Rekomendasi Utama</span>}
+         </div>
+         {onClose && (
+           <button 
+             onClick={onClose}
+             className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+             title="Tutup Panel"
+           >
+             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+           </button>
+         )}
+      </div>
+
+      <div className="p-6 pt-4 flex-1">
       {!location && (
         <div className="flex-1 flex flex-col items-center justify-center text-center text-text-secondary opacity-70 animate-fadeIn">
           <svg className="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,6 +147,7 @@ const RecommendationPanel = ({
           
         </div>
       )}
+      </div>
     </div>
   );
 };
