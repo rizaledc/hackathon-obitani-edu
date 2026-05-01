@@ -293,7 +293,7 @@ const MapPage = () => {
       
       {/* Panel Daftar Lahan Kiri */}
       {showLahanList && (
-        <div className="w-[300px] flex-shrink-0 bg-white shadow-[2px_0_10px_rgba(0,0,0,0.05)] border-r border-gray-200 flex flex-col h-full animate-slideRight z-20">
+        <div className="w-[20%] min-w-[250px] flex-shrink-0 bg-white shadow-[2px_0_10px_rgba(0,0,0,0.05)] border-r border-gray-200 flex flex-col h-full animate-slideRight z-20">
            <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
               <h2 className="font-bold text-gray-800 text-sm">Daftar Lahan</h2>
               <div className="flex items-center gap-2">
@@ -441,7 +441,7 @@ const MapPage = () => {
       </div>
       
       {selectedLocation && (
-        <div className="w-[400px] flex-shrink-0 bg-white border-l border-gray-200 overflow-y-auto animate-slideLeft custom-scrollbar flex flex-col h-full z-20 shadow-2xl" style={{ scrollbarWidth: 'none' }}>
+        <div className="w-[20%] min-w-[300px] flex-shrink-0 bg-white border-l border-gray-200 overflow-y-auto animate-slideLeft custom-scrollbar flex flex-col h-full z-20 shadow-2xl" style={{ scrollbarWidth: 'none' }}>
           {analysisError && (
             <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-xl text-sm font-medium">
               {analysisError}
