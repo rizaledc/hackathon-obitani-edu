@@ -22,6 +22,11 @@ const MapPage = () => {
     }
   };
   
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [newPolygonGeom, setNewPolygonGeom] = useState(null);
+  const [newLahanName, setNewLahanName] = useState('');
+  const [newLahanDesc, setNewLahanDesc] = useState('');
+
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [recommendationResult, setRecommendationResult] = useState(null);
   const [status, setStatus] = useState('idle'); // idle, processing, done, error
@@ -67,44 +72,55 @@ const MapPage = () => {
   };
 
   const handleAnalyze = async () => {
-    if (!selectedLocation) return;
+    if (!selectedLocation || !selectedLocation.id) {
+       setAnalysisError('Pilih lahan terlebih dahulu');
+       return;
+    }
     
     setStatus('processing');
     setAnalysisError('');
     try {
-      let lahanId = selectedLocation.id;
-      
-      if (!lahanId) {
-        // Simulasi user menggambar polygon dengan membuat kotak di sekitar titik yang diklik
-        const d = 0.001; 
-        const payload = {
-          koordinat: {
-            type: "Polygon",
-            coordinates: [[
-              [selectedLocation.lng - d, selectedLocation.lat - d],
-              [selectedLocation.lng + d, selectedLocation.lat - d],
-              [selectedLocation.lng + d, selectedLocation.lat + d],
-              [selectedLocation.lng - d, selectedLocation.lat + d],
-              [selectedLocation.lng - d, selectedLocation.lat - d]
-            ]]
-          }
-        };
-        const resCreate = await api.post('/api/lahan/', payload);
-        lahanId = resCreate.data.data?.id || resCreate.data.id;
-        
-        // Refresh daftar lahan agar polygon baru muncul di peta
-        const resLahans = await api.get('/api/lahan/');
-        setLahans(resLahans.data.data || resLahans.data || []);
-        setSelectedLocation(prev => ({ ...prev, id: lahanId }));
-      }
-      
-      const resAnalyze = await api.post(`/api/lahan/${lahanId}/analyze`);
+      const resAnalyze = await api.post(`/api/lahan/${selectedLocation.id}/analyze`);
       setRecommendationResult(resAnalyze.data.data || resAnalyze.data);
       setStatus('done');
     } catch (error) {
       console.error(error);
       setStatus('error');
       setAnalysisError('Gagal melakukan analisis lahan');
+    }
+  };
+
+  const handlePolygonDrawn = (geometry) => {
+    setNewPolygonGeom(geometry);
+    setNewLahanName('');
+    setNewLahanDesc('');
+    setShowSaveModal(true);
+  };
+
+  const handleSaveLahan = async () => {
+    try {
+      const payload = {
+        nama: newLahanName || 'Lahan Baru',
+        deskripsi: newLahanDesc || 'Deskripsi otomatis',
+        koordinat: newPolygonGeom
+      };
+      const resCreate = await api.post('/api/lahan/', payload);
+      const newId = resCreate.data.data?.id || resCreate.data.id;
+      
+      // Refresh daftar lahan
+      const resLahans = await api.get('/api/lahan/');
+      setLahans(resLahans.data.data || resLahans.data || []);
+      
+      setShowSaveModal(false);
+      
+      // Select the new lahan
+      const centroid = getCentroid({ koordinat: newPolygonGeom });
+      if (centroid) {
+         handleSelectLocation(centroid[0], centroid[1], newId);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Gagal menyimpan lahan');
     }
   };
 
@@ -139,7 +155,7 @@ const MapPage = () => {
   return (
     <div className="flex h-[calc(100vh-100px)] gap-6 w-full relative animate-fadeIn">
       <div className="flex-1 rounded-2xl overflow-hidden shadow-sm border border-gray-200 relative group cursor-crosshair">
-        <MapViewer onSelectLocation={handleSelectLocation} lahans={lahans} selectedLocation={selectedLocation} mapRef={mapRef} />
+        <MapViewer onSelectLocation={handleSelectLocation} lahans={lahans} selectedLocation={selectedLocation} mapRef={mapRef} onPolygonDrawn={handlePolygonDrawn} />
         {lahansLoading && (
           <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-md text-xs font-semibold text-text-secondary z-[400]">
             Memuat data lahan...
@@ -169,6 +185,50 @@ const MapPage = () => {
             onAnalyzeAI={handleAnalyzeAI}
             onDemoMode={handleDemoMode}
           />
+        </div>
+      )}
+
+      {showSaveModal && (
+        <div className="absolute inset-0 z-[1000] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 w-[400px] shadow-lg animate-fadeIn">
+            <h3 className="text-xl font-bold mb-4">Simpan Lahan Baru</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold mb-1">Nama Lahan</label>
+                <input 
+                  type="text" 
+                  value={newLahanName}
+                  onChange={e => setNewLahanName(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
+                  placeholder="Misal: Lahan Tomat A"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1">Deskripsi</label>
+                <textarea 
+                  value={newLahanDesc}
+                  onChange={e => setNewLahanDesc(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
+                  placeholder="Deskripsi singkat..."
+                  rows={3}
+                />
+              </div>
+              <div className="flex gap-3 justify-end pt-2">
+                <button 
+                  onClick={() => setShowSaveModal(false)}
+                  className="px-4 py-2 font-semibold text-gray-600 hover:bg-gray-100 rounded-lg"
+                >
+                  Batal
+                </button>
+                <button 
+                  onClick={handleSaveLahan}
+                  className="px-4 py-2 font-semibold bg-primary text-white rounded-lg hover:bg-primary-dark"
+                >
+                  Simpan Lahan
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
