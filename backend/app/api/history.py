@@ -8,25 +8,42 @@ from app.models.schemas import FeedbackCreate
 router = APIRouter()
 
 @router.get("/")
-async def list_history(current_user: dict = Depends(get_current_user)) -> Any:
-    role = current_user.get("role")
-    org_id = current_user.get("organization_id")
+async def list_history(current_user: dict = Depends(get_current_user)):
     
-    if role == "superadmin":
-        res = supabase.table("satellite_results").select("*").execute()
-        return res.data
-        
-    if org_id:
-        lahan_res = supabase.table("lahan").select("id").eq("organization_id", org_id).execute()
+    if current_user["role"] == "superadmin":
+        # Semua data
+        result = supabase.table("satellite_results")\
+            .select("*")\
+            .order("created_at", desc=True)\
+            .execute()
+    
+    elif current_user["role"] == "admin":
+        # Filter by organization_id
+        result = supabase.table("satellite_results")\
+            .select("*")\
+            .eq("organization_id", current_user["organization_id"])\
+            .order("created_at", desc=True)\
+            .execute()
+    
     else:
-        lahan_res = supabase.table("lahan").select("id").eq("user_id", current_user["id"]).execute()
+        # User biasa: ambil lahan milik user dulu
+        lahan_result = supabase.table("lahan")\
+            .select("id")\
+            .eq("user_id", current_user["id"])\
+            .execute()
         
-    lahan_ids = [row["id"] for row in lahan_res.data]
-    if not lahan_ids:
-        return []
+        lahan_ids = [l["id"] for l in lahan_result.data]
         
-    res = supabase.table("satellite_results").select("*").in_("lahan_id", lahan_ids).execute()
-    return res.data
+        if not lahan_ids:
+            return []
+        
+        result = supabase.table("satellite_results")\
+            .select("*")\
+            .in_("lahan_id", lahan_ids)\
+            .order("created_at", desc=True)\
+            .execute()
+    
+    return result.data
 
 @router.get("/export")
 async def export_history(current_user: dict = Depends(get_current_user)) -> Any:
