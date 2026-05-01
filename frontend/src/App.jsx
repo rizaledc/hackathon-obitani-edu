@@ -1,5 +1,5 @@
-import React, { Suspense, lazy } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import React, { Suspense, lazy, useEffect } from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import OrbitaniLoader from "./components/OrbitaniLoader";
 import MainLayout from "./components/layout/MainLayout";
 import useAuthStore from "./store/authStore";
@@ -28,6 +28,18 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 };
 
 function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const { checkSession, isAuthenticated } = useAuthStore.getState();
+      if (isAuthenticated && !checkSession()) {
+        navigate('/login');
+      }
+    }, 60 * 1000);
+    return () => clearInterval(interval);
+  }, [navigate]);
+
   return ( 
     <Suspense fallback={<div className="h-screen flex items-center justify-center"><OrbitaniLoader status="processing" /></div>}> 
       <Routes>

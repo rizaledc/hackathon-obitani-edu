@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
 
+const TIMEOUT = 30 * 60 * 1000; // 30 menit
+
 const useAuthStore = create(
   persist(
     (set) => ({
@@ -23,10 +25,29 @@ const useAuthStore = create(
         
         const { access_token, role } = response.data
         localStorage.setItem('token', access_token)
+        localStorage.setItem('login_time', Date.now().toString())
         set({ token: access_token, role, user: { username, role }, isAuthenticated: true })
       },
-      logout: () => set({ token: null, user: null, isAuthenticated: false }),
+      logout: () => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('login_time')
+        set({ token: null, user: null, isAuthenticated: false })
+      },
       setUnreadChatCount: (n) => set({ unreadChatCount: n }),
+      checkSession: () => {
+        const loginTime = localStorage.getItem('login_time')
+        const token = localStorage.getItem('token')
+        if (!token || !loginTime) return false
+        
+        const elapsed = Date.now() - parseInt(loginTime)
+        if (elapsed > TIMEOUT) {
+          localStorage.removeItem('token')
+          localStorage.removeItem('login_time')
+          set({ token: null, user: null, isAuthenticated: false })
+          return false
+        }
+        return true
+      }
     }),
     {
       name: 'auth-storage',
