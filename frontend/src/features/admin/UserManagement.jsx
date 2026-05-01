@@ -18,6 +18,7 @@ const UserManagement = () => {
   const [totalLahan, setTotalLahan] = useState(0);
   const [totalAnalisis, setTotalAnalisis] = useState(0);
   const [orgName, setOrgName] = useState('-');
+  const [orgList, setOrgList] = useState([]);
 
   const { user: currentUser } = useAuthStore();
   const isSuperadmin = currentUser?.role === 'superadmin';
@@ -82,6 +83,13 @@ const UserManagement = () => {
     api.get('/api/history/')
       .then(res => setTotalAnalisis(res.data?.length || 0))
       .catch(() => setTotalAnalisis(0));
+      
+    // Fetch orgList
+    api.get('/api/organizations/')
+      .then(res => {
+        setOrgList(res.data || []);
+      })
+      .catch(err => console.error('Gagal fetch org:', err));
   }, []);
 
   useEffect(() => {
@@ -375,10 +383,10 @@ const UserManagement = () => {
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">Organisasi</label>
-                    <select className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.organization_id} onChange={e => setFormData({...formData, organization_id: e.target.value})}>
+                    <select className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.organization_id || ''} onChange={e => setFormData({...formData, organization_id: parseInt(e.target.value) || null})}>
                       <option value="">- Pilih Org -</option>
-                      {orgs.map(o => (
-                        <option key={o.id} value={o.id}>{o.name}</option>
+                      {orgList.map(org => (
+                        <option key={org.id} value={org.id}>{org.nama}</option>
                       ))}
                     </select>
                   </div>
