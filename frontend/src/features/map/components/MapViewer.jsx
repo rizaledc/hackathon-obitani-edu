@@ -21,6 +21,17 @@ const ClickHandler = ({ onSelectLocation, isDrawingMode }) => {
   return null;
 };
 
+function MapResizer() {
+  const map = useMap();
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [map]);
+  return null;
+}
+
 const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, draftPoints = [], isDrawingMode = false, samplePoints = [], selectedId }) => {
   const defaultCenter = [-2.5, 118];
   const defaultZoom = 5;
@@ -82,6 +93,7 @@ const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, dr
           attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
         />
+        <MapResizer />
         <ClickHandler onSelectLocation={onSelectLocation} isDrawingMode={isDrawingMode} />
         
         {draftPoints && draftPoints.length > 0 && (
