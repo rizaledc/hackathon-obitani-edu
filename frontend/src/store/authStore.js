@@ -31,8 +31,9 @@ const useAuthStore = create(
       logout: () => {
         localStorage.removeItem('token')
         localStorage.removeItem('login_time')
-        set({ token: null, user: null, isAuthenticated: false })
+        set({ token: null, user: null, isAuthenticated: false, role: null })
       },
+      setUser: (userData) => set({ user: userData }),
       setUnreadChatCount: (n) => set({ unreadChatCount: n }),
       checkSession: () => {
         const loginTime = localStorage.getItem('login_time')
