@@ -188,6 +188,38 @@ const MapPage = () => {
 
   return (
     <div className="flex h-[calc(100vh-100px)] gap-6 w-full relative animate-fadeIn">
+      
+      {/* Panel Daftar Lahan Kiri */}
+      <div className="w-[300px] flex-shrink-0 bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col overflow-hidden h-full">
+         <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+            <h2 className="font-bold text-gray-800 text-sm">Daftar Lahan</h2>
+            <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-bold">{lahans.length}</span>
+         </div>
+         <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2 custom-scrollbar" style={{ scrollbarWidth: 'thin' }}>
+            {lahansLoading ? (
+               <div className="text-center text-sm text-gray-500 py-6">Memuat data...</div>
+            ) : lahans.length === 0 ? (
+               <div className="text-center text-sm text-gray-500 py-6 px-2">
+                 Belum ada lahan.<br/>Silakan buat polygon baru.
+               </div>
+            ) : (
+               lahans.map(lahan => (
+                  <button 
+                     key={lahan.id}
+                     onClick={() => {
+                        const centroid = getCentroid(lahan);
+                        if (centroid) handleSelectLocation(centroid[0], centroid[1], lahan.id);
+                     }}
+                     className={`text-left p-3 rounded-xl border transition-all ${selectedLocation?.id === lahan.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-gray-100 hover:border-primary/40 hover:bg-gray-50'}`}
+                  >
+                     <div className="font-bold text-gray-800 text-sm truncate">{lahan.nama || 'Lahan Tanpa Nama'}</div>
+                     <div className="text-xs text-gray-500 mt-1 line-clamp-2">{lahan.deskripsi || 'Tidak ada deskripsi'}</div>
+                  </button>
+               ))
+            )}
+         </div>
+      </div>
+
       <div className="flex-1 rounded-2xl overflow-hidden shadow-sm border border-gray-200 relative group cursor-crosshair">
         <MapViewer onSelectLocation={handleSelectLocation} lahans={lahans} selectedLocation={selectedLocation} mapRef={mapRef} draftPoints={draftPoints} />
         
