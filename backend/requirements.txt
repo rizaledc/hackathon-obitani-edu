@@ -11,3 +11,4 @@ numpy
 python-dotenv
 httpx
 pydantic[email]
+python-multipart==0.0.9
