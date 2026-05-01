@@ -314,12 +314,12 @@ const UserManagement = () => {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {u.role === 'user' && (
+                        {isSuperadmin && u.role === 'user' && (
                           <button onClick={() => handleRoleChange(u, 'admin')} className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-blue-600 border border-blue-200 rounded hover:bg-blue-50 transition-colors">
                             <ChevronUp size={12} /> Admin
                           </button>
                         )}
-                        {u.role === 'admin' && (
+                        {isSuperadmin && u.role === 'admin' && (
                           <button onClick={() => handleRoleChange(u, 'user')} className="flex items-center gap-1 px-2 py-1 text-xs font-semibold text-gray-600 border border-gray-200 rounded hover:bg-gray-50 transition-colors">
                             <ChevronDown size={12} /> User
                           </button>

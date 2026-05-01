@@ -28,8 +28,11 @@ const Toast = ({ message, type = 'success', onClose }) => {
       {icons[type]}
       <span className="font-medium text-sm flex-1">{message}</span>
       <button 
-        onClick={onClose}
-        className="ml-2 opacity-50 hover:opacity-100 transition-opacity flex-shrink-0">
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        className="ml-2 opacity-50 hover:opacity-100 transition-opacity flex-shrink-0 cursor-pointer">
         <X size={14} />
       </button>
     </div>
