@@ -216,7 +216,6 @@ const MapPage = () => {
                        onClick={() => {
                           const centroid = getCentroid(lahan);
                           if (centroid) handleSelectLocation(centroid[0], centroid[1], lahan.id);
-                          setShowLahanList(false); // Opsional: tutup daftar setelah dipilih agar map jelas
                        }}
                        className={`text-left p-3 rounded-xl border transition-all ${selectedLocation?.id === lahan.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-gray-100 hover:border-primary/40 hover:bg-gray-50'}`}
                     >
@@ -321,7 +320,7 @@ const MapPage = () => {
       </div>
       
       {selectedLocation && (
-        <div className="w-[400px] flex-shrink-0 overflow-y-auto pr-2 pb-6 custom-scrollbar animate-slideLeft" style={{ scrollbarWidth: 'none' }}>
+        <div className="w-[320px] flex-shrink-0 overflow-y-auto pr-2 pb-6 custom-scrollbar animate-slideLeft" style={{ scrollbarWidth: 'none' }}>
           {analysisError && (
             <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-xl text-sm font-medium">
               {analysisError}

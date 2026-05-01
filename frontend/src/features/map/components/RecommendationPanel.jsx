@@ -42,7 +42,7 @@ const RecommendationPanel = ({
          )}
       </div>
 
-      <div className="p-6 pt-4 flex-1">
+      <div className="p-4 pt-3 flex-1 flex flex-col">
       {!location && (
         <div className="flex-1 flex flex-col items-center justify-center text-center text-text-secondary opacity-70 animate-fadeIn">
           <svg className="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,15 +60,15 @@ const RecommendationPanel = ({
       )}
 
       {location && status === 'idle' && (
-        <div className="mb-6 p-4 bg-primary-pale rounded-xl border border-primary/20 animate-slideUp">
-          <p className="text-xs font-semibold text-text-secondary mb-1">Koordinat Lahan</p>
-          <div className="flex justify-between items-center text-sm font-medium text-text-primary mb-4">
+        <div className="mb-4 p-3 bg-primary-pale rounded-xl border border-primary/20 animate-slideUp">
+          <p className="text-[11px] font-semibold text-text-secondary mb-1">Koordinat Lahan</p>
+          <div className="flex justify-between items-center text-xs font-medium text-text-primary mb-3">
             <span>Lat: {location.lat.toFixed(4)}</span>
             <span>Lng: {location.lng.toFixed(4)}</span>
           </div>
           <button 
             onClick={onAnalyze}
-            className="w-full bg-primary text-white font-bold py-2 rounded-lg hover:bg-primary-dark transition-colors shadow-sm"
+            className="w-full bg-primary text-white font-bold py-2 text-sm rounded-lg hover:bg-primary-dark transition-colors shadow-sm"
           >
             Analisis Lahan
           </button>
