@@ -15,12 +15,12 @@ class UserLogin(BaseModel):
     password: str
 
 class UserOut(BaseModel):
-    id: str
+    id: int
     username: str
-    email: str
-    name: str
+    email: Optional[str]
+    name: Optional[str]
     role: str
-    organization_id: Optional[str] = None
+    organization_id: Optional[int] = None
 
 class Token(BaseModel):
     access_token: str
