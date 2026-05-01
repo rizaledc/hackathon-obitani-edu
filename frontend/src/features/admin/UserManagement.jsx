@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Users as UsersIcon, Search, Plus, X, Shield, ShieldCheck, User, ChevronUp, ChevronDown, Trash2 } from 'lucide-react';
+import { 
+  Users, Shield, ShieldCheck, User, Trash2, 
+  Plus, Search, ChevronUp, ChevronDown, 
+  UserCog, Building2, X
+} from 'lucide-react';
 import api from '../../services/api';
 import useToast from '../../hooks/useToast';
 import useConfirm from '../../hooks/useConfirm';
@@ -27,15 +31,21 @@ const UserManagement = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [userRes, orgRes] = await Promise.all([
-        api.get('/api/users/'),
-        api.get('/api/organizations/').catch(() => ({ data: [] }))
-      ]);
-      
-      let uData = userRes.data || [];
+      let uData = [];
+      try {
+        const userRes = await api.get('/api/users/');
+        uData = userRes.data || [];
+      } catch (err) {
+        if (err.response?.status === 403) {
+          showToast('Akses terbatas untuk role admin', 'warning');
+        } else {
+          console.error('Failed to fetch users', err);
+        }
+      }
       if (!Array.isArray(uData) && uData.data) uData = uData.data;
       setUsers(uData);
 
+      const orgRes = await api.get('/api/organizations/').catch(() => ({ data: [] }));
       let oData = orgRes.data || [];
       if (!Array.isArray(oData) && oData.data) oData = oData.data;
       setOrgs(oData);
