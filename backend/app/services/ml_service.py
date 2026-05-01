@@ -1,6 +1,10 @@
 import os
 import joblib
 import pandas as pd
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 PLANT_NAMES_ID = {
     "rice": "Padi",
@@ -47,19 +51,27 @@ def predict_crop(features: dict):
         
     # Pastikan urutan fitur PERSIS sama dengan urutan kolom dataset training
     # [N, P, K, temperature, humidity, ph, rainfall]
-    df = pd.DataFrame([{
-        "N": features.get("n", features.get("N", 0)),
-        "P": features.get("p", features.get("P", 0)),
-        "K": features.get("k", features.get("K", 0)),
-        "temperature": features.get("temperature", 0),
-        "humidity": features.get("humidity", 0),
-        "ph": features.get("ph", 6.5),
-        "rainfall": features.get("rainfall", 0)
-    }], columns=["N", "P", "K", "temperature", "humidity", "ph", "rainfall"])
+    try:
+        df = pd.DataFrame([[
+            features["n"], features["p"], features["k"],
+            features["temperature"], features["humidity"],
+            features["ph"], features["rainfall"]
+        ]], columns=["N", "P", "K", "temperature", "humidity", "ph", "rainfall"])
+    except KeyError as ke:
+        logger.error(f"Missing feature: {ke}")
+        # Fallback to get with defaults if strict KeyError fails
+        df = pd.DataFrame([[
+            features.get("n", 0), features.get("p", 0), features.get("k", 0),
+            features.get("temperature", 0), features.get("humidity", 0),
+            features.get("ph", 6.5), features.get("rainfall", 0)
+        ]], columns=["N", "P", "K", "temperature", "humidity", "ph", "rainfall"])
+        
+    logger.info(f"Input features: {features}")
     
     try:
         # Scale fitur menggunakan minmax_scaler
         X_scaled = scaler.transform(df)
+        logger.info(f"Scaled features: {X_scaled}")
         
         # Predict menggunakan random_forest_model
         if hasattr(model, "predict_proba"):
@@ -73,9 +85,13 @@ def predict_crop(features: dict):
             pred_numeric = model.predict(X_scaled)[0]
             probability = 0.95
             
+        logger.info(f"Raw prediction: {pred_numeric}")
+            
         # Decode label menggunakan label_encoder
         pred_label_array = encoder.inverse_transform([pred_numeric])
         pred_label = pred_label_array[0]
+        
+        logger.info(f"Decoded label: {pred_label}")
             
         # Return label dalam Bahasa Indonesia
         label_id = PLANT_NAMES_ID.get(pred_label.lower(), pred_label)
