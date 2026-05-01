@@ -1,9 +1,6 @@
 import React from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents, Polygon, CircleMarker, useMap, FeatureGroup } from 'react-leaflet';
-import { EditControl } from 'react-leaflet-draw';
+import { MapContainer, TileLayer, Marker, useMapEvents, Polygon, CircleMarker, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import 'leaflet-draw/dist/leaflet.draw.css';
-import 'leaflet-draw';
 
 // Fix Leaflet's default icon path issues in React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -16,51 +13,13 @@ L.Icon.Default.mergeOptions({
 const ClickHandler = ({ onSelectLocation }) => {
   useMapEvents({
     click(e) {
-      if (onSelectLocation) onSelectLocation(e.latlng.lat, e.latlng.lng);
+      if (onSelectLocation) onSelectLocation(e.latlng.lat, e.latlng.lng, null);
     }
   });
   return null;
 };
 
-const DrawControl = ({ onPolygonDrawn }) => {
-  const handleCreated = (e) => {
-    const type = e.layerType;
-    const layer = e.layer;
-    if (type === 'polygon' && onPolygonDrawn) {
-      const geoJSON = layer.toGeoJSON();
-      onPolygonDrawn(geoJSON.geometry);
-      // Hapus layer yang baru digambar agar tidak duplicate
-      if (e.target && e.target.removeLayer) {
-        e.target.removeLayer(layer);
-      } else if (layer.remove) {
-        layer.remove();
-      }
-    }
-  };
-
-  return (
-    <FeatureGroup>
-      <EditControl
-        position="topleft"
-        onCreated={handleCreated}
-        draw={{
-          rectangle: false,
-          circle: false,
-          circlemarker: false,
-          marker: false,
-          polyline: false,
-          polygon: true,
-        }}
-        edit={{
-          edit: false,
-          remove: false
-        }}
-      />
-    </FeatureGroup>
-  );
-};
-
-const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, onPolygonDrawn }) => {
+const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, draftPoints = [] }) => {
   const defaultCenter = [-2.5, 118];
   const defaultZoom = 5;
   const bounds = [[-11, 95], [6, 141]];
@@ -81,7 +40,10 @@ const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, on
       <React.Fragment key={lahan.id}>
         <Polygon positions={positions} 
           pathOptions={{color: '#047857', fillColor: '#10b981', fillOpacity: 0.4}} 
-          eventHandlers={{ click: () => onSelectLocation(centroid[0], centroid[1], lahan.id) }} />
+          eventHandlers={{ click: (e) => {
+            // L.DomEvent.stopPropagation(e); // Optional: prevent map click
+            onSelectLocation(centroid[0], centroid[1], lahan.id);
+          }}} />
         <CircleMarker center={centroid} radius={6}
           pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}} 
           eventHandlers={{ click: () => onSelectLocation(centroid[0], centroid[1], lahan.id) }} />
@@ -106,8 +68,21 @@ const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, on
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <DrawControl onPolygonDrawn={onPolygonDrawn} />
         <ClickHandler onSelectLocation={onSelectLocation} />
+        
+        {draftPoints && draftPoints.length > 0 && (
+          <>
+            {draftPoints.length < 3 ? (
+              <Polyline positions={draftPoints} pathOptions={{ color: '#3b82f6', weight: 3, dashArray: '5, 10' }} />
+            ) : (
+              <Polygon positions={draftPoints} pathOptions={{ color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 0.4, weight: 3, dashArray: '5, 10' }} />
+            )}
+            {draftPoints.map((pos, idx) => (
+              <CircleMarker key={idx} center={pos} radius={5} pathOptions={{ color: '#2563eb', fillColor: '#fff', fillOpacity: 1, weight: 2 }} />
+            ))}
+          </>
+        )}
+
         {lahans.map((lahan) => renderLahan(lahan))}
         {selectedLocation && !selectedLocation.id && (
            <Marker position={[selectedLocation.lat, selectedLocation.lng]} />

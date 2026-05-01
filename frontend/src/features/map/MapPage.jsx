@@ -27,6 +27,9 @@ const MapPage = () => {
   const [newLahanName, setNewLahanName] = useState('');
   const [newLahanDesc, setNewLahanDesc] = useState('');
 
+  const [isDrawingMode, setIsDrawingMode] = useState(false);
+  const [draftPoints, setDraftPoints] = useState([]);
+
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [recommendationResult, setRecommendationResult] = useState(null);
   const [status, setStatus] = useState('idle'); // idle, processing, done, error
@@ -52,6 +55,11 @@ const MapPage = () => {
   }, []);
 
   const handleSelectLocation = (lat, lng, id) => {
+    if (isDrawingMode) {
+      setDraftPoints(prev => [...prev, [lat, lng]]);
+      return;
+    }
+
     if (status === 'processing') return;
     setSelectedLocation({ lat, lng, id });
     setStatus('idle');
@@ -69,6 +77,32 @@ const MapPage = () => {
     } else if (mapRef.current) {
       mapRef.current.flyTo([lat, lng], 14);
     }
+  };
+
+  const startDrawing = () => {
+    setIsDrawingMode(true);
+    setDraftPoints([]);
+    setSelectedLocation(null);
+  };
+
+  const cancelDrawing = () => {
+    setIsDrawingMode(false);
+    setDraftPoints([]);
+  };
+
+  const finishDrawing = () => {
+    if (draftPoints.length < 3) {
+      alert("Polygon harus memiliki minimal 3 titik");
+      return;
+    }
+    const closedRing = [...draftPoints.map(p => [p[1], p[0]]), [draftPoints[0][1], draftPoints[0][0]]];
+    const geometry = {
+      type: "Polygon",
+      coordinates: [closedRing]
+    };
+    setIsDrawingMode(false);
+    setDraftPoints([]);
+    handlePolygonDrawn(geometry);
   };
 
   const handleAnalyze = async () => {
@@ -155,7 +189,43 @@ const MapPage = () => {
   return (
     <div className="flex h-[calc(100vh-100px)] gap-6 w-full relative animate-fadeIn">
       <div className="flex-1 rounded-2xl overflow-hidden shadow-sm border border-gray-200 relative group cursor-crosshair">
-        <MapViewer onSelectLocation={handleSelectLocation} lahans={lahans} selectedLocation={selectedLocation} mapRef={mapRef} onPolygonDrawn={handlePolygonDrawn} />
+        <MapViewer onSelectLocation={handleSelectLocation} lahans={lahans} selectedLocation={selectedLocation} mapRef={mapRef} draftPoints={draftPoints} />
+        
+        {/* Drawing Toolbar */}
+        <div className="absolute top-4 right-4 z-[400] bg-white/90 backdrop-blur-sm rounded-xl shadow-md p-3 flex flex-col gap-2 border border-gray-100">
+          {!isDrawingMode ? (
+            <button 
+              onClick={startDrawing}
+              className="flex items-center gap-2 px-3 py-2 text-sm font-bold text-primary hover:bg-green-50 rounded-lg transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+              Buat Polygon Baru
+            </button>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <div className="text-xs font-semibold text-gray-600 px-1 border-b pb-2">
+                Klik titik-titik di peta
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  onClick={finishDrawing}
+                  className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm font-bold text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors shadow-sm"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                  Selesai
+                </button>
+                <button 
+                  onClick={cancelDrawing}
+                  className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                  Batal
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         {lahansLoading && (
           <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-md text-xs font-semibold text-text-secondary z-[400]">
             Memuat data lahan...
