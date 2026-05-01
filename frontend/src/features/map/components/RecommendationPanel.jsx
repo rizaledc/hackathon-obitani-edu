@@ -58,12 +58,10 @@ const RecommendationPanel = ({
 }) => {
   const isLoading = status === 'processing';
   const [chatInput, setChatInput] = useState('');
-  const [aiResponse, setAiResponse] = useState(null);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
 
   useEffect(() => {
-    setAiResponse('');
     setChatHistory([]);
     if (location?.id) {
       loadChatHistory(location.id);
@@ -75,16 +73,8 @@ const RecommendationPanel = ({
       const res = await api.get(`/api/chat/history?lahan_id=${lahanId}`);
       const messages = res.data?.data || res.data || [];
       setChatHistory(messages);
-      
-      const lastAI = messages.filter(m => m.role === 'assistant').pop();
-      if (lastAI) {
-        setAiResponse(lastAI.content);
-      } else {
-        setAiResponse('');
-      }
     } catch {
       setChatHistory([]);
-      setAiResponse('');
     }
   };
 
@@ -94,7 +84,6 @@ const RecommendationPanel = ({
   const handleChat = async () => {
     if (!chatInput.trim()) return;
     setIsChatLoading(true);
-    setAiResponse('');
     
     try {
       const avg = (key) => {
@@ -143,17 +132,24 @@ Pertanyaan: ${chatInput}`
       });
 
       const responseText = res.data?.response || res.data?.message || res.data?.data?.reply || res.data?.reply || res.data;
-      setAiResponse(responseText);
       
-      if (location?.id) {
-        loadChatHistory(location.id);
-      }
+      setChatHistory(prev => [
+        ...prev,
+        { role: 'user', content: chatInput },
+        { role: 'assistant', content: typeof responseText === 'string' ? responseText : JSON.stringify(responseText) }
+      ]);
+      setChatInput('');
       
     } catch (err) {
-      setAiResponse('Gagal menghubungi Pakar AI. Coba lagi.');
+      console.error(err);
+      setChatHistory(prev => [
+        ...prev,
+        { role: 'user', content: chatInput },
+        { role: 'assistant', content: 'Gagal menghubungi Pakar AI. Coba lagi.' }
+      ]);
+      setChatInput('');
     } finally {
       setIsChatLoading(false);
-      setChatInput('');
     }
   };
 
@@ -506,12 +502,12 @@ Pertanyaan: ${chatInput}`
               </h3>
 
               {chatHistory.length > 0 && (
-                <div className="mb-3 max-h-40 overflow-y-auto space-y-2 custom-scrollbar">
+                <div className="mb-3 max-h-60 overflow-y-auto space-y-2 custom-scrollbar">
                   {chatHistory.map((msg, i) => (
                     <div key={i} className={`text-xs p-2 rounded-lg ${
                       msg.role === 'user' 
-                        ? 'bg-gray-100 text-gray-600 text-right' 
-                        : 'bg-green-50 text-gray-700'
+                        ? 'bg-gray-100 text-gray-600 ml-8' 
+                        : 'bg-green-50 text-gray-700 mr-8'
                     }`}>
                       {stripMarkdown(msg.content)}
                     </div>
@@ -532,17 +528,6 @@ Pertanyaan: ${chatInput}`
               >
                 {isChatLoading ? 'Menganalisis...' : 'Kirim Pertanyaan'}
               </button>
-              
-              {aiResponse && (
-                <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-100 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  <div className="font-bold text-[#16a34a] mb-1 flex items-center gap-1"><Sparkle size={14} weight="fill"/> Jawaban AI:</div>
-                  {stripMarkdown(
-                    typeof aiResponse === 'string' 
-                      ? aiResponse 
-                      : aiResponse?.response || aiResponse?.message || ''
-                  )}
-                </div>
-              )}
             </section>
           </>
         )}
