@@ -10,6 +10,12 @@ class UserCreate(BaseModel):
     organization_id: Optional[int] = None
     role: str
 
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    role: Optional[str] = None
+    organization_id: Optional[int] = None
+
 class UserLogin(BaseModel):
     username: str
     password: str

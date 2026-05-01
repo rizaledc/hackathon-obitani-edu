@@ -6,9 +6,7 @@ from app.core.security import get_current_user
 
 router = APIRouter()
 
-class UserUpdate(BaseModel):
-    name: Optional[str] = None
-    email: Optional[EmailStr] = None
+from app.models.schemas import UserUpdate
 
 @router.get("/")
 async def list_users(current_user: dict = Depends(get_current_user)) -> Any:
@@ -49,13 +47,23 @@ async def update_user(user_id: str, payload: UserUpdate, current_user: dict = De
     user = await get_user(user_id, current_user)
     
     update_data = {}
-    if payload.name is not None:
+    if payload.name:
         update_data["name"] = payload.name
-    if payload.email is not None:
+    if payload.email:
         existing = supabase.table("users").select("id").eq("email", payload.email).neq("id", user_id).execute()
         if existing.data:
             raise HTTPException(status_code=400, detail="Email already taken")
         update_data["email"] = payload.email
+        
+    if payload.role:
+        if current_user.get("role") != "superadmin":
+            raise HTTPException(status_code=403, detail="Only superadmin can update role")
+        if user.get("role") == "superadmin" and str(user.get("id")) != str(current_user.get("id")):
+            raise HTTPException(status_code=403, detail="Cannot update role of another superadmin")
+        update_data["role"] = payload.role
+        
+    if payload.organization_id is not None:
+        update_data["organization_id"] = payload.organization_id
         
     if not update_data:
         return user
