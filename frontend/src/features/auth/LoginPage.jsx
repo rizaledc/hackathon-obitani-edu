@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import logo from '../../assets/logo.webp';
-import heroImg from '../../assets/hero.png';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -71,7 +70,6 @@ const LoginPage = () => {
       
       <div className="hidden lg:flex w-1/2 bg-primary-pale items-center justify-center relative overflow-hidden">
         <div className="absolute w-[150%] h-[150%] bg-gradient-to-tr from-green-100 to-white rounded-full -top-1/4 -right-1/4 blur-3xl opacity-60"></div>
-        <img src={heroImg} alt="Visual" className="relative z-10 w-3/4 max-w-lg object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500" />
       </div>
     </div>
   );
