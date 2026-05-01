@@ -62,10 +62,6 @@ const AdminMLOps = () => {
     );
   }
 
-  const fileName = mlopsData.model_info?.file_name || '-';
-  const sizeKb = mlopsData.model_info?.size_bytes 
-    ? (mlopsData.model_info.size_bytes / 1024).toFixed(1) 
-    : '0';
   const modifiedAt = mlopsData.model_info?.modified_at
     ? new Date(mlopsData.model_info.modified_at)
       .toLocaleDateString('id-ID', {
@@ -73,6 +69,27 @@ const AdminMLOps = () => {
       })
     : '-';
   const totalPredictions = mlopsData.total_predictions || 0;
+
+  const modelFiles = [
+    { 
+      name: "random_forest_model.pkl", 
+      size: "2,299 KB",
+      role: "Model Utama (Classifier)",
+      color: "text-green-700 bg-green-100"
+    },
+    { 
+      name: "minmax_scaler.pkl", 
+      size: "2 KB",
+      role: "Feature Scaler",
+      color: "text-blue-700 bg-blue-100"
+    },
+    { 
+      name: "label_encoder.pkl", 
+      size: "1 KB",
+      role: "Label Encoder",
+      color: "text-purple-700 bg-purple-100"
+    }
+  ];
 
   return (
     <div className="flex-1 p-6 lg:px-8 bg-[#FAFAFA] font-sans h-[calc(100vh-64px)] overflow-y-auto">
@@ -106,9 +123,45 @@ const AdminMLOps = () => {
 
         {/* SECTION 2 — Info Model ML */}
         <SectionHeader title="Info Model ML" icon={<Brain size={18} />} />
+        
+        <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden mb-4">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left whitespace-nowrap">
+              <thead className="text-xs text-gray-500 uppercase bg-gray-50 border-b border-gray-100">
+                <tr>
+                  <th className="px-4 py-3 font-semibold">Nama File</th>
+                  <th className="px-4 py-3 font-semibold">Ukuran</th>
+                  <th className="px-4 py-3 font-semibold">Fungsi</th>
+                  <th className="px-4 py-3 font-semibold text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {modelFiles.map((file, idx) => (
+                  <tr key={idx} className="hover:bg-gray-50 transition-colors bg-white">
+                    <td className="px-4 py-3 font-mono text-gray-800 text-xs">
+                      {file.name}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600">
+                      {file.size}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${file.color}`}>
+                        {file.role}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <span className="inline-flex items-center gap-1.5 text-green-600 text-xs font-semibold">
+                        <span className="w-2 h-2 rounded-full bg-green-500" /> Online
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <InfoCard title="Nama Model" value={fileName} icon={<FileText size={18} />} />
-          <InfoCard title="Ukuran File" value={`${sizeKb} KB`} icon={<Database size={18} />} />
           <InfoCard title="Total Prediksi" value={totalPredictions} icon={<BarChart2 size={18} />} />
           <InfoCard title="Tanggal Modified" value={modifiedAt} icon={<CheckCircle size={18} />} />
           <InfoCard title="Algoritma" value="Random Forest Classifier" icon={<Cpu size={18} />} />
