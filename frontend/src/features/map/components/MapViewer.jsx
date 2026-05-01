@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents, Polygon, CircleMarker, Polyline, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, Polygon, CircleMarker, Polyline, useMap, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 
 // Fix Leaflet's default icon path issues in React
@@ -57,6 +57,7 @@ const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, dr
         ref={mapRef}
         center={defaultCenter} 
         zoom={defaultZoom} 
+        zoomControl={false}
         minZoom={5}
         maxBounds={bounds}
         maxBoundsViscosity={1.0}
@@ -65,9 +66,10 @@ const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, dr
         onClick={(e) => onSelectLocation(e.latlng.lat, e.latlng.lng)}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
         />
+        <ZoomControl position="bottomright" />
         <ClickHandler onSelectLocation={onSelectLocation} />
         
         {draftPoints && draftPoints.length > 0 && (
