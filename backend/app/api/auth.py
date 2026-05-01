@@ -37,10 +37,15 @@ def register(user: UserCreate) -> Any:
             detail="The user with this email already exists in the system."
         )
 
-    user_dict = user.model_dump()
-    user_dict["password"] = get_password_hash(user_dict["password"])
-    
-    new_user = supabase.table("users").insert(user_dict).execute()
+    hashed = get_password_hash(user.password)
+    new_user = supabase.table("users").insert({
+        "username": user.username,
+        "email": user.email,
+        "name": user.name,
+        "password_hash": hashed,
+        "role": user.role,
+        "organization_id": user.organization_id
+    }).execute()
     
     if not new_user.data:
         raise HTTPException(status_code=500, detail="Failed to create user.")
@@ -56,7 +61,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()) -> Any:
         
     user = user_response.data[0]
     
-    if not verify_password(form_data.password, user["password"]):
+    if not verify_password(form_data.password, user["password_hash"]):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
 
     access_token = create_access_token(
@@ -80,7 +85,7 @@ async def update_password(body: PasswordUpdate, current_user: dict = Depends(get
         
     hashed_password = get_password_hash(body.new_password)
     
-    update_response = supabase.table("users").update({"password": hashed_password}).eq("id", current_user["id"]).execute()
+    update_response = supabase.table("users").update({"password_hash": hashed_password}).eq("id", current_user["id"]).execute()
     
     if not update_response.data:
         raise HTTPException(status_code=500, detail="Failed to update password")
