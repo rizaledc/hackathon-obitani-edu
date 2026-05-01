@@ -40,8 +40,8 @@ const Sidebar = () => {
     menuItems.push({ path: '/admin/users', icon: <Users size={20} />, label: 'Kelola Pengguna', roles: ['admin', 'superadmin'] });
     if (role === 'superadmin') {
       menuItems.push({ path: '/admin/organizations', icon: <Buildings size={20} />, label: 'Daftar Organisasi', roles: ['superadmin'] });
+      menuItems.push({ path: '/admin/mlops', icon: <Cpu size={20} />, label: 'Dashboard MLOps', roles: ['superadmin'] });
     }
-    menuItems.push({ path: '/admin/mlops', icon: <Cpu size={20} />, label: 'Dashboard MLOps', roles: ['admin', 'superadmin'] });
   }
 
   return (
