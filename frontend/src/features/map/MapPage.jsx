@@ -88,8 +88,9 @@ const MapPage = () => {
     try {
       const res = await api.get(`/api/history/${lahanId}`);
       if (res.data && res.data.length > 0) {
-        setRecommendationResult(res.data);
-        setSamplePoints(res.data);
+        const latest = res.data.slice(0, 10);
+        setRecommendationResult(latest);
+        setSamplePoints(latest);
         setStatus('done');
       } else {
         setRecommendationResult(null);
@@ -440,7 +441,7 @@ const MapPage = () => {
       </div>
       
       {selectedLocation && (
-        <div className="w-[400px] flex-shrink-0 bg-[#1a1a2e] border-l border-gray-800 overflow-y-auto animate-slideLeft custom-scrollbar flex flex-col h-full z-20 shadow-2xl" style={{ scrollbarWidth: 'none' }}>
+        <div className="w-[400px] flex-shrink-0 bg-white border-l border-gray-200 overflow-y-auto animate-slideLeft custom-scrollbar flex flex-col h-full z-20 shadow-2xl" style={{ scrollbarWidth: 'none' }}>
           {analysisError && (
             <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-xl text-sm font-medium">
               {analysisError}

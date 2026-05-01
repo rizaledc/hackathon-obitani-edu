@@ -120,10 +120,10 @@ const RecommendationPanel = ({
 
   const renderCorrelationColor = (val) => {
     const r = parseFloat(val);
-    if (r === 1) return 'bg-[#1a1a2e] text-gray-500'; // diagonal
-    if (r >= 0.5) return 'bg-green-500/20 text-green-400';
-    if (r <= -0.5) return 'bg-red-500/20 text-red-400';
-    return 'bg-gray-800 text-gray-400';
+    if (r === 1) return 'bg-gray-100 text-gray-400'; // diagonal
+    if (r >= 0.5) return 'bg-green-100 text-green-700 font-bold';
+    if (r <= -0.5) return 'bg-red-100 text-red-700 font-bold';
+    return 'bg-white text-gray-500';
   };
 
   const formatDate = (dateStr) => {
@@ -134,27 +134,27 @@ const RecommendationPanel = ({
 
   if (!location) {
     return (
-      <div className="flex flex-col min-h-full w-full bg-[#1a1a2e] text-white font-sans p-6 items-center justify-center text-center">
+      <div className="flex flex-col min-h-full w-full bg-white text-gray-800 font-sans p-6 items-center justify-center text-center">
         <span className="text-4xl mb-4">🌍</span>
-        <p className="text-gray-400">Pilih lahan dari daftar atau peta untuk melihat analisis</p>
+        <p className="text-gray-500">Pilih lahan dari daftar atau peta untuk melihat analisis</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-full w-full bg-[#1a1a2e] text-gray-200 font-sans border-l border-gray-800 shadow-2xl overflow-y-auto custom-scrollbar" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+    <div className="flex flex-col min-h-full w-full bg-white text-gray-800 font-sans border-l border-gray-100 shadow-sm overflow-y-auto custom-scrollbar" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
       
       {/* HEADER (SECTION 1) */}
-      <div className="sticky top-0 bg-[#1a1a2e]/95 backdrop-blur-md z-20 p-5 border-b border-gray-800 flex flex-col gap-3">
+      <div className="sticky top-0 bg-white/95 backdrop-blur-md z-20 p-5 border-b border-gray-100 flex flex-col gap-3">
         <div className="flex justify-between items-start">
           <div>
-            <h2 className="text-xl font-bold text-white mb-1">{selectedLahan?.nama || 'Lahan Tanpa Nama'}</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-1">{selectedLahan?.nama || 'Lahan Tanpa Nama'}</h2>
             {hasData && (
-              <p className="text-xs text-gray-400">Analisis: {formatDate(resultsData[0]?.created_at) || 'Baru Saja'}</p>
+              <p className="text-xs text-gray-500">Analisis: {formatDate(resultsData[0]?.created_at) || 'Baru Saja'}</p>
             )}
           </div>
           {onClose && (
-            <button onClick={onClose} className="p-1.5 text-gray-500 hover:text-white rounded-md transition-colors bg-gray-800/50 hover:bg-gray-700">
+            <button onClick={onClose} className="p-1.5 text-gray-400 hover:text-gray-600 rounded-md transition-colors bg-gray-50 hover:bg-gray-100">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           )}
@@ -162,7 +162,7 @@ const RecommendationPanel = ({
         <button 
           onClick={onAnalyze}
           disabled={isLoading}
-          className="w-full bg-[#16a34a] hover:bg-green-500 text-white font-bold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 shadow-lg shadow-green-900/20 disabled:opacity-50"
+          className="w-full bg-[#16a34a] hover:bg-green-600 text-white font-bold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 shadow-md disabled:opacity-50"
         >
           {isLoading ? <OrbitaniLoader status="processing" size="small" /> : (
             <>
@@ -178,7 +178,7 @@ const RecommendationPanel = ({
         {isLoading && (
           <div className="flex flex-col items-center justify-center py-12">
             <OrbitaniLoader status="processing" />
-            <p className="text-sm text-gray-400 mt-4 animate-pulse">Menjalankan 10 titik sampel & MLOps...</p>
+            <p className="text-sm text-gray-500 mt-4 animate-pulse">Menjalankan 10 titik sampel & MLOps...</p>
           </div>
         )}
 
@@ -186,17 +186,17 @@ const RecommendationPanel = ({
           <>
             {/* SECTION 3 - REKOMENDASI */}
             <section>
-              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Top Rekomendasi</h3>
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Top Rekomendasi</h3>
               <div className="space-y-3">
                 {getRankings().slice(0, 3).map((r, i) => (
-                  <div key={i} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50">
+                  <div key={i} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
                     <div className="flex justify-between mb-2">
-                      <span className="font-bold text-white text-sm flex items-center gap-2">
+                      <span className="font-bold text-gray-800 text-sm flex items-center gap-2">
                         {i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} {toIndonesian(r.crop)}
                       </span>
-                      <span className="text-xs font-bold text-[#16a34a] bg-green-900/30 px-2 py-0.5 rounded">{r.percentage}%</span>
+                      <span className="text-xs font-bold text-[#16a34a] bg-green-100 px-2 py-0.5 rounded">{r.percentage}%</span>
                     </div>
-                    <div className="w-full bg-gray-700 rounded-full h-1.5">
+                    <div className="w-full bg-gray-200 rounded-full h-1.5">
                       <div className="bg-[#16a34a] h-1.5 rounded-full" style={{ width: `${r.percentage}%` }}></div>
                     </div>
                   </div>
@@ -206,7 +206,7 @@ const RecommendationPanel = ({
 
             {/* SECTION 2 - RATA RATA BIOFISIK */}
             <section>
-              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Kondisi Biofisik (Avg)</h3>
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Kondisi Biofisik (Avg)</h3>
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { label: 'Nitrogen', val: getAverages().n, unit: 'mg/kg' },
@@ -216,9 +216,9 @@ const RecommendationPanel = ({
                   { label: 'Suhu', val: getAverages().temperature, unit: '°C' },
                   { label: 'Curah Hujan', val: getAverages().rainfall, unit: 'mm' },
                 ].map((item, i) => (
-                  <div key={i} className="bg-gray-800/30 p-3 rounded-lg border border-gray-700/30 flex flex-col">
-                    <span className="text-[10px] text-gray-500 uppercase">{item.label}</span>
-                    <span className="text-lg font-bold text-white">{item.val} <span className="text-xs font-normal text-gray-400">{item.unit}</span></span>
+                  <div key={i} className="bg-gray-50 p-3 rounded-lg border border-gray-100 flex flex-col">
+                    <span className="text-[10px] text-gray-500 uppercase font-semibold">{item.label}</span>
+                    <span className="text-lg font-bold text-gray-800">{item.val} <span className="text-xs font-normal text-gray-500">{item.unit}</span></span>
                   </div>
                 ))}
               </div>
@@ -226,19 +226,19 @@ const RecommendationPanel = ({
 
             {/* SECTION 6 - PROFIL BAR CHART */}
             <section>
-              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Profil Lahan</h3>
-              <div className="space-y-3 bg-gray-800/30 p-4 rounded-xl border border-gray-700/30">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Profil Lahan</h3>
+              <div className="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
                 {['n', 'p', 'k', 'ph', 'temperature', 'humidity'].map((key) => {
                   const val = getAverages()[key];
                   const pct = getNormalization(key, val);
                   return (
                     <div key={key}>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="text-gray-400 uppercase">{key}</span>
-                        <span className="text-white font-medium">{val}</span>
+                        <span className="text-gray-500 uppercase font-semibold">{key}</span>
+                        <span className="text-gray-800 font-bold">{val}</span>
                       </div>
-                      <div className="w-full bg-gray-700 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-gradient-to-r from-green-600 to-[#16a34a] h-1.5" style={{ width: `${pct}%` }}></div>
+                      <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-gradient-to-r from-green-400 to-[#16a34a] h-1.5" style={{ width: `${pct}%` }}></div>
                       </div>
                     </div>
                   );
@@ -248,27 +248,27 @@ const RecommendationPanel = ({
 
             {/* SECTION 5 - STATISTIK */}
             <section>
-              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Statistik N, P, K</h3>
-              <div className="overflow-hidden border border-gray-700/50 rounded-xl">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Statistik N, P, K</h3>
+              <div className="overflow-hidden border border-gray-100 rounded-xl">
                 <table className="w-full text-xs text-left">
-                  <thead className="bg-gray-800 text-gray-400 uppercase">
+                  <thead className="bg-gray-50 text-gray-500 uppercase">
                     <tr>
-                      <th className="px-3 py-2">Var</th>
-                      <th className="px-3 py-2">Min</th>
-                      <th className="px-3 py-2">Avg</th>
-                      <th className="px-3 py-2">Max</th>
-                      <th className="px-3 py-2">Std</th>
+                      <th className="px-3 py-2 font-bold">Var</th>
+                      <th className="px-3 py-2 font-bold">Min</th>
+                      <th className="px-3 py-2 font-bold">Avg</th>
+                      <th className="px-3 py-2 font-bold">Max</th>
+                      <th className="px-3 py-2 font-bold">Std</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-700/50">
+                  <tbody className="divide-y divide-gray-100">
                     {['n', 'p', 'k'].map(v => {
                       const st = calculateStats(v);
                       return (
-                        <tr key={v} className="bg-gray-800/20">
-                          <td className="px-3 py-2 font-bold uppercase text-white">{v}</td>
-                          <td className="px-3 py-2">{st.min}</td>
+                        <tr key={v} className="bg-white">
+                          <td className="px-3 py-2 font-bold uppercase text-gray-800">{v}</td>
+                          <td className="px-3 py-2 text-gray-600">{st.min}</td>
                           <td className="px-3 py-2 text-[#16a34a] font-bold">{st.avg}</td>
-                          <td className="px-3 py-2">{st.max}</td>
+                          <td className="px-3 py-2 text-gray-600">{st.max}</td>
                           <td className="px-3 py-2 text-gray-500">{st.std}</td>
                         </tr>
                       );
@@ -280,19 +280,19 @@ const RecommendationPanel = ({
 
             {/* SECTION 7 - KORELASI */}
             <section>
-              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Korelasi Variabel (Pearson)</h3>
-              <div className="overflow-x-auto border border-gray-700/50 rounded-xl custom-scrollbar pb-1">
-                <table className="w-full text-[10px] text-center border-collapse">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Korelasi Variabel (Pearson)</h3>
+              <div className="overflow-x-auto border border-gray-100 rounded-xl custom-scrollbar pb-1">
+                <table className="w-full text-[10px] text-center border-collapse bg-white">
                   <thead>
                     <tr>
-                      <th className="p-1 bg-gray-800 border-b border-r border-gray-700/50"></th>
-                      {['N', 'P', 'K', 'pH', 'Suhu', 'Hum'].map(h => <th key={h} className="p-2 bg-gray-800 border-b border-gray-700/50 text-gray-400 font-medium">{h}</th>)}
+                      <th className="p-1 bg-gray-50 border-b border-r border-gray-100"></th>
+                      {['N', 'P', 'K', 'pH', 'Suhu', 'Hum'].map(h => <th key={h} className="p-2 bg-gray-50 border-b border-gray-100 text-gray-500 font-bold">{h}</th>)}
                     </tr>
                   </thead>
                   <tbody>
                     {getCorrelationMatrix().map((row, i) => (
                       <tr key={i}>
-                        <th className="p-2 bg-gray-800 border-r border-gray-700/50 text-gray-400 font-medium">{['N', 'P', 'K', 'pH', 'Suhu', 'Hum'][i]}</th>
+                        <th className="p-2 bg-gray-50 border-r border-gray-100 text-gray-500 font-bold">{['N', 'P', 'K', 'pH', 'Suhu', 'Hum'][i]}</th>
                         {row.map((val, j) => (
                           <td key={j} className={`p-2 font-mono ${renderCorrelationColor(val)}`}>
                             {val}
@@ -307,15 +307,15 @@ const RecommendationPanel = ({
 
             {/* SECTION 8 - SHAP */}
             <section>
-              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Feature Importance (SHAP)</h3>
-              <div className="space-y-2.5 bg-gray-800/30 p-4 rounded-xl border border-gray-700/30">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Feature Importance (SHAP)</h3>
+              <div className="space-y-2.5 bg-gray-50 p-4 rounded-xl border border-gray-100">
                 {SHAP_VALUES.map((shap, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <span className="text-[10px] uppercase text-gray-400 w-16 truncate">{shap.feature}</span>
-                    <div className="flex-1 bg-gray-700 h-2 rounded-full overflow-hidden">
+                    <span className="text-[10px] font-bold uppercase text-gray-500 w-16 truncate">{shap.feature}</span>
+                    <div className="flex-1 bg-gray-200 h-2 rounded-full overflow-hidden">
                       <div className="bg-purple-500 h-2 rounded-full" style={{ width: `${(shap.value / SHAP_VALUES[0].value) * 100}%` }}></div>
                     </div>
-                    <span className="text-[10px] font-mono text-gray-300 w-10 text-right">{shap.value}</span>
+                    <span className="text-[10px] font-mono font-medium text-gray-600 w-10 text-right">{shap.value}</span>
                   </div>
                 ))}
               </div>
@@ -323,31 +323,35 @@ const RecommendationPanel = ({
 
             {/* SECTION 4 - TABEL TITIK */}
             <section>
-              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Data Titik Sampel</h3>
-              <div className="overflow-x-auto border border-gray-700/50 rounded-xl custom-scrollbar pb-2">
-                <table className="w-full text-[10px] text-left whitespace-nowrap">
-                  <thead className="bg-gray-800 text-gray-400">
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Data Titik Sampel (Max 10)</h3>
+              <div className="overflow-x-auto border border-gray-100 rounded-xl custom-scrollbar pb-2">
+                <table className="w-full text-[10px] text-left whitespace-nowrap bg-white">
+                  <thead className="bg-gray-50 text-gray-500">
                     <tr>
-                      <th className="p-2">No</th>
-                      <th className="p-2">Lat</th>
-                      <th className="p-2">Lng</th>
-                      <th className="p-2 text-center">N</th>
-                      <th className="p-2 text-center">P</th>
-                      <th className="p-2 text-center">K</th>
-                      <th className="p-2 text-center">pH</th>
-                      <th className="p-2">Rekomendasi</th>
+                      <th className="p-2 font-bold">No</th>
+                      <th className="p-2 font-bold">Lat</th>
+                      <th className="p-2 font-bold">Lng</th>
+                      <th className="p-2 font-bold text-center">N</th>
+                      <th className="p-2 font-bold text-center">P</th>
+                      <th className="p-2 font-bold text-center">K</th>
+                      <th className="p-2 font-bold text-center">pH</th>
+                      <th className="p-2 font-bold text-center">Suhu</th>
+                      <th className="p-2 font-bold text-center">Hujan</th>
+                      <th className="p-2 font-bold">Rekomendasi</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-700/50">
-                    {resultsData.map((r, i) => (
-                      <tr key={i} className="bg-gray-800/20 hover:bg-gray-700/30">
-                        <td className="p-2">{i+1}</td>
-                        <td className="p-2 font-mono">{r.latitude?.toFixed(4) || '-'}</td>
-                        <td className="p-2 font-mono">{r.longitude?.toFixed(4) || '-'}</td>
-                        <td className="p-2 text-center text-blue-400">{r.n}</td>
-                        <td className="p-2 text-center text-orange-400">{r.p}</td>
-                        <td className="p-2 text-center text-yellow-400">{r.k}</td>
-                        <td className="p-2 text-center text-pink-400">{r.ph}</td>
+                  <tbody className="divide-y divide-gray-100">
+                    {resultsData.slice(0, 10).map((r, i) => (
+                      <tr key={i} className="hover:bg-gray-50/80">
+                        <td className="p-2 font-medium text-gray-600">{i+1}</td>
+                        <td className="p-2 font-mono text-gray-600">{r.latitude?.toFixed(4) || '-'}</td>
+                        <td className="p-2 font-mono text-gray-600">{r.longitude?.toFixed(4) || '-'}</td>
+                        <td className="p-2 text-center text-blue-600 font-medium">{r.n?.toFixed(1) || '-'}</td>
+                        <td className="p-2 text-center text-orange-500 font-medium">{r.p?.toFixed(1) || '-'}</td>
+                        <td className="p-2 text-center text-yellow-600 font-medium">{r.k?.toFixed(1) || '-'}</td>
+                        <td className="p-2 text-center text-pink-600 font-medium">{r.ph?.toFixed(1) || '-'}</td>
+                        <td className="p-2 text-center text-gray-600 font-medium">{r.temperature?.toFixed(1) || '-'}</td>
+                        <td className="p-2 text-center text-gray-600 font-medium">{r.rainfall?.toFixed(1) || '-'}</td>
                         <td className="p-2 font-bold text-[#16a34a]">{toIndonesian(r.hasil_rekomendasi)}</td>
                       </tr>
                     ))}
@@ -357,27 +361,27 @@ const RecommendationPanel = ({
             </section>
 
             {/* SECTION 9 - KONSULTASI AI */}
-            <section className="mt-4 pt-6 border-t border-gray-800">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-3">
-                <Sparkle weight="fill" className="text-yellow-400" /> Tanya Pakar AI
+            <section className="mt-4 pt-6 border-t border-gray-100">
+              <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2 mb-3">
+                <Sparkle weight="fill" className="text-yellow-500" /> Tanya Pakar AI
               </h3>
               <textarea
                 value={chatInput}
                 onChange={e => setChatInput(e.target.value)}
                 placeholder="Tanyakan analisis mendalam tentang lahan ini..."
-                className="w-full bg-gray-800/50 border border-gray-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#16a34a] focus:border-[#16a34a] mb-3 resize-none h-24"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#16a34a] focus:border-[#16a34a] mb-3 resize-none h-24"
               />
               <button
                 onClick={handleChat}
                 disabled={isChatLoading || !chatInput.trim()}
-                className="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-2 rounded-lg text-sm transition-colors border border-gray-700 disabled:opacity-50"
+                className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 rounded-lg text-sm transition-colors border border-gray-800 shadow-sm disabled:opacity-50"
               >
                 {isChatLoading ? 'Menganalisis...' : 'Kirim Pertanyaan'}
               </button>
               
               {aiResponse && (
-                <div className="mt-4 bg-[#16a34a]/10 border border-[#16a34a]/30 p-4 rounded-xl text-sm text-gray-300 leading-relaxed">
-                  <div className="font-bold text-[#16a34a] mb-1 flex items-center gap-1"><Sparkle size={14}/> Jawaban AI:</div>
+                <div className="mt-4 bg-[#f0fdf4] border border-[#16a34a]/30 p-4 rounded-xl text-sm text-gray-700 leading-relaxed">
+                  <div className="font-bold text-[#16a34a] mb-1 flex items-center gap-1"><Sparkle size={14} weight="fill"/> Jawaban AI:</div>
                   {aiResponse}
                 </div>
               )}
