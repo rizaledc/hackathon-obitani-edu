@@ -8,6 +8,10 @@ const LandingPage = lazy(() => import("./features/landing/LandingPage"));
 const MapPage = lazy(() => import("./features/map/MapPage"));
 const LoginPage = lazy(() => import("./features/auth/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/RegisterPage"));
+const AdminDashboard = lazy(() => import("./features/admin/AdminDashboard"));
+const UserManagement = lazy(() => import("./features/admin/UserManagement"));
+const HistoryPage = lazy(() => import("./features/history/HistoryPage"));
+const ChatPage = lazy(() => import("./features/chat/ChatPage"));
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, isAuthenticated } = useAuthStore();
@@ -34,15 +38,19 @@ function App() {
         {/* Dashboard Routes wrapped in MainLayout and ProtectedRoute */}
         <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
           <Route path="/map" element={<MapPage />} />
-          <Route path="/admin/dashboard" element={<MapPage />} />
-          <Route path="/chat" element={<div className="p-6">Chat Page Placeholder</div>} />
+          <Route path="/admin/dashboard" element={
+            <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/chat" element={<ChatPage />} />
           <Route path="/chat-live" element={<div className="p-6">Live Chat Page Placeholder</div>} />
           <Route path="/analytics" element={<div className="p-6">Analytics Page Placeholder</div>} />
-          <Route path="/history" element={<div className="p-6">History Page Placeholder</div>} />
+          <Route path="/history" element={<HistoryPage />} />
           
           <Route path="/admin/users" element={
             <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
-              <div className="p-6">Kelola Pengguna Placeholder</div>
+              <UserManagement />
             </ProtectedRoute>
           } />
           <Route path="/admin/organizations" element={

@@ -26,7 +26,7 @@ const LocationMarker = ({ onSelectLocation }) => {
   );
 };
 
-const MapViewer = ({ onSelectLocation }) => {
+const MapViewer = ({ onSelectLocation, lahans = [] }) => {
   // Center map on Indonesia
   const defaultCenter = [-0.7893, 113.9213];
   const defaultZoom = 5;
@@ -43,6 +43,13 @@ const MapViewer = ({ onSelectLocation }) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        {lahans.map((lahan) => (
+          <Marker 
+            key={lahan.id} 
+            position={[lahan.lat, lahan.lng]} 
+            eventHandlers={{ click: () => onSelectLocation(lahan.lat, lahan.lng, lahan.id) }} 
+          />
+        ))}
         <LocationMarker onSelectLocation={onSelectLocation} />
       </MapContainer>
     </div>

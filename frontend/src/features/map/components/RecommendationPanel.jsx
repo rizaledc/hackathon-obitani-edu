@@ -11,6 +11,7 @@ const RecommendationPanel = ({
   aiResult, 
   aiLoading, 
   aiError, 
+  onAnalyze,
   onAnalyzeAI,
   onDemoMode
 }) => {
@@ -44,19 +45,25 @@ const RecommendationPanel = ({
         </div>
       )}
 
-      {location && (
+      {location && status === 'idle' && (
         <div className="mb-6 p-4 bg-primary-pale rounded-xl border border-primary/20 animate-slideUp">
           <p className="text-xs font-semibold text-text-secondary mb-1">Koordinat Lahan</p>
-          <div className="flex justify-between items-center text-sm font-medium text-text-primary">
+          <div className="flex justify-between items-center text-sm font-medium text-text-primary mb-4">
             <span>Lat: {location.lat.toFixed(4)}</span>
             <span>Lng: {location.lng.toFixed(4)}</span>
           </div>
+          <button 
+            onClick={onAnalyze}
+            className="w-full bg-primary text-white font-bold py-2 rounded-lg hover:bg-primary-dark transition-colors shadow-sm"
+          >
+            Analisis Lahan
+          </button>
         </div>
       )}
 
       {isLoading && (
         <div className="flex-1 flex flex-col items-center justify-center py-10 animate-fadeIn">
-          <OrbitaniLoader status={status} />
+          <OrbitaniLoader status="processing" />
         </div>
       )}
 
