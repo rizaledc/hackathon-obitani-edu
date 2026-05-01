@@ -43,10 +43,15 @@ const useAuthStore = create(
             `${import.meta.env.VITE_API_URL || 'https://orbitani-edu-backend-bwbghbeegsf4fwev.indonesiacentral-01.azurewebsites.net'}/api/auth/me`,
             { headers: { Authorization: `Bearer ${token}` } }
           )
-          set({ user: res.data, isAuthenticated: true })
+          set({ 
+            user: res.data,
+            isAuthenticated: true,
+            token 
+          })
         } catch {
           // token expired, clear
           localStorage.removeItem('token')
+          localStorage.removeItem('login_time')
           set({ user: null, isAuthenticated: false, token: null })
         }
       },

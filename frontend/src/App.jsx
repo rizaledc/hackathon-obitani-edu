@@ -39,8 +39,10 @@ function App() {
   const { confirmState, handleConfirm, handleCancel } = useConfirm();
 
   useEffect(() => {
-    const { fetchMe } = useAuthStore.getState();
-    fetchMe();
+    const token = localStorage.getItem('token');
+    if (token) {
+      useAuthStore.getState().fetchMe();
+    }
   }, []);
 
   useEffect(() => {

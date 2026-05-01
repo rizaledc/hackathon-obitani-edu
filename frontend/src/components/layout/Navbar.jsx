@@ -45,15 +45,14 @@ const Navbar = () => {
     return 'Beranda';
   };
 
-  const getInitials = (name) => {
-    if (!name) return 'U';
-    return name
-      .split(' ')
-      .map(w => w[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase();
-  };
+  const displayName = user?.name || user?.username || 'User';
+
+  const initials = (user?.name || user?.username || 'U')
+    .split(' ')
+    .map(w => w[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 
   const handleLogout = async () => {
     const confirm = await showConfirm(
@@ -84,7 +83,7 @@ const Navbar = () => {
     }
   };
 
-  const displayName = user?.name || user?.username || 'Pengguna Tamu';
+
 
   return (
     <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-6 sticky top-0 z-[50] transition-all duration-300">
@@ -110,7 +109,7 @@ const Navbar = () => {
           onClick={() => setShowProfile(!showProfile)}
           className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold shadow-sm cursor-pointer hover:bg-primary-dark transition-colors select-none"
         >
-          {getInitials(displayName)}
+          {initials}
         </div>
 
         {showProfile && (
