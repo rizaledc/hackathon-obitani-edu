@@ -123,7 +123,7 @@ const Navbar = () => {
               <button onClick={() => { setShowEditModal(true); setShowProfile(false); }}
                 className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-t-xl transition-colors">
                 <UserCog size={15} />
-                Edit Profil
+                {canEdit ? 'Edit Profil' : 'Lihat Profil'}
               </button>
               <div className="border-t border-gray-100" />
               <button onClick={handleLogout}
@@ -142,7 +142,7 @@ const Navbar = () => {
             <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50/50">
               <h3 className="font-semibold text-gray-800 flex items-center gap-2">
                 <UserCog size={18} className="text-primary" />
-                Edit Profil
+                {canEdit ? 'Edit Profil' : 'Lihat Profil'}
               </h3>
               <button onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-gray-600 font-bold px-2 py-1 text-lg leading-none">&times;</button>
             </div>
