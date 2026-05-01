@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertTriangle, X } from 'lucide-react';
 
 const Toast = ({ message, type = 'success', onClose }) => {
   useEffect(() => {
@@ -24,9 +24,14 @@ const Toast = ({ message, type = 'success', onClose }) => {
   if (!message) return null;
 
   return (
-    <div className={`fixed top-5 right-5 z-[99999] flex items-center gap-3 px-4 py-3 border rounded-xl shadow-lg animate-slide-in-right ${bgs[type]}`}>
+    <div className={`fixed bottom-5 right-5 z-[99999] flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg text-sm font-medium animate-slide-in ${bgs[type]}`}>
       {icons[type]}
-      <span className="font-medium text-sm">{message}</span>
+      <span className="font-medium text-sm flex-1">{message}</span>
+      <button 
+        onClick={onClose}
+        className="ml-2 opacity-50 hover:opacity-100 transition-opacity flex-shrink-0">
+        <X size={14} />
+      </button>
     </div>
   );
 };
