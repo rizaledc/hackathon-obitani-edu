@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import logo from '../../assets/logo.webp';
 import PasswordStrength from '../../components/ui/PasswordStrength';
+import EmailValidator from '../../components/ui/EmailValidator';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ const RegisterPage = () => {
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
               placeholder="email@sekolah.edu"
             />
+            <EmailValidator email={email} />
           </div>
           <div>
             <label className="block text-sm font-semibold mb-2">Kata Sandi</label>
@@ -62,7 +64,7 @@ const RegisterPage = () => {
           </div>
           <button 
             type="submit"
-            disabled={!(password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[a-z]/.test(password))}
+            disabled={!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) || !(password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[a-z]/.test(password))}
             className="w-full bg-primary text-white font-bold py-3 rounded-xl hover:scale-105 transition-transform shadow-md mt-4 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
             Daftar

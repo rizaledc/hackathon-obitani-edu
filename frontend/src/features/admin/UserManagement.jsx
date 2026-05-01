@@ -9,6 +9,7 @@ import useToast from '../../hooks/useToast';
 import useConfirm from '../../hooks/useConfirm';
 import useAuthStore from '../../store/authStore';
 import PasswordStrength from '../../components/ui/PasswordStrength';
+import EmailValidator from '../../components/ui/EmailValidator';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -368,6 +369,7 @@ const UserManagement = () => {
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
                 <input type="email" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="john@example.com" />
+                <EmailValidator email={formData.email} />
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Password <span className="text-red-500">*</span></label>
@@ -402,7 +404,7 @@ const UserManagement = () => {
               )}
               <div className="flex items-center justify-end gap-2 pt-4 mt-2 border-t border-gray-100">
                 <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">Batal</button>
-                <button type="submit" disabled={!(formData.password.length >= 8 && /[A-Z]/.test(formData.password) && /[0-9]/.test(formData.password) && /[a-z]/.test(formData.password))} className="px-4 py-2 text-sm font-medium text-white bg-green-700 hover:bg-green-800 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Simpan Pengguna</button>
+                <button type="submit" disabled={!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) || !(formData.password.length >= 8 && /[A-Z]/.test(formData.password) && /[0-9]/.test(formData.password) && /[a-z]/.test(formData.password))} className="px-4 py-2 text-sm font-medium text-white bg-green-700 hover:bg-green-800 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Simpan Pengguna</button>
               </div>
             </form>
           </div>

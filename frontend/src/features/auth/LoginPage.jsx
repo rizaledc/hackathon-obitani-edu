@@ -4,6 +4,7 @@ import useAuthStore from '../../store/authStore';
 import logo from '../../assets/logo.webp';
 import OrbitaniLoader from '../../components/OrbitaniLoader';
 import PasswordStrength from '../../components/ui/PasswordStrength';
+import EmailValidator from '../../components/ui/EmailValidator';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -45,15 +46,16 @@ const LoginPage = () => {
               </div>
             )}
             <div>
-              <label className="block text-sm font-semibold mb-2">Username</label>
+              <label className="block text-sm font-semibold mb-2">Username / Email</label>
               <input 
                 type="text" 
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                placeholder="Username"
+                placeholder="Username atau Email"
               />
+              {username && username.includes('@') && <EmailValidator email={username} />}
             </div>
             <div>
               <label className="block text-sm font-semibold mb-2">Kata Sandi</label>
@@ -70,7 +72,7 @@ const LoginPage = () => {
             </div>
             <button 
               type="submit"
-              disabled={loading || !(password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[a-z]/.test(password))}
+              disabled={loading || (username.includes('@') && !(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username))) || !(password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[a-z]/.test(password))}
               className="w-full bg-primary text-white font-bold py-3 rounded-xl hover:scale-105 transition-transform shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center overflow-hidden relative"
               style={{ minHeight: '52px' }}
             >
