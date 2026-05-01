@@ -176,15 +176,47 @@ const RecommendationPanel = ({
       <div className="p-5 flex flex-col gap-8 pb-10">
         
         {isLoading && (
-          <div className="flex flex-col items-center justify-center py-12">
-            <OrbitaniLoader status="processing" />
-            <p className="text-sm text-gray-500 mt-4 animate-pulse">Menjalankan 10 titik sampel & MLOps...</p>
+          <div className="flex items-center justify-center py-6">
+            <OrbitaniLoader status="processing" size="sm" 
+              text="Menjalankan 10 titik sampel & MLOps..." />
           </div>
         )}
 
-        {!isLoading && hasData && (
+        {!isLoading && (
           <>
-            {/* SECTION 3 - REKOMENDASI */}
+            {!hasData ? (
+              <>
+                <section>
+                  <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Top Rekomendasi</h3>
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 text-center">
+                    <p className="text-gray-400 font-medium">— Belum ada data —</p>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Kondisi Biofisik</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {['Nitrogen', 'Phosphor', 'Kalium', 'pH Tanah', 'Suhu', 'Curah Hujan'].map((label) => (
+                      <div key={label} className="bg-gray-50 p-3 rounded-lg border border-gray-100 flex flex-col">
+                        <span className="text-[10px] text-gray-500 uppercase font-semibold">{label}</span>
+                        <span className="text-lg font-bold text-gray-300">—</span>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Data Titik Sampel</h3>
+                  <div className="bg-gray-50 rounded-xl p-6 border border-gray-100 flex items-center justify-center">
+                    <p className="text-gray-400 text-sm font-medium text-center">
+                      Analisis lahan untuk melihat data titik sampel
+                    </p>
+                  </div>
+                </section>
+              </>
+            ) : (
+              <>
+                {/* SECTION 3 - REKOMENDASI */}
             <section>
               <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Top Rekomendasi</h3>
               <div className="space-y-3">
@@ -305,22 +337,6 @@ const RecommendationPanel = ({
               </div>
             </section>
 
-            {/* SECTION 8 - SHAP */}
-            <section>
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Feature Importance (SHAP)</h3>
-              <div className="space-y-2.5 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                {SHAP_VALUES.map((shap, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <span className="text-[10px] font-bold uppercase text-gray-500 w-16 truncate">{shap.feature}</span>
-                    <div className="flex-1 bg-gray-200 h-2 rounded-full overflow-hidden">
-                      <div className="bg-purple-500 h-2 rounded-full" style={{ width: `${(shap.value / SHAP_VALUES[0].value) * 100}%` }}></div>
-                    </div>
-                    <span className="text-[10px] font-mono font-medium text-gray-600 w-10 text-right">{shap.value}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-
             {/* SECTION 4 - TABEL TITIK */}
             <section>
               <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Data Titik Sampel (Max 10)</h3>
@@ -357,6 +373,25 @@ const RecommendationPanel = ({
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </section>
+
+              </>
+            )}
+
+            {/* SECTION 8 - SHAP */}
+            <section>
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Feature Importance (SHAP)</h3>
+              <div className="space-y-2.5 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                {SHAP_VALUES.map((shap, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <span className="text-[10px] font-bold uppercase text-gray-500 w-16 truncate">{shap.feature}</span>
+                    <div className="flex-1 bg-gray-200 h-2 rounded-full overflow-hidden">
+                      <div className="bg-purple-500 h-2 rounded-full" style={{ width: `${(shap.value / SHAP_VALUES[0].value) * 100}%` }}></div>
+                    </div>
+                    <span className="text-[10px] font-mono font-medium text-gray-600 w-10 text-right">{shap.value}</span>
+                  </div>
+                ))}
               </div>
             </section>
 

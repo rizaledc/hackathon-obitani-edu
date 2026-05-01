@@ -47,6 +47,7 @@ const MapPage = () => {
   };
   
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [newPolygonGeom, setNewPolygonGeom] = useState(null);
   const [newLahanName, setNewLahanName] = useState('');
   const [newLahanDesc, setNewLahanDesc] = useState('');
@@ -206,6 +207,8 @@ const MapPage = () => {
   };
 
   const handleSaveLahan = async () => {
+    if (saving) return;
+    setSaving(true);
     try {
       const payload = {
         nama: newLahanName || 'Lahan Baru',
@@ -226,6 +229,8 @@ const MapPage = () => {
     } catch (error) {
       console.error(error);
       alert('Gagal menyimpan lahan');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -502,9 +507,10 @@ const MapPage = () => {
                 </button>
                 <button 
                   onClick={handleSaveLahan}
-                  className="px-4 py-2 font-semibold bg-primary text-white rounded-lg hover:bg-primary-dark"
+                  disabled={saving}
+                  className={`px-4 py-2 font-semibold text-white rounded-lg ${saving ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary hover:bg-primary-dark'}`}
                 >
-                  Simpan Lahan
+                  {saving ? 'Menyimpan...' : 'Simpan Lahan'}
                 </button>
               </div>
             </div>
