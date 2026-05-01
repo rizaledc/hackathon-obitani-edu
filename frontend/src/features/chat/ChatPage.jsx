@@ -433,7 +433,7 @@ const ChatPage = () => {
             <div className="text-center mt-2 text-[10px] text-gray-400 font-medium">
               Daya analitik dari Gemini AI. AI dapat membuat kesalahan.
               {savedApiKey 
-                ? ' • Menggunakan API Key pribadi Anda'
+                ? ' • Menggunakan API KEY External'
                 : ' • Menggunakan Server Default Orbitani'
               }
             </div>
@@ -485,7 +485,7 @@ const ChatPage = () => {
                   </span>
                 </div>
                 <ol className="text-xs text-gray-600 space-y-1.5 ml-1">
-                  <li>1. Kunjungi <strong>Google AI Studio</strong>.</li>
+                  <li>1. Kunjungi <strong><a href="https://aistudio.google.com/app/api-keys" target="_blank" rel="noopener noreferrer" className="text-green-600 hover:underline">Google AI Studio</a></strong>.</li>
                   <li>2. Masuk menggunakan Akun Google Anda.</li>
                   <li>3. Klik tombol <strong>"Create API Key"</strong> lalu 
                      salin kunci (<code className="bg-gray-200 px-1 rounded text-xs">AIza...</code>).</li>
@@ -541,7 +541,7 @@ const ChatPage = () => {
               {savedApiKey && (
                 <p className="text-xs text-green-600 text-center mt-3 flex items-center justify-center gap-1">
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block" />
-                  Menggunakan API Key pribadi Anda
+                  Menggunakan API KEY External
                 </p>
               )}
             </div>
