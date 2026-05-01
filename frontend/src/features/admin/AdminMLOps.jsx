@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Activity, Brain, Server, Database, Globe, Zap, 
-  CheckCircle2, BarChart2, MapPin, Users, Building2, Cpu, Key, FileText, CheckCircle
+  CheckCircle2, BarChart2, MapPin, Users, Building2, Cpu, Key, FileText, CheckCircle,
+  GitBranch, Layers, Target, Settings2
 } from 'lucide-react';
 import api from '../../services/api';
 
@@ -170,26 +171,81 @@ const AdminMLOps = () => {
           <InfoCard title="Fitur Input" value="N, P, K, Temperature, Humidity, pH, Rainfall" icon={<Activity size={18} />} valueColor="text-xs" />
         </div>
 
-        {/* SECTION 3 — Status Infrastruktur */}
-        <SectionHeader title="Status Infrastruktur" icon={<Server size={18} />} />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { name: "Backend Azure", icon: <Server size={18} /> },
-            { name: "Database Supabase", icon: <Database size={18} /> },
-            { name: "Google Earth Engine", icon: <Globe size={18} /> },
-            { name: "Gemini AI", icon: <Brain size={18} /> }
-          ].map((infra, idx) => (
-            <InfoCard 
-              key={idx}
-              title={infra.name} 
-              value={
-                <span className="flex items-center gap-1.5 text-green-600">
-                  <span className="w-2 h-2 rounded-full bg-green-500" /> Online
+        {/* SECTION 3 — Model Pipeline Info */}
+        <SectionHeader title="Model Pipeline Info" icon={<GitBranch size={18} />} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          {/* Card 1 */}
+          <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
+            <h3 className="font-semibold text-gray-800 flex items-center gap-2 mb-4">
+              <Layers className="text-blue-500" size={18} />
+              Input Features (7 Variabel)
+            </h3>
+            <ul className="space-y-2">
+              {[
+                { n: "N (Nitrogen)", s: "Landsat-8 regression" },
+                { n: "P (Phosphor)", s: "Landsat-8 regression" },
+                { n: "K (Kalium)", s: "Landsat-8 regression" },
+                { n: "Temperature", s: "Landsat-8 Thermal + MODIS fallback" },
+                { n: "Humidity", s: "ERA5 Magnus Formula + Sentinel-2 fallback" },
+                { n: "pH Tanah", s: "Landsat-8 regression" },
+                { n: "Rainfall", s: "CHIRPS 30 hari + GPM fallback" }
+              ].map((item, idx) => (
+                <li key={idx} className="flex items-center gap-2 text-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />
+                  <span className="font-medium text-gray-700">{item.n}</span>
+                  <span className="text-gray-400 text-xs"> — dari {item.s}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Card 2 */}
+          <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
+            <h3 className="font-semibold text-gray-800 flex items-center gap-2 mb-4">
+              <Target className="text-green-500" size={18} />
+              Output Rekomendasi (22 Tanaman)
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {["Padi", "Jagung", "Kacang Arab", "Kacang Merah", "Kacang Gude", "Kacang Moth", "Kacang Hijau", "Kacang Hitam", "Lentil", "Delima", "Pisang", "Mangga", "Anggur", "Semangka", "Melon", "Apel", "Jeruk", "Pepaya", "Kelapa", "Kapas", "Rami", "Kopi"].map(tanaman => (
+                <span key={tanaman} className="bg-green-50 text-green-700 rounded-full px-2 py-0.5 text-xs font-medium border border-green-100">
+                  {tanaman}
                 </span>
-              }
-              icon={infra.icon} 
-            />
-          ))}
+              ))}
+            </div>
+          </div>
+
+          {/* Card 3 */}
+          <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
+            <h3 className="font-semibold text-gray-800 flex items-center gap-2 mb-4">
+              <MapPin className="text-red-500" size={18} />
+              Strategi Sampling
+            </h3>
+            <ul className="space-y-2 text-sm text-gray-700">
+              <li className="flex items-start gap-2"><span className="text-gray-400 mt-0.5">•</span> <div><b>Titik Sampel:</b> 10 titik per analisis lahan</div></li>
+              <li className="flex items-start gap-2"><span className="text-gray-400 mt-0.5">•</span> <div><b>Metode:</b> 1 Centroid + 9 Random dalam Polygon</div></li>
+              <li className="flex items-start gap-2"><span className="text-gray-400 mt-0.5">•</span> <div><b>Resolusi Satelit:</b> 30 meter (Landsat) / 10 meter (Sentinel-2)</div></li>
+              <li className="flex items-start gap-2"><span className="text-gray-400 mt-0.5">•</span> <div><b>Periode Rainfall:</b> 30 hari terakhir</div></li>
+              <li className="flex items-start gap-2"><span className="text-gray-400 mt-0.5">•</span> <div><b>Cloud Cover Threshold:</b> {'<'} 50% (fallback MODIS jika lebih)</div></li>
+            </ul>
+          </div>
+
+          {/* Card 4 */}
+          <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
+            <h3 className="font-semibold text-gray-800 flex items-center gap-2 mb-4">
+              <Settings2 className="text-purple-500" size={18} />
+              Arsitektur Model
+            </h3>
+            <ul className="space-y-2 text-sm text-gray-700">
+              <li className="flex items-start gap-2"><span className="text-gray-400 mt-0.5">•</span> <div><b>Algoritma:</b> Random Forest Classifier</div></li>
+              <li className="flex items-start gap-2"><span className="text-gray-400 mt-0.5">•</span> <div><b>Jumlah Trees:</b> 100 estimators</div></li>
+              <li className="flex items-start gap-2"><span className="text-gray-400 mt-0.5">•</span> <div><b>Train/Test Split:</b> 80/20 Stratified</div></li>
+              <li className="flex items-start gap-2"><span className="text-gray-400 mt-0.5">•</span> <div><b>Dataset Size:</b> 2.200 sampel</div></li>
+              <li className="flex items-start gap-2"><span className="text-gray-400 mt-0.5">•</span> <div><b>Validation:</b> Cross-validation</div></li>
+              <li className="flex items-start gap-2"><span className="text-gray-400 mt-0.5">•</span> <div><b>Top Feature:</b> Humidity (SHAP: 0.0317)</div></li>
+            </ul>
+          </div>
+          
         </div>
 
         {/* SECTION 4 — Statistik Platform */}
