@@ -169,9 +169,21 @@ async def chat_with_gemini(request: ChatRequest, current_user: dict = Depends(ge
     return {"response": response_text}
 
 @router.get("/history")
-async def get_chat_history(current_user: dict = Depends(get_current_user)):
-    res = supabase.table("ai_chat_history").select("*").eq("user_id", current_user["id"]).order("created_at", desc=True).execute()
-    return res.data
+async def get_chat_history(
+    lahan_id: Optional[int] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    query = supabase.table("ai_chat_history")\
+        .select("*")\
+        .eq("user_id", current_user["id"])\
+        .order("created_at", desc=False)
+    
+    if lahan_id:
+        session_id = f"lahan_{lahan_id}"
+        query = query.eq("session_id", session_id)
+    
+    result = query.execute()
+    return result.data
 
 @router.delete("/history")
 async def delete_chat_history(current_user: dict = Depends(get_current_user)):
