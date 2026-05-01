@@ -94,14 +94,10 @@ const Sidebar = () => {
         })}
       </div>
 
-      <div className="p-4 border-t border-gray-200">
-        <button 
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2.5 w-full text-left text-text-secondary hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors font-medium text-sm"
-        >
-          <SignOut size={20} />
-          <span>Keluar</span>
-        </button>
+      <div className="px-4 py-3 border-t border-gray-100">
+        <p className="text-xs text-gray-400 text-center">
+          Orbitani Edu v1.0
+        </p>
       </div>
     </div>
   );
