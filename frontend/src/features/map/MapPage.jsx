@@ -21,6 +21,30 @@ const MapPage = () => {
       return null;
     }
   };
+
+  const getBounds = (lahan) => {
+    try {
+      const coords = lahan?.koordinat?.coordinates?.[0];
+      if (!coords || coords.length === 0) return null;
+      
+      let minLat = Infinity, maxLat = -Infinity;
+      let minLng = Infinity, maxLng = -Infinity;
+      
+      coords.forEach(c => {
+        const lat = c[1];
+        const lng = c[0];
+        if (lat < minLat) minLat = lat;
+        if (lat > maxLat) maxLat = lat;
+        if (lng < minLng) minLng = lng;
+        if (lng > maxLng) maxLng = lng;
+      });
+      
+      if (minLat === Infinity) return null;
+      return [[minLat, minLng], [maxLat, maxLng]];
+    } catch {
+      return null;
+    }
+  };
   
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [newPolygonGeom, setNewPolygonGeom] = useState(null);
@@ -30,6 +54,10 @@ const MapPage = () => {
   const [isDrawingMode, setIsDrawingMode] = useState(false);
   const [draftPoints, setDraftPoints] = useState([]);
   const [showLahanList, setShowLahanList] = useState(false);
+
+  const [editModal, setEditModal] = useState(false);
+  const [editData, setEditData] = useState({ nama: '', deskripsi: '' });
+  const [editingId, setEditingId] = useState(null);
 
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [recommendationResult, setRecommendationResult] = useState(null);
@@ -73,9 +101,23 @@ const MapPage = () => {
 
     if (id) {
       const selectedLahan = lahans.find(l => l.id === id);
-      const centroid = getCentroid(selectedLahan);
-      if (centroid && mapRef.current) {
-        mapRef.current.flyTo(centroid, 14);
+      const bounds = getBounds(selectedLahan);
+      if (bounds && mapRef.current) {
+        // Hitung offset panel UI agar poligon berada tepat di tengah area yang kosong
+        const leftPadding = showLahanList ? 320 : 50;
+        const rightPadding = 340; // Panel analisis akan terbuka, jadi selalu beri padding kanan
+        
+        mapRef.current.flyToBounds(bounds, { 
+          paddingTopLeft: [leftPadding, 50], 
+          paddingBottomRight: [rightPadding, 50],
+          maxZoom: 18,
+          duration: 1.5 // Animasi lebih halus
+        });
+      } else {
+        const centroid = getCentroid(selectedLahan);
+        if (centroid && mapRef.current) {
+          mapRef.current.flyTo(centroid, 16);
+        }
       }
     }
   };
@@ -147,15 +189,43 @@ const MapPage = () => {
       setLahans(resLahans.data.data || resLahans.data || []);
       
       setShowSaveModal(false);
-      
-      // Select the new lahan
-      const centroid = getCentroid({ koordinat: newPolygonGeom });
-      if (centroid) {
-         handleSelectLocation(centroid[0], centroid[1], newId);
-      }
+      setNewLahanName('');
+      setNewLahanDesc('');
+      setNewPolygonGeom(null);
     } catch (error) {
       console.error(error);
       alert('Gagal menyimpan lahan');
+    }
+  };
+
+  const handleDeleteLahan = async (lahanId, e) => {
+    e.stopPropagation();
+    if (!window.confirm('Yakin ingin menghapus lahan ini?')) return;
+    try {
+      await api.delete(`/api/lahan/${lahanId}`);
+      setLahans(prev => prev.filter(l => l.id !== lahanId));
+      if (selectedLocation?.id === lahanId) setSelectedLocation(null);
+    } catch {
+      alert('Gagal menghapus lahan');
+    }
+  };
+
+  const handleEditLahan = (lahan, e) => {
+    e.stopPropagation();
+    setEditingId(lahan.id);
+    setEditData({ nama: lahan.nama, deskripsi: lahan.deskripsi || '' });
+    setEditModal(true);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      await api.put(`/api/lahan/${editingId}`, editData);
+      setLahans(prev => prev.map(l => 
+        l.id === editingId ? { ...l, ...editData } : l
+      ));
+      setEditModal(false);
+    } catch {
+      alert('Gagal mengupdate lahan');
     }
   };
 
@@ -217,10 +287,28 @@ const MapPage = () => {
                           const centroid = getCentroid(lahan);
                           if (centroid) handleSelectLocation(centroid[0], centroid[1], lahan.id);
                        }}
-                       className={`text-left p-3 rounded-xl border transition-all ${selectedLocation?.id === lahan.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-gray-100 hover:border-primary/40 hover:bg-gray-50'}`}
+                       className={`text-left p-3 rounded-xl border transition-all relative group ${selectedLocation?.id === lahan.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-gray-100 hover:border-primary/40 hover:bg-gray-50'}`}
                     >
-                       <div className="font-bold text-gray-800 text-sm truncate">{lahan.nama || 'Lahan Tanpa Nama'}</div>
+                       <div className="font-bold text-gray-800 text-sm truncate pr-14">{lahan.nama || 'Lahan Tanpa Nama'}</div>
                        <div className="text-xs text-gray-500 mt-1 line-clamp-2">{lahan.deskripsi || 'Tidak ada deskripsi'}</div>
+                       
+                       {/* Tombol Aksi */}
+                       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button 
+                            onClick={(e) => handleEditLahan(lahan, e)}
+                            className="p-1.5 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-md"
+                            title="Edit"
+                          >
+                            ✏️
+                          </button>
+                          <button 
+                            onClick={(e) => handleDeleteLahan(lahan.id, e)}
+                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md"
+                            title="Hapus"
+                          >
+                            🗑️
+                          </button>
+                       </div>
                     </button>
                  ))
               )}
@@ -381,6 +469,49 @@ const MapPage = () => {
                   Simpan Lahan
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 w-[400px] shadow-xl animate-fadeIn">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Edit Lahan</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold mb-1">Nama Lahan</label>
+                <input
+                  className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 border-gray-200"
+                  placeholder="Nama Lahan"
+                  value={editData.nama}
+                  onChange={e => setEditData(p => ({...p, nama: e.target.value}))}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-1">Deskripsi (Opsional)</label>
+                <textarea
+                  className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 border-gray-200"
+                  placeholder="Deskripsi Lahan"
+                  rows={3}
+                  value={editData.deskripsi}
+                  onChange={e => setEditData(p => ({...p, deskripsi: e.target.value}))}
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 justify-end mt-6">
+              <button 
+                onClick={() => setEditModal(false)}
+                className="px-4 py-2 text-sm font-bold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={handleSaveEdit}
+                className="px-4 py-2 text-sm font-bold rounded-lg bg-primary text-white hover:bg-primary-dark shadow-sm transition-colors"
+              >
+                Simpan Perubahan
+              </button>
             </div>
           </div>
         </div>
