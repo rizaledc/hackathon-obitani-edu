@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import heroImg from '../../assets/hero.png';
 import { ArrowRight, PlayCircle } from '@phosphor-icons/react';
+import logo from "../../assets/logo.png";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -10,8 +11,8 @@ const LandingPage = () => {
     <div className="min-h-screen bg-white font-sans text-text-primary selection:bg-primary-pale selection:text-primary overflow-x-hidden">
       {/* Navbar Minimalis */}
       <nav className="container mx-auto px-6 py-6 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <span className="text-3xl">🛰️</span>
+        <div className="flex items-center gap-2 group cursor-pointer">
+          <img src={logo} alt="Orbitani Logo" className="w-10 h-10 object-contain group-hover:scale-105 transition-transform" />
           <span className="font-bold text-xl tracking-tight text-gray-900">Orbitani Edu</span>
         </div>
         <button 

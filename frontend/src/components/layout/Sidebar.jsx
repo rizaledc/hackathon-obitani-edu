@@ -10,9 +10,9 @@ import {
   Users, 
   Buildings, 
   Cpu, 
-  SignOut,
-  Planet
+  SignOut
 } from '@phosphor-icons/react';
+import logo from "../../assets/logo.png";
 
 const Sidebar = () => {
   const { user, unreadChatCount, logout } = useAuthStore();
@@ -46,14 +46,16 @@ const Sidebar = () => {
 
   return (
     <div className="w-64 h-screen bg-white border-r border-gray-200 flex flex-col fixed left-0 top-0 z-20">
-      <div className="p-6 flex flex-col">
-        <div className="flex items-center gap-3">
-          <Planet size={28} className="text-primary" weight="duotone" />
-          <span className="font-bold text-xl text-text-primary tracking-tight">Orbitani Edu</span>
+      <div className="flex items-center gap-3 px-6 py-6 group cursor-pointer">
+        <img src={logo} alt="Orbitani Logo" className="w-10 h-10 object-contain group-hover:scale-105 transition-transform" />
+        <div>
+          <h1 className="text-lg font-bold text-text-primary tracking-tight">
+            Orbitani Edu
+          </h1>
+          <p className="text-[10px] text-text-secondary uppercase tracking-widest font-bold">
+            Precision Agriculture Lab
+          </p>
         </div>
-        <span className="text-[10px] uppercase font-bold tracking-widest text-text-secondary mt-1 ml-10">
-          Precision Agriculture Lab
-        </span>
       </div>
       
       <div className="flex-1 overflow-y-auto px-4 flex flex-col gap-1 pb-4">
