@@ -1,16 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Any, Optional
-from pydantic import BaseModel
 import os
 import google.generativeai as genai
 from app.db.database import supabase
 from app.core.security import get_current_user
+from app.models.schemas import ChatRequest
 
 router = APIRouter()
 
-class ChatRequest(BaseModel):
-    message: str
-    lahan_id: Optional[str] = None
+MODEL_LIST = [
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-2.0-flash", 
+    "gemini-2.0-flash-lite"
+]
 
 SYSTEM_PROMPT = """Kamu adalah Orbitani, asisten AI pakar agrikultur presisi yang dikembangkan oleh tim Arthree Vision. 
 Kamu hanya boleh menjawab pertanyaan yang berkaitan dengan topik-topik berikut:
@@ -101,21 +104,42 @@ async def chat_with_gemini(request: ChatRequest, current_user: dict = Depends(ge
     
     response_text = ""
     errors = []
+    success = False
     
-    keys_to_try = len(_gemini_keys) if _gemini_keys else 1
-    for _ in range(keys_to_try):
-        try:
-            api_key = get_next_gemini_key()
-            genai.configure(api_key=api_key)
-            model = genai.GenerativeModel("gemini-1.5-flash")
-            response = model.generate_content(full_prompt)
-            response_text = response.text
+    # 1. Tentukan pool keys yang akan dipakai
+    if request.user_api_key:
+        keys_to_try = [request.user_api_key]
+    else:
+        keys_to_try = _gemini_keys if _gemini_keys else [os.getenv("GEMINI_API_KEY")]
+        if not keys_to_try or not keys_to_try[0]:
+            raise HTTPException(status_code=500, detail="No Gemini API Key available")
+
+    # 2. Coba request
+    for api_key in keys_to_try:
+        if success:
             break
-        except Exception as e:
-            errors.append(str(e))
             
-    if not response_text:
-        raise HTTPException(status_code=500, detail=f"Gemini API failed: {errors}")
+        if not request.user_api_key and len(_gemini_keys) > 0:
+            api_key = get_next_gemini_key()
+            
+        genai.configure(api_key=api_key)
+        
+        for model_name in MODEL_LIST:
+            try:
+                model = genai.GenerativeModel(model_name)
+                response = model.generate_content(full_prompt)
+                response_text = response.text
+                success = True
+                break
+            except Exception as e:
+                error_str = str(e)
+                errors.append(f"Model {model_name} failed: {error_str}")
+                # Jika error 429, skip model lain di key ini, lanjut ke key berikutnya
+                if "429" in error_str or "quota" in error_str.lower() or "rate" in error_str.lower():
+                    break
+                    
+    if not success:
+        raise HTTPException(status_code=500, detail=f"Gemini API failed after trying keys/models: {errors}")
         
     history_data = {
         "user_id": current_user["id"],

@@ -69,3 +69,8 @@ class OrganizationOut(BaseModel):
     id: int
     nama: str
     created_at: datetime
+
+class ChatRequest(BaseModel):
+    message: str
+    lahan_id: Optional[int] = None
+    user_api_key: Optional[str] = None
