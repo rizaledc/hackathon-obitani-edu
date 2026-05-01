@@ -1,9 +1,15 @@
-import { create } from 'zustand';
+import { useState, useCallback } from 'react'
 
-const useToast = create((set) => ({
-  toast: { message: '', type: 'success', visible: false },
-  showToast: (message, type = 'success') => set({ toast: { message, type, visible: true } }),
-  hideToast: () => set((state) => ({ toast: { ...state.toast, visible: false } }))
-}));
+export default function useToast() {
+  const [toast, setToast] = useState(null)
 
-export default useToast;
+  const showToast = useCallback((message, type = 'success') => {
+    setToast({ message, type, key: Date.now() })
+  }, [])
+
+  const hideToast = useCallback(() => {
+    setToast(null)
+  }, [])
+
+  return { toast, showToast, hideToast }
+}
