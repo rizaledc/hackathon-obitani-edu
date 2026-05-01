@@ -11,7 +11,7 @@ import {
   Buildings, 
   Cpu, 
   SignOut,
-  Satellite
+  Planet
 } from '@phosphor-icons/react';
 
 const Sidebar = () => {
@@ -48,7 +48,7 @@ const Sidebar = () => {
     <div className="w-64 h-screen bg-white border-r border-gray-200 flex flex-col fixed left-0 top-0 z-20">
       <div className="p-6 flex flex-col">
         <div className="flex items-center gap-3">
-          <Satellite size={28} className="text-primary" weight="duotone" />
+          <Planet size={28} className="text-primary" weight="duotone" />
           <span className="font-bold text-xl text-text-primary tracking-tight">Orbitani Edu</span>
         </div>
         <span className="text-[10px] uppercase font-bold tracking-widest text-text-secondary mt-1 ml-10">
