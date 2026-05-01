@@ -21,36 +21,43 @@ const ClickHandler = ({ onSelectLocation, isDrawingMode }) => {
   return null;
 };
 
-const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, draftPoints = [], isDrawingMode = false }) => {
+const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, draftPoints = [], isDrawingMode = false, samplePoints = [] }) => {
   const defaultCenter = [-2.5, 118];
   const defaultZoom = 5;
   const bounds = [[-11, 95], [6, 141]];
 
   const renderLahan = (lahan) => {
-    const coords = lahan.koordinat?.coordinates?.[0];
-    if (!coords || coords.length < 3) return null;
-    
-    const positions = coords.map(c => [c[1], c[0]]);
-    const centroid = [
-      coords.reduce((s,c) => s + c[1], 0) / coords.length,
-      coords.reduce((s,c) => s + c[0], 0) / coords.length
-    ];
-    
-    if (positions.some(p => isNaN(p[0]) || isNaN(p[1]))) return null;
-    
-    return (
-      <React.Fragment key={lahan.id}>
-        <Polygon positions={positions} 
-          pathOptions={{color: '#047857', fillColor: '#10b981', fillOpacity: 0.4}} 
-          eventHandlers={{ click: (e) => {
-            // L.DomEvent.stopPropagation(e); // Optional: prevent map click
-            onSelectLocation(centroid[0], centroid[1], lahan.id);
-          }}} />
-        <CircleMarker center={centroid} radius={6}
-          pathOptions={{color: 'red', fillColor: 'red', fillOpacity: 1}} 
-          eventHandlers={{ click: () => onSelectLocation(centroid[0], centroid[1], lahan.id) }} />
-      </React.Fragment>
-    );
+    try {
+      const coords = lahan.koordinat?.coordinates?.[0];
+      if (!coords || coords.length < 3) return null;
+      
+      const positions = coords.map(c => [c[1], c[0]]);
+      const lat = coords.reduce((s,c) => s + c[1], 0) / coords.length;
+      const lng = coords.reduce((s,c) => s + c[0], 0) / coords.length;
+      
+      if (positions.some(p => isNaN(p[0]) || isNaN(p[1]))) return null;
+      
+      return (
+        <React.Fragment key={lahan.id}>
+          <Polygon positions={positions} 
+            pathOptions={{color: '#047857', fillColor: '#10b981', fillOpacity: 0.4}} 
+            eventHandlers={{ click: (e) => {
+              onSelectLocation(lat, lng, lahan.id);
+            }}} />
+          <CircleMarker center={[lat, lng]} radius={selectedLocation?.id === lahan.id ? 8 : 6}
+            pathOptions={{
+              color: selectedLocation?.id === lahan.id ? '#10b981' : '#dc2626', 
+              fillColor: selectedLocation?.id === lahan.id ? '#10b981' : '#ef4444', 
+              fillOpacity: 1
+            }} 
+            eventHandlers={{ click: (e) => {
+              onSelectLocation(lat, lng, lahan.id);
+            }}} />
+        </React.Fragment>
+      );
+    } catch {
+      return null;
+    }
   };
 
   return (
@@ -87,6 +94,24 @@ const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, dr
         )}
 
         {lahans.map((lahan) => renderLahan(lahan))}
+
+        {samplePoints && samplePoints.map((point, i) => {
+          if (!point.latitude || !point.longitude) return null;
+          return (
+            <CircleMarker
+              key={`sample-${i}`}
+              center={[point.latitude, point.longitude]}
+              radius={5}
+              pathOptions={{
+                color: '#ef4444',
+                fillColor: '#ef4444', 
+                fillOpacity: 1,
+                weight: 2
+              }}
+            />
+          );
+        })}
+
         {selectedLocation && !selectedLocation.id && (
            <Marker position={[selectedLocation.lat, selectedLocation.lng]} />
         )}

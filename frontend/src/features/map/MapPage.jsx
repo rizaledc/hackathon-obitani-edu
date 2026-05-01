@@ -61,6 +61,7 @@ const MapPage = () => {
 
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [recommendationResult, setRecommendationResult] = useState(null);
+  const [samplePoints, setSamplePoints] = useState([]);
   const [status, setStatus] = useState('idle'); // idle, processing, done, error
   const [analysisError, setAnalysisError] = useState('');
   
@@ -93,6 +94,7 @@ const MapPage = () => {
 
     if (status === 'processing') return;
     setSelectedLocation({ lat, lng, id });
+    setSamplePoints([]); // reset titik sampel lama
     setStatus('idle');
     setRecommendationResult(null);
     setAiResult(null);
@@ -160,8 +162,15 @@ const MapPage = () => {
     setStatus('processing');
     setAnalysisError('');
     try {
-      const resAnalyze = await api.post(`/api/lahan/${selectedLocation.id}/analyze`);
-      setRecommendationResult(resAnalyze.data.data || resAnalyze.data);
+      const response = await api.post(`/api/lahan/${selectedLocation.id}/analyze`);
+      const resData = response.data.data || response.data;
+      setRecommendationResult(resData);
+      // Simpan 10 titik sampel
+      if (resData.results) {
+         setSamplePoints(resData.results);
+      } else if (response.data.results) {
+         setSamplePoints(response.data.results);
+      }
       setStatus('done');
     } catch (error) {
       console.error(error);
@@ -284,13 +293,13 @@ const MapPage = () => {
                  </div>
               ) : (
                  lahans.map(lahan => (
-                    <button 
+                    <div 
                        key={lahan.id}
                        onClick={() => {
                           const centroid = getCentroid(lahan);
                           if (centroid) handleSelectLocation(centroid[0], centroid[1], lahan.id);
                        }}
-                       className={`text-left p-3 rounded-xl border transition-all relative group ${selectedLocation?.id === lahan.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-gray-100 hover:border-primary/40 hover:bg-gray-50'}`}
+                       className={`cursor-pointer text-left p-3 rounded-xl border transition-all relative group ${selectedLocation?.id === lahan.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-gray-100 hover:border-primary/40 hover:bg-gray-50'}`}
                     >
                        <div className="font-bold text-gray-800 text-sm truncate pr-14">{lahan.nama || 'Lahan Tanpa Nama'}</div>
                        <div className="text-xs text-gray-500 mt-1 line-clamp-2">{lahan.deskripsi || 'Tidak ada deskripsi'}</div>
@@ -312,7 +321,7 @@ const MapPage = () => {
                             🗑️
                           </button>
                        </div>
-                    </button>
+                    </div >
                  ))
               )}
            </div>
@@ -328,6 +337,7 @@ const MapPage = () => {
           mapRef={mapRef} 
           draftPoints={draftPoints} 
           isDrawingMode={isDrawingMode} 
+          samplePoints={samplePoints}
         />
         
         {/* Navigation & Toolbar (Top Right) */}
