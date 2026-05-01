@@ -370,7 +370,7 @@ const UserManagement = () => {
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-1">Password <span className="text-red-500">*</span></label>
-                <input required type="password" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} placeholder="••••••••" />
+                <input required type="password" autoComplete="new-password" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} placeholder="••••••••" />
               </div>
               {isSuperadmin && (
                 <div className="grid grid-cols-2 gap-4">
