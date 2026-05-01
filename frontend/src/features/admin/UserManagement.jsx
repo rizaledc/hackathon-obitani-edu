@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Users, Shield, ShieldCheck, User, Trash2, 
   Plus, Search, ChevronUp, ChevronDown, 
-  UserCog, Building2, X
+  UserCog, Building2, X, MapPin, FileText
 } from 'lucide-react';
 import api from '../../services/api';
 import useToast from '../../hooks/useToast';
@@ -13,6 +13,12 @@ const UserManagement = () => {
   const [orgs, setOrgs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  
+  const [totalLahan, setTotalLahan] = useState(0);
+  const [totalAnalisis, setTotalAnalisis] = useState(0);
+  const [orgName, setOrgName] = useState('-');
+
+  const { user: currentUser } = useAuthStore();
   
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -43,9 +49,15 @@ const UserManagement = () => {
         }
       }
       if (!Array.isArray(uData) && uData.data) uData = uData.data;
-      setUsers(uData);
+      const filteredUsers = uData.filter(u => u.id !== currentUser?.id);
+      setUsers(filteredUsers);
 
-      const orgRes = await api.get('/api/organizations/').catch(() => ({ data: [] }));
+      const orgRes = await api.get('/api/organizations/').catch((err) => {
+        if (err.response?.status === 403) {
+          setOrgName(`Org #${currentUser?.organization_id || '-'}`);
+        }
+        return { data: [] };
+      });
       let oData = orgRes.data || [];
       if (!Array.isArray(oData) && oData.data) oData = oData.data;
       setOrgs(oData);
@@ -58,7 +70,26 @@ const UserManagement = () => {
 
   useEffect(() => {
     fetchData();
+
+    // Fetch lahan count
+    api.get('/api/lahan/')
+      .then(res => setTotalLahan(res.data?.length || 0))
+      .catch(() => setTotalLahan(0));
+    
+    // Fetch history count  
+    api.get('/api/history/')
+      .then(res => setTotalAnalisis(res.data?.length || 0))
+      .catch(() => setTotalAnalisis(0));
   }, []);
+
+  useEffect(() => {
+    if (orgs.length > 0 && currentUser?.organization_id) {
+      const org = orgs.find(o => o.id === currentUser.organization_id);
+      if (org) setOrgName(org.name || org.nama || `Org #${currentUser.organization_id}`);
+    } else if (orgName === '-') {
+      setOrgName(currentUser?.organization_id ? `Org #${currentUser.organization_id}` : '-');
+    }
+  }, [orgs, currentUser, orgName]);
 
   const stats = useMemo(() => {
     const total = users.length;
@@ -155,28 +186,28 @@ const UserManagement = () => {
           <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gray-100 text-gray-600"><Users size={20}/></div>
           <div>
             <p className="text-sm text-gray-500 font-medium">Total Pengguna</p>
-            <p className="text-2xl font-bold text-gray-800">{stats.total}</p>
+            <p className="text-2xl font-bold text-gray-800">{users.length}</p>
           </div>
         </div>
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-100 text-blue-900"><Shield size={20}/></div>
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-100 text-blue-900"><MapPin size={20}/></div>
           <div>
-            <p className="text-sm text-gray-500 font-medium">Superadmin</p>
-            <p className="text-2xl font-bold text-gray-800">{stats.sa}</p>
+            <p className="text-sm text-gray-500 font-medium">Total Lahan</p>
+            <p className="text-2xl font-bold text-gray-800">{totalLahan}</p>
           </div>
         </div>
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-yellow-100 text-yellow-700"><ShieldCheck size={20}/></div>
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-yellow-100 text-yellow-700"><FileText size={20}/></div>
           <div>
-            <p className="text-sm text-gray-500 font-medium">Admin</p>
-            <p className="text-2xl font-bold text-gray-800">{stats.adm}</p>
+            <p className="text-sm text-gray-500 font-medium">Total Analisis</p>
+            <p className="text-2xl font-bold text-gray-800">{totalAnalisis}</p>
           </div>
         </div>
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-green-100 text-green-700"><User size={20}/></div>
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-green-100 text-green-700"><Building2 size={20}/></div>
           <div>
-            <p className="text-sm text-gray-500 font-medium">User</p>
-            <p className="text-2xl font-bold text-gray-800">{stats.usr}</p>
+            <p className="text-sm text-gray-500 font-medium">Organisasi Saya</p>
+            <p className="text-lg font-bold text-gray-800 truncate max-w-[120px]">{orgName}</p>
           </div>
         </div>
       </div>
