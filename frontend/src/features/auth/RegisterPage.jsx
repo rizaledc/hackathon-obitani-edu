@@ -33,6 +33,7 @@ const RegisterPage = () => {
             <input 
               type="text" 
               required
+              autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
@@ -44,6 +45,7 @@ const RegisterPage = () => {
             <input 
               type="email" 
               required
+              autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
