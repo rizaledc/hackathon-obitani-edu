@@ -7,16 +7,30 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def initialize_gee():
-    if not ee.data._credentials:
+    try:
         service_account = os.getenv("GEE_SERVICE_ACCOUNT")
         key_json_str = os.getenv("GEE_KEY_JSON")
         
         if not service_account or not key_json_str:
-            raise ValueError("GEE_SERVICE_ACCOUNT atau GEE_KEY_JSON tidak ditemukan di environment variables")
+            raise ValueError("GEE credentials tidak ditemukan di environment variables")
         
         key_data = json.loads(key_json_str)
-        credentials = ee.ServiceAccountCredentials(service_account, key_data=key_data)
+        
+        # Simpan key_data ke file temporary
+        import tempfile
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+            json.dump(key_data, f)
+            tmp_path = f.name
+        
+        credentials = ee.ServiceAccountCredentials(service_account, tmp_path)
         ee.Initialize(credentials)
+        
+        # Hapus file temporary
+        os.unlink(tmp_path)
+        
+        return True
+    except Exception as e:
+        raise Exception(f"GEE initialization failed: {str(e)}")
 
 def analyze_lahan(polygon_geojson, lahan_id):
     try:
