@@ -3,6 +3,7 @@ import MapViewer from './components/MapViewer';
 import RecommendationPanel from './components/RecommendationPanel';
 import api from '../../services/api';
 import { getAIExplanation } from '../../services/aiService';
+import { Pencil, Trash2 } from 'lucide-react';
 
 const MapPage = () => {
   const [lahans, setLahans] = useState([]);
@@ -339,14 +340,14 @@ const MapPage = () => {
                             className="p-1.5 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-md"
                             title="Edit"
                           >
-                            ✏️
+                            <Pencil size={14} />
                           </button>
                           <button 
                             onClick={(e) => handleDeleteLahan(lahan.id, e)}
                             className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md"
                             title="Hapus"
                           >
-                            🗑️
+                            <Trash2 size={14} />
                           </button>
                        </div>
                     </div >
