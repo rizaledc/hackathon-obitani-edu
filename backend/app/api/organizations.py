@@ -23,21 +23,37 @@ async def create_organization(org: OrganizationCreate, current_user: dict = Depe
     return response.data[0]
 
 @router.get("/{org_id}")
-async def get_organization(org_id: str, current_user: dict = Depends(get_current_user)) -> Any:
-    role = current_user.get("role")
-    if role != "superadmin" and current_user.get("organization_id") != org_id:
-        raise HTTPException(status_code=403, detail="Not authorized to access this organization")
-        
-    org_res = supabase.table("organizations").select("*").eq("id", org_id).execute()
-    if not org_res.data:
-        raise HTTPException(status_code=404, detail="Organization not found")
-        
-    org = org_res.data[0]
+def get_organization(
+    org_id: int,
+    current_user: dict = Depends(get_current_user)
+):
+    # Superadmin bisa akses semua
+    if current_user["role"] != "superadmin":
+        # Admin/user hanya bisa akses org sendiri
+        if current_user.get("organization_id") != org_id:
+            raise HTTPException(
+                status_code=403,
+                detail="Tidak punya akses ke organisasi ini"
+            )
     
-    count_res = supabase.table("users").select("id", count="exact").eq("organization_id", org_id).execute()
-    user_count = count_res.count if count_res.count is not None else len(count_res.data)
+    result = supabase.table("organizations")\
+        .select("*")\
+        .eq("id", org_id)\
+        .execute()
     
-    org["user_count"] = user_count
+    if not result.data:
+        raise HTTPException(status_code=404, 
+            detail="Organisasi tidak ditemukan")
+    
+    org = result.data[0]
+    
+    # Hitung jumlah user
+    users = supabase.table("users")\
+        .select("id")\
+        .eq("organization_id", org_id)\
+        .execute()
+    
+    org["user_count"] = len(users.data)
     return org
 
 @router.put("/{org_id}")
