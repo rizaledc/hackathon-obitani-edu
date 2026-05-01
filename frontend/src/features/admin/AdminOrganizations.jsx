@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Building2, Plus, Pencil, Trash2, X } from 'lucide-react';
 import api from '../../services/api';
+import useToast from '../../hooks/useToast';
+import useConfirm from '../../hooks/useConfirm';
 
 const AdminOrganizations = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -12,6 +14,9 @@ const AdminOrganizations = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentOrgId, setCurrentOrgId] = useState(null);
   const [formData, setFormData] = useState({ nama: '' });
+  
+  const { showToast } = useToast();
+  const { showConfirm } = useConfirm();
 
   const fetchData = async () => {
     setLoading(true);
@@ -64,12 +69,14 @@ const AdminOrganizations = () => {
   };
 
   const handleDelete = async (org) => {
-    if (!window.confirm("Hapus organisasi ini? Semua user terkait akan kehilangan organisasi.")) return;
+    const confirm = await showConfirm("Hapus organisasi ini? Semua user terkait akan kehilangan organisasi.");
+    if (!confirm) return;
     try {
       await api.delete(`/api/organizations/${org.id}`);
       fetchData();
+      showToast('Organisasi berhasil dihapus', 'success');
     } catch (e) {
-      alert('Gagal menghapus organisasi.');
+      showToast('Gagal menghapus organisasi.', 'error');
     }
   };
 
@@ -84,8 +91,9 @@ const AdminOrganizations = () => {
       }
       setShowModal(false);
       fetchData();
+      showToast(isEditing ? 'Organisasi berhasil diperbarui' : 'Organisasi berhasil ditambahkan', 'success');
     } catch (e) {
-      alert(e.response?.data?.detail || 'Gagal menyimpan organisasi');
+      showToast(e.response?.data?.detail || 'Gagal menyimpan organisasi', 'error');
     }
   };
 

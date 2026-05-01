@@ -1,8 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Send, Plus, Clock, MessageSquare, Settings, ChevronDown, X, Brain, MapPin, Pencil, Trash2, KeyRound, Eye, EyeOff } from 'lucide-react';
 import api from '../../services/api';
+import ChatMessage from './components/ChatMessage';
+import useToast from '../../hooks/useToast';
+import useConfirm from '../../hooks/useConfirm';
 
 const ChatPage = () => {
+  const { showToast } = useToast();
+  const { showConfirm } = useConfirm();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -91,8 +96,11 @@ const ChatPage = () => {
     setEditingSession(null);
   };
 
-  const handleDeleteSession = async (sessionId) => {
-    if (!window.confirm('Hapus percakapan ini?')) return;
+  const handleDeleteSession = async (sessionId, e) => {
+    e.stopPropagation();
+    const confirmed = await showConfirm('Hapus percakapan ini?');
+    if (!confirmed) return;
+    
     try {
       await api.delete('/api/chat/history', {
         params: { session_id: sessionId }
@@ -101,9 +109,9 @@ const ChatPage = () => {
       if (currentSessionId === sessionId) {
         handleNewChat();
       }
+      showToast('Percakapan berhasil dihapus', 'success');
     } catch {
-      setChatSessions(prev => prev.filter(s => s.session_id !== sessionId));
-      if (currentSessionId === sessionId) handleNewChat();
+      showToast('Gagal menghapus percakapan', 'error');
     }
   };
 

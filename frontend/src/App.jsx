@@ -3,6 +3,10 @@ import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import OrbitaniLoader from "./components/OrbitaniLoader";
 import MainLayout from "./components/layout/MainLayout";
 import useAuthStore from "./store/authStore";
+import Toast from "./components/ui/Toast";
+import ConfirmDialog from "./components/ui/ConfirmDialog";
+import useToast from "./hooks/useToast";
+import useConfirm from "./hooks/useConfirm";
 
 const LandingPage = lazy(() => import("./features/landing/LandingPage"));
 const MapPage = lazy(() => import("./features/map/MapPage"));
@@ -31,6 +35,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
 function App() {
   const navigate = useNavigate();
+  const { toast, hideToast } = useToast();
+  const { confirmState, handleConfirm, handleCancel } = useConfirm();
 
   useEffect(() => {
     const { fetchMe } = useAuthStore.getState();
@@ -82,6 +88,14 @@ function App() {
         {/* Catch all unmatched routes */}
         <Route path="*" element={<Navigate to="/map" replace />} />
       </Routes> 
+      <Toast message={toast.message} type={toast.type} onClose={hideToast} />
+      {confirmState.visible && (
+        <ConfirmDialog 
+          message={confirmState.message} 
+          onConfirm={handleConfirm} 
+          onCancel={handleCancel} 
+        />
+      )}
     </Suspense> 
   );
 }

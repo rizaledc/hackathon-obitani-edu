@@ -3,11 +3,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { UserCog, LogOut } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import api from '../../services/api';
+import useToast from '../../hooks/useToast';
+import useConfirm from '../../hooks/useConfirm';
 
 const Navbar = () => {
   const { user } = useAuthStore();
   const location = useLocation();
   const navigate = useNavigate();
+  const { showToast } = useToast();
+  const { showConfirm } = useConfirm();
 
   const [showProfile, setShowProfile] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -51,8 +55,8 @@ const Navbar = () => {
       .toUpperCase();
   };
 
-  const handleLogout = () => {
-    const confirm = window.confirm(
+  const handleLogout = async () => {
+    const confirm = await showConfirm(
       "Apakah Anda yakin ingin keluar dari Orbitani Edu?"
     );
     if (!confirm) return;
@@ -72,9 +76,9 @@ const Navbar = () => {
       useAuthStore.getState().setUser(res.data);
       setShowEditModal(false);
       setShowProfile(false);
-      alert('Profil berhasil diperbarui!');
+      showToast('Profil berhasil diperbarui!', 'success');
     } catch (err) {
-      alert(err.response?.data?.detail || 'Gagal menyimpan profil');
+      showToast(err.response?.data?.detail || 'Gagal menyimpan profil', 'error');
     } finally {
       setIsSaving(false);
     }

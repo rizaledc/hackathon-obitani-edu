@@ -4,6 +4,8 @@ import RecommendationPanel from './components/RecommendationPanel';
 import api from '../../services/api';
 import { getAIExplanation } from '../../services/aiService';
 import { Pencil, Trash2, Menu, Compass, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import useToast from '../../hooks/useToast';
+import useConfirm from '../../hooks/useConfirm';
 
 const MapPage = () => {
   const [lahans, setLahans] = useState([]);
@@ -71,6 +73,9 @@ const MapPage = () => {
   const [aiResult, setAiResult] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState(null);
+
+  const { showToast } = useToast();
+  const { showConfirm } = useConfirm();
 
   useEffect(() => {
     const fetchLahans = async () => {
@@ -164,7 +169,7 @@ const MapPage = () => {
 
   const finishDrawing = () => {
     if (draftPoints.length < 3) {
-      alert("Polygon harus memiliki minimal 3 titik");
+      showToast("Polygon harus memiliki minimal 3 titik", "warning");
       return;
     }
     const closedRing = [...draftPoints.map(p => [p[1], p[0]]), [draftPoints[0][1], draftPoints[0][0]]];
@@ -232,9 +237,10 @@ const MapPage = () => {
       setNewLahanName('');
       setNewLahanDesc('');
       setNewPolygonGeom(null);
+      showToast('Lahan berhasil disimpan', 'success');
     } catch (error) {
       console.error(error);
-      alert('Gagal menyimpan lahan');
+      showToast('Gagal menyimpan lahan', 'error');
     } finally {
       setSaving(false);
     }
@@ -242,13 +248,15 @@ const MapPage = () => {
 
   const handleDeleteLahan = async (lahanId, e) => {
     e.stopPropagation();
-    if (!window.confirm('Yakin ingin menghapus lahan ini?')) return;
+    const confirm = await showConfirm('Yakin ingin menghapus lahan ini?');
+    if (!confirm) return;
     try {
       await api.delete(`/api/lahan/${lahanId}`);
       setLahans(prev => prev.filter(l => l.id !== lahanId));
       if (selectedLocation?.id === lahanId) setSelectedLocation(null);
+      showToast('Lahan berhasil dihapus', 'success');
     } catch {
-      alert('Gagal menghapus lahan');
+      showToast('Gagal menghapus lahan', 'error');
     }
   };
 
@@ -266,8 +274,9 @@ const MapPage = () => {
         l.id === editingId ? { ...l, ...editData } : l
       ));
       setEditModal(false);
+      showToast('Lahan berhasil diperbarui', 'success');
     } catch {
-      alert('Gagal mengupdate lahan');
+      showToast('Gagal mengupdate lahan', 'error');
     }
   };
 

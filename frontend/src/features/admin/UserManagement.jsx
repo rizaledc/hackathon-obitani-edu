@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Users, Shield, ShieldCheck, User, Trash2, Plus, Search, ChevronUp, ChevronDown, X } from 'lucide-react';
+import { Users as UsersIcon, Search, Plus, X, Shield, ShieldCheck, User, ChevronUp, ChevronDown, Trash2 } from 'lucide-react';
 import api from '../../services/api';
+import useToast from '../../hooks/useToast';
+import useConfirm from '../../hooks/useConfirm';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -18,6 +20,9 @@ const UserManagement = () => {
     role: 'user',
     organization_id: ''
   });
+
+  const { showToast } = useToast();
+  const { showConfirm } = useConfirm();
 
   const fetchData = async () => {
     setLoading(true);
@@ -73,22 +78,26 @@ const UserManagement = () => {
   };
 
   const handleRoleChange = async (user, newRole) => {
-    if (!window.confirm(`Ubah role pengguna ${user.full_name || user.username} menjadi ${newRole}?`)) return;
+    const confirmed = await showConfirm(`Ubah role pengguna ${user.full_name || user.username} menjadi ${newRole}?`);
+    if (!confirmed) return;
     try {
       await api.put(`/api/users/${user.id}`, { role: newRole });
       fetchData();
+      showToast('Role berhasil diperbarui', 'success');
     } catch (e) {
-      alert('Gagal mengubah role. Pastikan Anda memiliki akses yang cukup.');
+      showToast('Gagal mengubah role. Pastikan Anda memiliki akses yang cukup.', 'error');
     }
   };
 
   const handleDelete = async (user) => {
-    if (!window.confirm(`Hapus pengguna ${user.full_name || user.username}? Tindakan ini tidak dapat dibatalkan.`)) return;
+    const confirmed = await showConfirm(`Hapus pengguna ${user.full_name || user.username}? Tindakan ini tidak dapat dibatalkan.`);
+    if (!confirmed) return;
     try {
       await api.delete(`/api/users/${user.id}`);
       fetchData();
+      showToast('Pengguna berhasil dihapus', 'success');
     } catch (e) {
-      alert('Gagal menghapus pengguna.');
+      showToast('Gagal menghapus pengguna.', 'error');
     }
   };
 
@@ -102,8 +111,9 @@ const UserManagement = () => {
       setShowModal(false);
       setFormData({ username: '', full_name: '', email: '', password: '', role: 'user', organization_id: '' });
       fetchData();
+      showToast('Pengguna berhasil ditambahkan', 'success');
     } catch (e) {
-      alert(e.response?.data?.detail || 'Gagal menambahkan pengguna');
+      showToast(e.response?.data?.detail || 'Gagal menambahkan pengguna', 'error');
     }
   };
 
