@@ -141,13 +141,26 @@ async def chat_with_gemini(request: ChatRequest, current_user: dict = Depends(ge
     if not success:
         raise HTTPException(status_code=500, detail=f"Gemini API failed after trying keys/models: {errors}")
         
-    history_data = {
+    session_id = request.session_id or "default"
+    session_name = request.session_name or "New Chat"
+    
+    user_msg_data = {
         "user_id": current_user["id"],
-        "message": user_message,
-        "response": response_text,
-        "lahan_id": request.lahan_id
+        "session_id": session_id,
+        "session_name": session_name,
+        "role": "user",
+        "content": user_message
     }
-    supabase.table("ai_chat_history").insert(history_data).execute()
+    
+    ai_msg_data = {
+        "user_id": current_user["id"],
+        "session_id": session_id,
+        "session_name": session_name,
+        "role": "assistant",
+        "content": response_text
+    }
+    
+    supabase.table("ai_chat_history").insert([user_msg_data, ai_msg_data]).execute()
     
     return {"response": response_text}
 

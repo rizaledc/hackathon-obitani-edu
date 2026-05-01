@@ -74,3 +74,5 @@ class ChatRequest(BaseModel):
     message: str
     lahan_id: Optional[int] = None
     user_api_key: Optional[str] = None
+    session_id: Optional[str] = None
+    session_name: Optional[str] = None
