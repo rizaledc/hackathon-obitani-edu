@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import heroImg from '../../assets/hero.png';
 import { ArrowRight, PlayCircle } from '@phosphor-icons/react';
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logo.webp";
 
 const LandingPage = () => {
   const navigate = useNavigate();

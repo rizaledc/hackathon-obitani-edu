@@ -12,7 +12,7 @@ import {
   Cpu, 
   SignOut
 } from '@phosphor-icons/react';
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logo.webp";
 
 const Sidebar = () => {
   const { user, unreadChatCount, logout } = useAuthStore();
