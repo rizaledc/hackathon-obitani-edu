@@ -76,3 +76,8 @@ class ChatRequest(BaseModel):
     user_api_key: Optional[str] = None
     session_id: Optional[str] = None
     session_name: Optional[str] = None
+
+class FeedbackCreate(BaseModel):
+    actual_crop: str
+    rating: int
+    notes: Optional[str] = None

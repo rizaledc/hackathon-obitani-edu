@@ -3,12 +3,9 @@ from typing import Any
 from pydantic import BaseModel
 from app.db.database import supabase
 from app.core.security import get_current_user
+from app.models.schemas import FeedbackCreate
 
 router = APIRouter()
-
-class FeedbackCreate(BaseModel):
-    actual_crop: str
-    notes: str = ""
 
 @router.get("/")
 async def list_history(current_user: dict = Depends(get_current_user)) -> Any:
@@ -71,7 +68,8 @@ async def submit_feedback(result_id: str, payload: FeedbackCreate, current_user:
         "ph": result.get("ph", 6.5),
         "rainfall": result.get("rainfall", 0),
         "actual_label": payload.actual_crop,
-        "rating": 5
+        "rating": payload.rating,
+        "submited_by": current_user["id"]
     }
     
     res = supabase.table("ml_feedback").insert(feedback_data).execute()
