@@ -10,4 +10,4 @@ pandas
 numpy
 python-dotenv
 httpx
-pydantic
+pydantic[email]
