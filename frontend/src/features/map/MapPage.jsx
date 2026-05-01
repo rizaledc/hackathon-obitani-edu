@@ -61,6 +61,8 @@ const MapPage = () => {
       return;
     }
 
+    if (!id) return; // Abaikan klik di peta kosong jika tidak sedang menggambar
+
     if (status === 'processing') return;
     setSelectedLocation({ lat, lng, id });
     setStatus('idle');
@@ -75,8 +77,6 @@ const MapPage = () => {
       if (centroid && mapRef.current) {
         mapRef.current.flyTo(centroid, 14);
       }
-    } else if (mapRef.current) {
-      mapRef.current.flyTo([lat, lng], 14);
     }
   };
 
@@ -230,7 +230,14 @@ const MapPage = () => {
       )}
 
       <div className="flex-1 rounded-2xl overflow-hidden shadow-sm border border-gray-200 relative group cursor-crosshair">
-        <MapViewer onSelectLocation={handleSelectLocation} lahans={lahans} selectedLocation={selectedLocation} mapRef={mapRef} draftPoints={draftPoints} />
+        <MapViewer 
+          onSelectLocation={handleSelectLocation} 
+          lahans={lahans} 
+          selectedLocation={selectedLocation} 
+          mapRef={mapRef} 
+          draftPoints={draftPoints} 
+          isDrawingMode={isDrawingMode} 
+        />
         
         {/* Navigation & Toolbar (Top Right) */}
         <div className="absolute top-4 right-4 z-[400] flex flex-col items-end gap-2">

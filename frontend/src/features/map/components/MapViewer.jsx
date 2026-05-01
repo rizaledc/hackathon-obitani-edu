@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents, Polygon, CircleMarker, Polyline, useMap, ZoomControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, Polygon, CircleMarker, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
 // Fix Leaflet's default icon path issues in React
@@ -10,16 +10,18 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-const ClickHandler = ({ onSelectLocation }) => {
+const ClickHandler = ({ onSelectLocation, isDrawingMode }) => {
   useMapEvents({
     click(e) {
-      if (onSelectLocation) onSelectLocation(e.latlng.lat, e.latlng.lng, null);
+      if (isDrawingMode && onSelectLocation) {
+        onSelectLocation(e.latlng.lat, e.latlng.lng, null);
+      }
     }
   });
   return null;
 };
 
-const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, draftPoints = [] }) => {
+const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, draftPoints = [], isDrawingMode = false }) => {
   const defaultCenter = [-2.5, 118];
   const defaultZoom = 5;
   const bounds = [[-11, 95], [6, 141]];
@@ -69,8 +71,7 @@ const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, dr
           attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
         />
-        <ZoomControl position="bottomright" />
-        <ClickHandler onSelectLocation={onSelectLocation} />
+        <ClickHandler onSelectLocation={onSelectLocation} isDrawingMode={isDrawingMode} />
         
         {draftPoints && draftPoints.length > 0 && (
           <>
