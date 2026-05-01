@@ -50,37 +50,35 @@ const LandingPage = () => {
       </nav>
 
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-screen flex items-center justify-start bg-cover bg-center" style={{ backgroundImage: `url(${bg2})` }}>
+      <section className="relative min-h-screen flex items-center justify-center md:justify-end bg-cover bg-center px-10 animate-fadeIn" style={{ backgroundImage: `url(${bg2})` }}>
         <div className="absolute inset-0 bg-black/50"></div>
         
-        <div className="relative z-10 max-w-6xl mx-auto px-6 w-full animate-fadeIn">
-          <div className="relative z-10 max-w-2xl bg-white/80 backdrop-blur p-10 rounded-2xl shadow-xl text-left space-y-6 ml-0 md:ml-16 hover:scale-[1.01] transition duration-500">
-            <div className="inline-block bg-white border border-green-200 text-green-700 font-bold px-4 py-1.5 rounded-full text-sm shadow-sm">
-              AI · Data Satelit · Edukasi Digital
-            </div>
-            
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight text-gray-900">
-              Transformasi Pembelajaran Pertanian dengan Teknologi Geospasial
-            </h1>
-            
-            <p className="text-base text-gray-700 leading-relaxed">
-              Orbitani Edu adalah platform virtual laboratory berbasis kecerdasan buatan dan data satelit yang dirancang untuk membantu siswa, mahasiswa, dan institusi pendidikan memahami analisis lahan secara real-time dan interaktif. Mendukung pembelajaran agrikultur modern melalui pendekatan berbasis data dan teknologi.
-            </p>
-            
-            <div className="flex gap-4 pt-2">
-              <button 
-                onClick={() => navigate('/map')}
-                className="bg-primary hover:bg-green-700 text-white px-8 py-4 rounded-xl shadow-lg hover:scale-105 transition font-bold text-lg w-full sm:w-auto text-center"
-              >
-                Mulai Eksplorasi
-              </button>
-              <button 
-                onClick={() => document.getElementById('solusi').scrollIntoView()}
-                className="bg-white text-gray-900 border border-gray-200 px-8 py-4 rounded-xl shadow-sm hover:bg-gray-50 hover:scale-105 transition font-bold text-lg w-full sm:w-auto text-center"
-              >
-                Lihat Demo
-              </button>
-            </div>
+        <div className="relative z-10 max-w-2xl bg-white/80 backdrop-blur p-10 rounded-2xl shadow-xl text-left space-y-6 mr-0 md:mr-16 hover:scale-[1.01] transition duration-500">
+          <div className="inline-block bg-white border border-green-200 text-green-700 font-bold px-4 py-1.5 rounded-full text-sm shadow-sm">
+            AI · Data Satelit · Edukasi Digital
+          </div>
+          
+          <h1 className="text-4xl md:text-5xl font-bold leading-tight text-gray-900">
+            Transformasi Pembelajaran Pertanian dengan Teknologi Geospasial
+          </h1>
+          
+          <p className="text-base text-gray-700 leading-relaxed">
+            Orbitani Edu adalah platform virtual laboratory berbasis kecerdasan buatan dan data satelit yang dirancang untuk membantu siswa, mahasiswa, dan institusi pendidikan memahami analisis lahan secara real-time dan interaktif. Mendukung pembelajaran agrikultur modern melalui pendekatan berbasis data dan teknologi.
+          </p>
+          
+          <div className="flex gap-4 pt-2">
+            <button 
+              onClick={() => navigate('/map')}
+              className="bg-primary hover:bg-green-700 text-white px-8 py-4 rounded-xl shadow-lg hover:scale-105 transition font-bold text-lg w-full sm:w-auto text-center"
+            >
+              Mulai Eksplorasi
+            </button>
+            <button 
+              onClick={() => document.getElementById('solusi').scrollIntoView()}
+              className="bg-white text-gray-900 border border-gray-200 px-8 py-4 rounded-xl shadow-sm hover:bg-gray-50 hover:scale-105 transition font-bold text-lg w-full sm:w-auto text-center"
+            >
+              Lihat Demo
+            </button>
           </div>
         </div>
       </section>
@@ -301,54 +299,12 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* 9. FOOTER & CTA */}
-      <footer className="bg-gray-900 text-white py-12 border-t border-gray-800 text-left animate-slideUp">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div className="col-span-1 md:col-span-1">
-              <h3 className="text-lg font-semibold mb-2">
-                Mulai Eksplorasi Pembelajaran Pertanian Digital
-              </h3>
-              <p className="text-sm text-gray-300">
-                Platform edukasi berbasis data satelit dan kecerdasan buatan untuk mendukung pembelajaran agrikultur modern.
-              </p>
-            </div>
-            
-            <div>
-              <h4 className="text-white font-bold mb-4 tracking-wide">Platform</h4>
-              <ul className="space-y-3 text-sm">
-                <li><button onClick={() => navigate('/map')} className="text-gray-400 hover:text-white transition">Eksplorasi Lahan</button></li>
-                <li><button onClick={() => navigate('/chat')} className="text-gray-400 hover:text-white transition">Asisten AI</button></li>
-                <li><button onClick={() => navigate('/analytics')} className="text-gray-400 hover:text-white transition">Laporan Analisis</button></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="text-white font-bold mb-4 tracking-wide">Navigasi</h4>
-              <ul className="space-y-3 text-sm">
-                <li><button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-gray-400 hover:text-white transition">Beranda</button></li>
-                <li><button onClick={() => document.getElementById('solusi').scrollIntoView()} className="text-gray-400 hover:text-white transition">Solusi</button></li>
-                <li><button onClick={() => document.getElementById('carakerja').scrollIntoView()} className="text-gray-400 hover:text-white transition">Cara Kerja</button></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 className="text-white font-bold mb-4 tracking-wide">Bantuan</h4>
-              <ul className="space-y-3 text-sm">
-                <li><button className="text-gray-400 hover:text-white transition">Pusat Bantuan</button></li>
-                <li><button onClick={() => navigate('/login')} className="text-gray-400 hover:text-white transition">Masuk</button></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-sm">
-            <div className="flex items-center gap-2">
-              <img src={logo} alt="Orbitani Logo" className="w-5 h-5 grayscale opacity-50" />
-              <span className="font-bold tracking-widest uppercase text-gray-400">Orbitani Edu</span>
-            </div>
-            <div>&copy; {new Date().getFullYear()} Telkom University - Hackathon Project. Hak Cipta Dilindungi.</div>
-          </div>
-        </div>
+      {/* 9. FOOTER BARU (MINIMALIS) */}
+      <div className="border-t border-gray-200 mt-20"></div>
+      <footer className="bg-gray-900 text-center py-6">
+        <p className="text-sm text-gray-400">
+          &copy; {new Date().getFullYear()} Telkom University - ORBITANI EDU - Hackathon Project. Hak Cipta Dilindungi.
+        </p>
       </footer>
     </div>
   );
