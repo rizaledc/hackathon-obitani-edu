@@ -73,4 +73,5 @@ jobs:
         with:
           app-name: 'orbitani-edu-backend'
           slot-name: 'Production'
+          package: './backend'
           
