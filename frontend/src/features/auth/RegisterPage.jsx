@@ -4,6 +4,19 @@ import { Eye, EyeOff } from 'lucide-react';
 import logo from '../../assets/logo.webp';
 import PasswordStrength from '../../components/ui/PasswordStrength';
 import EmailValidator from '../../components/ui/EmailValidator';
+import { CheckCircle2 } from 'lucide-react';
+import api from '../../services/api';
+
+// Fungsi encode/decode org ID ke kode
+const encodeOrgId = (id) => {
+  return 'ORB-' + String(id).padStart(5, '0');
+};
+
+const decodeOrgCode = (code) => {
+  const match = code.match(/^ORB-(\d+)$/);
+  if (!match) return null;
+  return parseInt(match[1]);
+};
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -11,10 +24,48 @@ const RegisterPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [orgCode, setOrgCode] = useState('');
+  const [orgCodeStatus, setOrgCodeStatus] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleOrgCode = async (val) => {
+    setOrgCode(val.toUpperCase());
+    if (!val) {
+      setOrgCodeStatus(null);
+      return;
+    }
+    
+    const orgId = decodeOrgCode(val.toUpperCase());
+    if (!orgId) {
+      setOrgCodeStatus('invalid');
+      return;
+    }
+    
+    try {
+      const res = await api.get(`/api/organizations/${orgId}`);
+      if (res.data?.nama || res.data?.name) {
+        setOrgCodeStatus({ id: orgId, nama: res.data.nama || res.data.name });
+      }
+    } catch {
+      setOrgCodeStatus('invalid');
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/login');
+    try {
+      await api.post('/api/auth/register', {
+        username: email.split('@')[0],
+        email: email,
+        password: password,
+        name: name,
+        role: 'user',
+        organization_id: orgCodeStatus?.id || null
+      });
+      navigate('/login');
+    } catch (error) {
+      console.error('Registration failed:', error);
+      navigate('/login');
+    }
   };
 
   return (
@@ -54,6 +105,30 @@ const RegisterPage = () => {
                 placeholder="email@sekolah.edu"
               />
               <EmailValidator email={email} />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold mb-2">
+                Kode Organisasi <span className="text-gray-400 text-xs ml-1">(Opsional)</span>
+              </label>
+              <input
+                type="text"
+                value={orgCode}
+                onChange={e => handleOrgCode(e.target.value)}
+                placeholder="Contoh: ORB-00001"
+                autoComplete="off"
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 font-mono tracking-wider uppercase focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              />
+              {orgCodeStatus === 'invalid' && (
+                <p className="text-xs text-red-500 mt-1">
+                  Kode organisasi tidak valid
+                </p>
+              )}
+              {orgCodeStatus && orgCodeStatus !== 'invalid' && (
+                <p className="text-xs text-green-600 mt-1 flex items-center gap-1 font-medium">
+                  <CheckCircle2 size={12} />
+                  Organisasi: {orgCodeStatus.nama}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-semibold mb-2">Kata Sandi</label>

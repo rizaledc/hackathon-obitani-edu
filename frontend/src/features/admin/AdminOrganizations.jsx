@@ -4,6 +4,10 @@ import api from '../../services/api';
 import useToast from '../../hooks/useToast';
 import useConfirm from '../../hooks/useConfirm';
 
+const encodeOrgId = (id) => {
+  return 'ORB-' + String(id).padStart(5, '0');
+};
+
 const AdminOrganizations = () => {
   const [organizations, setOrganizations] = useState([]);
   const [users, setUsers] = useState([]);
@@ -134,6 +138,7 @@ const AdminOrganizations = () => {
               <tr>
                 <th className="px-4 py-4 font-semibold">ID Organisasi</th>
                 <th className="px-4 py-4 font-semibold">Nama Organisasi</th>
+                <th className="px-4 py-4 font-semibold">Kode Undangan</th>
                 <th className="px-4 py-4 font-semibold">Tanggal Dibuat</th>
                 <th className="px-4 py-4 font-semibold text-center">Jumlah User</th>
                 <th className="px-4 py-4 font-semibold text-right">Aksi</th>
@@ -142,7 +147,7 @@ const AdminOrganizations = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="5" className="px-4 py-16 text-center">
+                  <td colSpan="6" className="px-4 py-16 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <div className="w-3 h-3 rounded-full bg-red-400 animate-pulse" style={{animationDelay: '0ms', animationDuration: '900ms'}} />
                       <div className="w-3 h-3 rounded-full bg-yellow-400 animate-pulse" style={{animationDelay: '300ms', animationDuration: '900ms'}} />
@@ -153,7 +158,7 @@ const AdminOrganizations = () => {
                 </tr>
               ) : organizations.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="px-4 py-16 text-center text-gray-400 font-medium">
+                  <td colSpan="6" className="px-4 py-16 text-center text-gray-400 font-medium">
                     Belum ada organisasi.
                   </td>
                 </tr>
@@ -165,6 +170,11 @@ const AdminOrganizations = () => {
                     </td>
                     <td className="px-4 py-3 font-bold text-gray-800">
                       {org.nama}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="font-mono text-green-700 bg-green-50 px-2 py-1 rounded text-xs font-semibold">
+                        {encodeOrgId(org.id)}
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-gray-600">
                       {formatDate(org.created_at)}
