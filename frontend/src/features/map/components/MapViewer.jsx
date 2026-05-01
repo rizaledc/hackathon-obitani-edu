@@ -1,5 +1,6 @@
 import React from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents, Polygon, CircleMarker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, Polygon, CircleMarker, useMap, FeatureGroup } from 'react-leaflet';
+import { EditControl } from 'react-leaflet-draw';
 import L from 'leaflet';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-draw';
@@ -22,48 +23,41 @@ const ClickHandler = ({ onSelectLocation }) => {
 };
 
 const DrawControl = ({ onPolygonDrawn }) => {
-  const map = useMap();
-  React.useEffect(() => {
-    const drawnItems = new L.FeatureGroup();
-    map.addLayer(drawnItems);
-    
-    const drawControl = new L.Control.Draw({
-      draw: {
-        polygon: true,
-        polyline: false,
-        rectangle: false,
-        circle: false,
-        marker: false,
-        circlemarker: false
-      },
-      edit: {
-        featureGroup: drawnItems
+  const handleCreated = (e) => {
+    const type = e.layerType;
+    const layer = e.layer;
+    if (type === 'polygon' && onPolygonDrawn) {
+      const geoJSON = layer.toGeoJSON();
+      onPolygonDrawn(geoJSON.geometry);
+      // Hapus layer yang baru digambar agar tidak duplicate
+      if (e.target && e.target.removeLayer) {
+        e.target.removeLayer(layer);
+      } else if (layer.remove) {
+        layer.remove();
       }
-    });
-    map.addControl(drawControl);
-    
-    const handleCreate = (e) => {
-      const type = e.layerType;
-      const layer = e.layer;
-      drawnItems.addLayer(layer);
-      
-      if (type === 'polygon' && onPolygonDrawn) {
-        const geoJSON = layer.toGeoJSON();
-        onPolygonDrawn(geoJSON.geometry);
-        // Hapus layer yang baru digambar agar tidak duplicate dengan lahan yang di-refresh dari backend
-        map.removeLayer(layer);
-      }
-    };
+    }
+  };
 
-    map.on(L.Draw.Event.CREATED, handleCreate);
-    
-    return () => {
-      map.removeControl(drawControl);
-      map.removeLayer(drawnItems);
-      map.off(L.Draw.Event.CREATED, handleCreate);
-    };
-  }, [map, onPolygonDrawn]);
-  return null;
+  return (
+    <FeatureGroup>
+      <EditControl
+        position="topleft"
+        onCreated={handleCreated}
+        draw={{
+          rectangle: false,
+          circle: false,
+          circlemarker: false,
+          marker: false,
+          polyline: false,
+          polygon: true,
+        }}
+        edit={{
+          edit: false,
+          remove: false
+        }}
+      />
+    </FeatureGroup>
+  );
 };
 
 const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, onPolygonDrawn }) => {
