@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { MapPin, Activity, Users, Building2, BarChart2 } from 'lucide-react';
 import {
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, ScatterChart, Scatter,
+  BarChart, Bar, Cell, ScatterChart, Scatter,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import api from '../../services/api';
@@ -64,14 +64,17 @@ const AnalyticsPage = () => {
     fetchData();
   }, []);
 
-  // Section 2: PieChart
+  // Section 2: Top 3 Rekomendasi Tanaman
   const cropFreq = useMemo(() => {
     const counts = {};
     historyData.forEach(h => {
       const rec = h.hasil_rekomendasi || 'Tidak Diketahui';
       counts[rec] = (counts[rec] || 0) + 1;
     });
-    return Object.entries(counts).map(([name, value]) => ({ name, value }));
+    return Object.entries(counts)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 3);
   }, [historyData]);
 
   // Section 3 & 5: Average N, P, K, pH per Lahan
@@ -97,17 +100,7 @@ const AnalyticsPage = () => {
     }));
   }, [historyData, lahanMap]);
 
-  // Section 4: Trend per Day
-  const trendData = useMemo(() => {
-    const counts = {};
-    historyData.forEach(h => {
-      const date = h.created_at ? h.created_at.split('T')[0] : 'Unknown';
-      counts[date] = (counts[date] || 0) + 1;
-    });
-    return Object.entries(counts)
-      .sort((a,b) => a[0].localeCompare(b[0]))
-      .map(([date, count]) => ({ date, count }));
-  }, [historyData]);
+
 
   // Section 6: Scatter Plot
   const scatterData = useMemo(() => {
@@ -168,26 +161,21 @@ const AnalyticsPage = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-6">
-        {/* SECTION 2 — Distribusi Rekomendasi Tanaman (PieChart) */}
-        <ChartCard title="Distribusi Rekomendasi Tanaman">
+        {/* SECTION 2 — Top 3 Rekomendasi Tanaman (BarChart) */}
+        <ChartCard title="TOP 3 Rekomendasi Tanaman">
           {cropFreq.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie 
-                  data={cropFreq} 
-                  dataKey="value" 
-                  nameKey="name" 
-                  cx="50%" cy="50%" 
-                  outerRadius={100} 
-                  label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
-                >
+              <BarChart layout="vertical" data={cropFreq}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                <XAxis type="number" tick={{ fontSize: 12 }} />
+                <YAxis dataKey="name" type="category" width={100} tick={{ fontSize: 12 }} />
+                <Tooltip cursor={{ fill: '#f3f4f6' }} />
+                <Bar dataKey="value" name="Jumlah" radius={[0, 4, 4, 0]}>
                   {cropFreq.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           ) : (
             <div className="h-[300px] flex items-center justify-center text-gray-400">Belum ada data</div>
@@ -214,30 +202,7 @@ const AnalyticsPage = () => {
           )}
         </ChartCard>
 
-        {/* SECTION 4 — Tren Analisis Per Hari (LineChart) */}
-        <ChartCard title="Tren Aktivitas Analisis">
-          {trendData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={trendData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="date" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                <Tooltip />
-                <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="count" 
-                  name="Jumlah Analisis" 
-                  stroke="#f59e0b" 
-                  strokeWidth={3} 
-                  activeDot={{ r: 8 }} 
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="h-[300px] flex items-center justify-center text-gray-400">Belum ada data</div>
-          )}
-        </ChartCard>
+
 
         {/* SECTION 5 — Distribusi pH Per Lahan (BarChart horizontal) */}
         <ChartCard title="Profil pH Tanah Per Lahan">
