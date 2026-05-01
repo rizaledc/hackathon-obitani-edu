@@ -47,9 +47,9 @@ def predict_crop(features: dict):
         raise RuntimeError(f"Gagal memuat model: {e}")
         
     df = pd.DataFrame([{
-        "N": features.get("N", 0),
-        "P": features.get("P", 0),
-        "K": features.get("K", 0),
+        "N": features.get("n", features.get("N", 0)),
+        "P": features.get("p", features.get("P", 0)),
+        "K": features.get("k", features.get("K", 0)),
         "temperature": features.get("temperature", 0),
         "humidity": features.get("humidity", 0),
         "ph": features.get("ph", 6.5),

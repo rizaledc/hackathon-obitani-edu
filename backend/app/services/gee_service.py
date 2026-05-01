@@ -80,29 +80,27 @@ def analyze_lahan(polygon_geojson, lahan_id):
         else:
             # Fallback mock jika gagal/kurang dari 10
             props = {
-                'N': random.uniform(50, 150),
-                'P': random.uniform(20, 60),
-                'K': random.uniform(20, 60),
+                'n': random.uniform(50, 150),
+                'p': random.uniform(20, 60),
+                'k': random.uniform(20, 60),
                 'temperature': random.uniform(20, 35),
                 'humidity': random.uniform(60, 90),
                 'ph': random.uniform(5.5, 7.5),
                 'rainfall': random.uniform(100, 300),
-                'ndvi': random.uniform(0.3, 0.8),
                 'ndti': random.uniform(-0.1, 0.1)
             }
             lat, lng = -7.5 + random.uniform(-0.01, 0.01), 110.0 + random.uniform(-0.01, 0.01)
                 
         results.append({
-            "lat": lat,
-            "lng": lng,
-            "N": props.get('N', 0),
-            "P": props.get('P', 0),
-            "K": props.get('K', 0),
+            "latitude": lat,
+            "longitude": lng,
+            "n": props.get('n', props.get('N', 0)),
+            "p": props.get('p', props.get('P', 0)),
+            "k": props.get('k', props.get('K', 0)),
             "temperature": props.get('temperature', 0),
             "humidity": props.get('humidity', 0),
             "ph": props.get('ph', 6.5),
             "rainfall": props.get('rainfall', 0),
-            "ndvi": props.get('ndvi', 0),
             "ndti": props.get('ndti', 0)
         })
         

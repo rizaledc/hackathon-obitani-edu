@@ -81,19 +81,18 @@ async def analyze_lahan_endpoint(lahan_id: str, current_user: dict = Depends(get
             
         record = {
             "lahan_id": lahan_id,
-            "lat": pt["lat"],
-            "lng": pt["lng"],
-            "n": pt["N"],
-            "p": pt["P"],
-            "k": pt["K"],
+            "organization_id": lahan.get("organization_id"),
+            "longitude": pt["longitude"],
+            "latitude": pt["latitude"],
+            "n": pt["n"],
+            "p": pt["p"],
+            "k": pt["k"],
             "temperature": pt["temperature"],
             "humidity": pt["humidity"],
             "ph": pt["ph"],
             "rainfall": pt["rainfall"],
-            "ndvi": pt.get("ndvi"),
             "ndti": pt.get("ndti"),
-            "predicted_label": ml_result["label"],
-            "probability": ml_result["probability"]
+            "hasil_rekomendasi": ml_result["label"]
         }
         results_to_insert.append(record)
         
