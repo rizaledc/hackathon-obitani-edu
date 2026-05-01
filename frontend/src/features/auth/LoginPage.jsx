@@ -8,13 +8,14 @@ const LoginPage = () => {
   const { login } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('user');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     login('dummy-token', {
       id: 1,
       username: 'Demo User',
-      role: 'user'
+      role: role
     });
     navigate('/map');
   };
@@ -53,6 +54,18 @@ const LoginPage = () => {
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="••••••••"
               />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold mb-2">Pilih Role (Demo)</label>
+              <select 
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              >
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+                <option value="superadmin">Super Admin</option>
+              </select>
             </div>
             <button 
               type="submit"

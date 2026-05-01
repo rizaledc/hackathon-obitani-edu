@@ -9,11 +9,17 @@ const MapPage = lazy(() => import("./features/map/MapPage"));
 const LoginPage = lazy(() => import("./features/auth/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/RegisterPage"));
 
-const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuthStore();
-  if (!isAuthenticated) {
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { user, isAuthenticated } = useAuthStore();
+  
+  if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />;
   }
+
+  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+    return <Navigate to="/map" replace />;
+  }
+
   return children;
 };
 
@@ -32,7 +38,22 @@ function App() {
           <Route path="/chat-live" element={<div className="p-6">Live Chat Page Placeholder</div>} />
           <Route path="/analytics" element={<div className="p-6">Analytics Page Placeholder</div>} />
           <Route path="/history" element={<div className="p-6">History Page Placeholder</div>} />
-          <Route path="/admin/*" element={<div className="p-6">Admin Area Placeholder</div>} />
+          
+          <Route path="/admin/users" element={
+            <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
+              <div className="p-6">Kelola Pengguna Placeholder</div>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/organizations" element={
+            <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
+              <div className="p-6">Daftar Organisasi Placeholder</div>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/mlops" element={
+            <ProtectedRoute allowedRoles={["superadmin"]}>
+              <div className="p-6">Dashboard MLOps Placeholder</div>
+            </ProtectedRoute>
+          } />
         </Route>
       </Routes> 
     </Suspense> 

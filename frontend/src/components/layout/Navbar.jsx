@@ -41,8 +41,8 @@ const Navbar = () => {
           <span className="text-sm font-medium text-text-primary dark:text-white">
             {user?.username || 'Pengguna Tamu'}
           </span>
-          <span className="text-[10px] text-text-secondary uppercase tracking-wider font-bold bg-gray-100 px-2 py-0.5 rounded-full mt-0.5">
-            {user?.role || 'User'}
+          <span className="text-xs bg-green-100 text-green-800 font-semibold px-2 py-1 rounded mt-0.5">
+            {user?.role || 'user'}
           </span>
         </div>
         <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold shadow-sm">
