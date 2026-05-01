@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, Plus, Clock, MessageSquare, Settings, ChevronDown, X, Brain, MapPin, Pencil, Trash2 } from 'lucide-react';
+import { Send, Plus, Clock, MessageSquare, Settings, ChevronDown, X, Brain, MapPin, Pencil, Trash2, KeyRound, Eye, EyeOff } from 'lucide-react';
 import api from '../../services/api';
 
 const ChatPage = () => {
@@ -15,6 +15,12 @@ const ChatPage = () => {
   const [chatSessions, setChatSessions] = useState([]);
   const [editingSession, setEditingSession] = useState(null);
   const [editName, setEditName] = useState('');
+  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState('');
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [savedApiKey, setSavedApiKey] = useState(
+    localStorage.getItem('gemini_api_key') || ''
+  );
 
   // Fetch lahan list
   useEffect(() => {
@@ -172,7 +178,7 @@ const ChatPage = () => {
         lahan_id: selectedLahan?.id || null,
         session_id: currentSessionId,
         session_name: currentSessionName,
-        user_api_key: null
+        user_api_key: savedApiKey || null
       });
       
       const aiText = res.data?.response || res.data?.message || res.data?.data?.reply || res.data?.reply || '';
@@ -297,8 +303,16 @@ const ChatPage = () => {
               <p className="text-xs text-gray-500">Asisten Analisis & Rekomendasi Pintar</p>
             </div>
           </div>
-          <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-full transition-colors">
+          <button 
+            onClick={() => {
+              setApiKeyInput(savedApiKey);
+              setShowApiKeyModal(true);
+            }}
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors relative">
             <Settings size={18} />
+            {savedApiKey && (
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-green-500 rounded-full" />
+            )}
           </button>
         </div>
 
@@ -417,11 +431,123 @@ const ChatPage = () => {
               </button>
             </div>
             <div className="text-center mt-2 text-[10px] text-gray-400 font-medium">
-              Daya analitik dari Gemini AI. Jawaban mungkin tidak selalu akurat.
+              Daya analitik dari Gemini AI. AI dapat membuat kesalahan.
+              {savedApiKey 
+                ? ' • Menggunakan API Key pribadi Anda'
+                : ' • Menggunakan Server Default Orbitani'
+              }
             </div>
           </div>
         </div>
       </div>
+
+      {/* MODAL BYOK */}
+      {showApiKeyModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999] p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl">
+            
+            {/* Header Modal */}
+            <div className="flex items-start gap-3 p-6 pb-4">
+              <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <KeyRound size={20} className="text-green-700" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-800">
+                  Pengaturan API Key
+                </h3>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Opsional — Bring Your Own Key
+                </p>
+              </div>
+              <button onClick={() => setShowApiKeyModal(false)}
+                className="text-gray-400 hover:text-gray-600">
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Body Modal */}
+            <div className="px-6 pb-6">
+              <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                Gunakan API Key Gemini pribadi Anda untuk menghindari 
+                antrean atau limitasi server. Kunci hanya disimpan di 
+                peramban Anda dan{' '}
+                <strong>tidak pernah dikirim ke server Orbitani</strong>.
+              </p>
+
+              {/* Info box */}
+              <div className="bg-gray-50 rounded-xl p-4 mb-5 border border-gray-100">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">i</span>
+                  </div>
+                  <span className="text-xs font-semibold text-gray-700">
+                    Cara Mendapatkan API Key Gratis
+                  </span>
+                </div>
+                <ol className="text-xs text-gray-600 space-y-1.5 ml-1">
+                  <li>1. Kunjungi <strong>Google AI Studio</strong>.</li>
+                  <li>2. Masuk menggunakan Akun Google Anda.</li>
+                  <li>3. Klik tombol <strong>"Create API Key"</strong> lalu 
+                     salin kunci (<code className="bg-gray-200 px-1 rounded text-xs">AIza...</code>).</li>
+                  <li>4. Tempelkan kunci tersebut di bawah.</li>
+                </ol>
+              </div>
+
+              {/* Input API Key */}
+              <label className="text-sm font-medium text-gray-700 mb-2 block">
+                API Key Gemini
+              </label>
+              <div className="relative">
+                <input
+                  type={showApiKey ? 'text' : 'password'}
+                  value={apiKeyInput}
+                  onChange={e => setApiKeyInput(e.target.value)}
+                  placeholder="AIza... Tempelkan kunci Anda di sini"
+                  className="w-full border border-gray-200 rounded-xl px-4 py-3 pr-10 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-green-500 placeholder:text-gray-300 placeholder:font-sans"
+                />
+                <button
+                  onClick={() => setShowApiKey(!showApiKey)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                  {showApiKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+
+              {/* Footer Modal */}
+              <div className="flex items-center justify-between mt-5">
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('gemini_api_key');
+                    setSavedApiKey('');
+                    setApiKeyInput('');
+                  }}
+                  className="flex items-center gap-1.5 text-sm text-red-400 hover:text-red-600 transition-colors"
+                >
+                  <Trash2 size={14} />
+                  Hapus Kunci
+                </button>
+                <button
+                  onClick={() => {
+                    localStorage.setItem('gemini_api_key', apiKeyInput);
+                    setSavedApiKey(apiKeyInput);
+                    setShowApiKeyModal(false);
+                  }}
+                  className="px-5 py-2.5 bg-green-700 hover:bg-green-800 text-white text-sm font-medium rounded-xl transition-colors"
+                >
+                  Simpan API Key
+                </button>
+              </div>
+
+              {/* Indicator jika sudah ada key */}
+              {savedApiKey && (
+                <p className="text-xs text-green-600 text-center mt-3 flex items-center justify-center gap-1">
+                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block" />
+                  Menggunakan API Key pribadi Anda
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
