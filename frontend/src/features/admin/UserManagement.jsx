@@ -84,13 +84,16 @@ const UserManagement = () => {
   }, []);
 
   useEffect(() => {
-    if (orgs.length > 0 && currentUser?.organization_id) {
-      const org = orgs.find(o => o.id === currentUser.organization_id);
-      if (org) setOrgName(org.name || org.nama || `Org #${currentUser.organization_id}`);
-    } else if (orgName === '-') {
-      setOrgName(currentUser?.organization_id ? `Org #${currentUser.organization_id}` : '-');
+    if (currentUser?.organization_id) {
+      api.get(`/api/organizations/${currentUser.organization_id}`)
+        .then(res => {
+          setOrgName(res.data?.nama || `Org #${currentUser.organization_id}`);
+        })
+        .catch(() => {
+          setOrgName(`Org #${currentUser.organization_id}`);
+        });
     }
-  }, [orgs, currentUser, orgName]);
+  }, [currentUser?.organization_id]);
 
   const stats = useMemo(() => {
     const total = users.length;
