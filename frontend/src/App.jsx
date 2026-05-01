@@ -53,7 +53,7 @@ function App() {
         <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
           <Route path="/map" element={<MapPage />} />
           <Route path="/chat" element={<ChatPage />} />
-          <Route path="/chat-live" element={<div className="p-6">Live Chat Page Placeholder</div>} />
+
           <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/history" element={<HistoryPage />} />
           

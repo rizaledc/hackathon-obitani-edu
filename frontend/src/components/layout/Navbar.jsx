@@ -48,12 +48,6 @@ const Navbar = () => {
         <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold shadow-sm">
           {getInitials(user?.username)}
         </div>
-        <button
-          onClick={toggleTheme}
-          className="ml-2 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition"
-        >
-          {theme === "light" ? "🌙" : "☀️"}
-        </button>
       </div>
     </header>
   );

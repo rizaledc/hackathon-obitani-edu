@@ -3,7 +3,7 @@ import MapViewer from './components/MapViewer';
 import RecommendationPanel from './components/RecommendationPanel';
 import api from '../../services/api';
 import { getAIExplanation } from '../../services/aiService';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Menu, Compass, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const MapPage = () => {
   const [lahans, setLahans] = useState([]);
@@ -56,6 +56,7 @@ const MapPage = () => {
   const [isDrawingMode, setIsDrawingMode] = useState(false);
   const [draftPoints, setDraftPoints] = useState([]);
   const [showLahanList, setShowLahanList] = useState(false);
+  const [showNavPad, setShowNavPad] = useState(false);
 
   const [editModal, setEditModal] = useState(false);
   const [editData, setEditData] = useState({ nama: '', deskripsi: '' });
@@ -358,97 +359,124 @@ const MapPage = () => {
       )}
 
       {/* Map Wrapper */}
-      <div className="flex-1 h-full relative group z-0 overflow-hidden" style={{ height: '100%' }}>
-        <MapViewer 
-          onSelectLocation={handleSelectLocation} 
-          lahans={lahans} 
-          selectedLocation={selectedLocation} 
-          mapRef={mapRef} 
-          draftPoints={draftPoints} 
-          isDrawingMode={isDrawingMode} 
-          samplePoints={samplePoints}
-          selectedId={selectedLocation?.id}
-        />
+      <div className="flex-1 h-full flex flex-col relative group z-0 overflow-hidden" style={{ height: '100%' }}>
         
-        {/* Navigation & Toolbar (Top Right) */}
-        <div className="absolute top-4 right-4 z-[400] flex flex-col items-end gap-2">
-           
-           {!isDrawingMode && (
-             <div className="bg-white/90 backdrop-blur-sm shadow-md rounded-xl p-1.5 flex flex-col gap-1.5 border border-gray-100">
-                {/* Tombol Daftar Lahan */}
-                <button 
-                  onClick={() => setShowLahanList(!showLahanList)}
-                  title="Daftar Lahan Tersimpan"
-                  className={`p-2.5 rounded-lg transition-colors flex items-center justify-center ${showLahanList ? 'bg-primary text-white shadow-sm' : 'text-gray-700 hover:bg-gray-100 hover:text-primary'}`}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" /></svg>
-                </button>
-                
-                {/* Tombol Pemetaan Lahan (Buat Polygon) */}
-                <button 
-                  onClick={startDrawing}
-                  title="Mulai Pemetaan Lahan (Polygon)"
-                  className="p-2.5 rounded-lg transition-colors text-gray-700 hover:bg-gray-100 hover:text-primary flex items-center justify-center"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                </button>
-             </div>
-           )}
-
-           {/* Custom Zoom Controls */}
-           {!isDrawingMode && (
-             <div className="bg-white/90 backdrop-blur-sm shadow-md rounded-xl flex flex-col border border-gray-100 overflow-hidden mt-1">
-                <button 
-                  onClick={() => mapRef.current?.zoomIn()}
-                  title="Zoom In"
-                  className="p-2.5 bg-white transition-colors text-gray-700 hover:bg-gray-100 hover:text-primary flex items-center justify-center border-b border-gray-100"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
-                </button>
-                <button 
-                  onClick={() => mapRef.current?.zoomOut()}
-                  title="Zoom Out"
-                  className="p-2.5 bg-white transition-colors text-gray-700 hover:bg-gray-100 hover:text-primary flex items-center justify-center"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 12H4" /></svg>
-                </button>
-             </div>
-           )}
-
-           {/* Drawing Mode Actions */}
-           {isDrawingMode && (
-             <div className="bg-white/95 backdrop-blur-sm shadow-md rounded-xl p-3 flex flex-col gap-2 border border-primary/30 w-48 animate-fadeIn">
-                <div className="text-xs font-bold text-gray-700 text-center border-b pb-2">
-                   Pemetaan Aktif
-                </div>
-                <div className="text-[11px] text-gray-500 text-center leading-tight mb-1">
-                   Klik di atas peta untuk membuat batas polygon lahan.
-                </div>
-                <div className="flex flex-col gap-2 mt-1">
-                  <button 
-                    onClick={finishDrawing}
-                    className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-bold text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors shadow-sm"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
-                    Selesai
-                  </button>
-                  <button 
-                    onClick={cancelDrawing}
-                    className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
-                    Batal
-                  </button>
-                </div>
-             </div>
-           )}
+        {/* Horizontal Toolbar */}
+        <div className="flex items-center gap-2 px-4 py-2 border-b border-gray-100 bg-white z-[400] relative shadow-sm">
+          <button onClick={() => setShowLahanList(!showLahanList)}
+            className={`p-2 rounded-lg hover:bg-gray-100 transition-colors ${showLahanList ? 'text-primary bg-primary/10' : 'text-gray-600'}`}
+            title="Toggle Daftar Lahan">
+            <Menu size={18} />
+          </button>
+          <button onClick={isDrawingMode ? cancelDrawing : startDrawing}
+            className={`p-2 rounded-lg hover:bg-gray-100 transition-colors ${isDrawingMode ? 'text-primary bg-primary/10' : 'text-gray-600'}`}
+            title="Gambar Lahan Baru">
+            <Pencil size={18} />
+          </button>
+          <button onClick={() => setShowNavPad(!showNavPad)}
+            className={`p-2 rounded-lg hover:bg-gray-100 transition-colors ${showNavPad ? 'text-primary bg-primary/10' : 'text-gray-600'}`}
+            title="Toggle Nav Pad">
+            <Compass size={18} />
+          </button>
+          <div className="w-px h-5 bg-gray-200 mx-1" />
+          <span className="text-xs text-gray-400">
+            {isDrawingMode ? 'Klik peta untuk membuat polygon (min 3 titik)' : 'Klik pensil untuk menggambar lahan baru'}
+          </span>
         </div>
 
-        {lahansLoading && (
-          <div className="absolute top-16 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-md text-xs font-semibold text-text-secondary z-[400]">
-            Memuat data lahan...
-          </div>
-        )}
+        <div className="flex-1 relative w-full h-full z-0 overflow-hidden">
+          <MapViewer 
+            onSelectLocation={handleSelectLocation} 
+            lahans={lahans} 
+            selectedLocation={selectedLocation} 
+            mapRef={mapRef} 
+            draftPoints={draftPoints} 
+            isDrawingMode={isDrawingMode} 
+            samplePoints={samplePoints}
+            selectedId={selectedLocation?.id}
+          />
+          
+          {/* Custom Zoom Controls */}
+          {!isDrawingMode && (
+            <div className="absolute top-[20px] right-4 z-[999] flex flex-col gap-1">
+              <button onClick={() => mapRef.current?.zoomIn()}
+                className="w-8 h-8 bg-white border border-gray-200 rounded-lg shadow-sm flex items-center justify-center hover:bg-gray-50 text-gray-600 font-bold text-lg">
+                +
+              </button>
+              <button onClick={() => mapRef.current?.zoomOut()}
+                className="w-8 h-8 bg-white border border-gray-200 rounded-lg shadow-sm flex items-center justify-center hover:bg-gray-50 text-gray-600 font-bold text-lg">
+                −
+              </button>
+            </div>
+          )}
+
+          {/* Navigation Pad */}
+          {showNavPad && (
+            <div className="absolute bottom-8 right-4 z-[999]">
+              <div className="grid grid-cols-3 gap-1 w-24">
+                <div />
+                <button onClick={() => mapRef.current?.panBy([0, -100])}
+                  className="w-7 h-7 bg-white border border-gray-200 rounded-lg shadow-sm flex items-center justify-center hover:bg-gray-50 text-gray-600">
+                  <ChevronUp size={14} />
+                </button>
+                <div />
+                <button onClick={() => mapRef.current?.panBy([-100, 0])}
+                  className="w-7 h-7 bg-white border border-gray-200 rounded-lg shadow-sm flex items-center justify-center hover:bg-gray-50 text-gray-600">
+                  <ChevronLeft size={14} />
+                </button>
+                <div className="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <Compass size={12} className="text-gray-400" />
+                </div>
+                <button onClick={() => mapRef.current?.panBy([100, 0])}
+                  className="w-7 h-7 bg-white border border-gray-200 rounded-lg shadow-sm flex items-center justify-center hover:bg-gray-50 text-gray-600">
+                  <ChevronRight size={14} />
+                </button>
+                <div />
+                <button onClick={() => mapRef.current?.panBy([0, 100])}
+                  className="w-7 h-7 bg-white border border-gray-200 rounded-lg shadow-sm flex items-center justify-center hover:bg-gray-50 text-gray-600">
+                  <ChevronDown size={14} />
+                </button>
+                <div />
+              </div>
+            </div>
+          )}
+
+          {/* Drawing Mode Actions */}
+          {isDrawingMode && (
+            <div className="absolute top-4 right-4 z-[400] flex flex-col items-end gap-2">
+              <div className="bg-white/95 backdrop-blur-sm shadow-md rounded-xl p-3 flex flex-col gap-2 border border-primary/30 w-48 animate-fadeIn">
+                 <div className="text-xs font-bold text-gray-700 text-center border-b pb-2">
+                    Pemetaan Aktif
+                 </div>
+                 <div className="text-[11px] text-gray-500 text-center leading-tight mb-1">
+                    Klik di atas peta untuk membuat batas polygon lahan.
+                 </div>
+                 <div className="flex flex-col gap-2 mt-1">
+                   <button 
+                     onClick={finishDrawing}
+                     className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-bold text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors shadow-sm"
+                   >
+                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+                     Selesai
+                   </button>
+                   <button 
+                     onClick={cancelDrawing}
+                     className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                   >
+                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
+                     Batal
+                   </button>
+                 </div>
+              </div>
+            </div>
+          )}
+
+          {lahansLoading && (
+            <div className="absolute top-16 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-md text-xs font-semibold text-text-secondary z-[400]">
+              Memuat data lahan...
+            </div>
+          )}
+        </div>
       </div>
       
       {selectedLocation && (
