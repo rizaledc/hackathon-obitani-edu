@@ -348,7 +348,7 @@ const MapPage = () => {
       )}
 
       {/* Map Wrapper */}
-      <div className="flex-1 h-full relative group cursor-crosshair z-0 overflow-hidden" style={{ height: '100%' }}>
+      <div className="flex-1 h-full relative group z-0 overflow-hidden" style={{ height: '100%' }}>
         <MapViewer 
           onSelectLocation={handleSelectLocation} 
           lahans={lahans} 
