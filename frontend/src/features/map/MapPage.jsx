@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MapViewer from './components/MapViewer';
 import RecommendationPanel from './components/RecommendationPanel';
 import api from '../../services/api';
@@ -7,6 +7,20 @@ import { getAIExplanation } from '../../services/aiService';
 const MapPage = () => {
   const [lahans, setLahans] = useState([]);
   const [lahansLoading, setLahansLoading] = useState(false);
+  const mapRef = useRef(null);
+
+  const getCentroid = (lahan) => {
+    try {
+      const coords = lahan?.koordinat?.coordinates?.[0];
+      if (!coords || coords.length === 0) return null;
+      const lat = coords.reduce((s, c) => s + c[1], 0) / coords.length;
+      const lng = coords.reduce((s, c) => s + c[0], 0) / coords.length;
+      if (isNaN(lat) || isNaN(lng)) return null;
+      return [lat, lng];
+    } catch {
+      return null;
+    }
+  };
   
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [recommendationResult, setRecommendationResult] = useState(null);
@@ -40,6 +54,16 @@ const MapPage = () => {
     setAiResult(null);
     setAiError(null);
     setAnalysisError('');
+
+    if (id) {
+      const selectedLahan = lahans.find(l => l.id === id);
+      const centroid = getCentroid(selectedLahan);
+      if (centroid && mapRef.current) {
+        mapRef.current.flyTo(centroid, 14);
+      }
+    } else if (mapRef.current) {
+      mapRef.current.flyTo([lat, lng], 14);
+    }
   };
 
   const handleAnalyze = async () => {
@@ -115,7 +139,7 @@ const MapPage = () => {
   return (
     <div className="flex h-[calc(100vh-100px)] gap-6 w-full relative animate-fadeIn">
       <div className="flex-1 rounded-2xl overflow-hidden shadow-sm border border-gray-200 relative group cursor-crosshair">
-        <MapViewer onSelectLocation={handleSelectLocation} lahans={lahans} selectedLocation={selectedLocation} />
+        <MapViewer onSelectLocation={handleSelectLocation} lahans={lahans} selectedLocation={selectedLocation} mapRef={mapRef} />
         {lahansLoading && (
           <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-md text-xs font-semibold text-text-secondary z-[400]">
             Memuat data lahan...

@@ -39,11 +39,7 @@ function App() {
         {/* Dashboard Routes wrapped in MainLayout and ProtectedRoute */}
         <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
           <Route path="/map" element={<MapPage />} />
-          <Route path="/admin/dashboard" element={
-            <ProtectedRoute allowedRoles={["admin", "superadmin"]}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          } />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/chat-live" element={<div className="p-6">Live Chat Page Placeholder</div>} />
           <Route path="/analytics" element={<div className="p-6">Analytics Page Placeholder</div>} />
