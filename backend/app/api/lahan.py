@@ -107,3 +107,36 @@ async def analyze_lahan_endpoint(lahan_id: str, current_user: dict = Depends(get
         "message": "Analysis completed successfully",
         "results": response_data or results_to_insert
     }
+
+@router.put("/{lahan_id}", response_model=dict)
+def update_lahan(
+    lahan_id: int,
+    lahan_update: LahanUpdate,
+    current_user: dict = Depends(get_current_user)
+):
+    try:
+        # Cek lahan milik user atau superadmin
+        existing = supabase.table("lahan").select("*").eq(
+            "id", lahan_id).execute()
+        if not existing.data:
+            raise HTTPException(status_code=404, detail="Lahan tidak ditemukan")
+        
+        lahan = existing.data[0]
+        if current_user["role"] != "superadmin" and \
+           lahan["user_id"] != current_user["id"]:
+            raise HTTPException(status_code=403, detail="Tidak punya akses")
+        
+        update_data = {}
+        if lahan_update.nama is not None:
+            update_data["nama"] = lahan_update.nama
+        if lahan_update.deskripsi is not None:
+            update_data["deskripsi"] = lahan_update.deskripsi
+        update_data["updated_at"] = "now()"
+        
+        result = supabase.table("lahan").update(
+            update_data).eq("id", lahan_id).execute()
+        return {"message": "Lahan berhasil diupdate", "data": result.data[0]}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
