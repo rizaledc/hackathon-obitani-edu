@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+supabase
+python-jose[cryptography]
+passlib[bcrypt]
+earthengine-api
+google-generativeai
+scikit-learn
+pandas
+numpy
+python-dotenv
+httpx
+pydantic
