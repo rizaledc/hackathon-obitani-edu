@@ -90,7 +90,14 @@ function App() {
         {/* Catch all unmatched routes */}
         <Route path="*" element={<Navigate to="/map" replace />} />
       </Routes> 
-      <Toast message={toast.message} type={toast.type} onClose={hideToast} />
+      {toast && (
+        <Toast 
+          key={toast.key}
+          message={toast.message} 
+          type={toast.type} 
+          onClose={hideToast} 
+        />
+      )}
       {confirmState.visible && (
         <ConfirmDialog 
           message={confirmState.message} 

@@ -2,6 +2,8 @@ import { useEffect } from 'react'
 import { CheckCircle2, XCircle, AlertTriangle, X } from 'lucide-react'
 
 export default function Toast({ message, type = 'success', onClose }) {
+  if (!message) return null;
+
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose()
