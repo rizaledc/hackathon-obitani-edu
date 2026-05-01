@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import axios from 'axios';
 
-const TIMEOUT = 30 * 60 * 1000; // 30 menit
+const TIMEOUT = 60 * 60 * 1000; // 60 menit
 
 const useAuthStore = create(
   persist(
