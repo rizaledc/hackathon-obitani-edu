@@ -48,16 +48,34 @@ const MapPage = () => {
     setStatus('processing');
     setAnalysisError('');
     try {
-      let endpoint = '/api/lahan/';
-      let payload = { lat: selectedLocation.lat, lng: selectedLocation.lng };
+      let lahanId = selectedLocation.id;
       
-      if (selectedLocation.id) {
-        endpoint = `/api/lahan/${selectedLocation.id}/analyze`;
-        payload = {};
+      if (!lahanId) {
+        // Simulasi user menggambar polygon dengan membuat kotak di sekitar titik yang diklik
+        const d = 0.001; 
+        const payload = {
+          koordinat: {
+            type: "Polygon",
+            coordinates: [[
+              [selectedLocation.lng - d, selectedLocation.lat - d],
+              [selectedLocation.lng + d, selectedLocation.lat - d],
+              [selectedLocation.lng + d, selectedLocation.lat + d],
+              [selectedLocation.lng - d, selectedLocation.lat + d],
+              [selectedLocation.lng - d, selectedLocation.lat - d]
+            ]]
+          }
+        };
+        const resCreate = await api.post('/api/lahan/', payload);
+        lahanId = resCreate.data.data?.id || resCreate.data.id;
+        
+        // Refresh daftar lahan agar polygon baru muncul di peta
+        const resLahans = await api.get('/api/lahan/');
+        setLahans(resLahans.data.data || resLahans.data || []);
+        setSelectedLocation(prev => ({ ...prev, id: lahanId }));
       }
       
-      const res = await api.post(endpoint, payload);
-      setRecommendationResult(res.data.data || res.data);
+      const resAnalyze = await api.post(`/api/lahan/${lahanId}/analyze`);
+      setRecommendationResult(resAnalyze.data.data || resAnalyze.data);
       setStatus('done');
     } catch (error) {
       console.error(error);
@@ -97,7 +115,7 @@ const MapPage = () => {
   return (
     <div className="flex h-[calc(100vh-100px)] gap-6 w-full relative animate-fadeIn">
       <div className="flex-1 rounded-2xl overflow-hidden shadow-sm border border-gray-200 relative group cursor-crosshair">
-        <MapViewer onSelectLocation={handleSelectLocation} lahans={lahans} />
+        <MapViewer onSelectLocation={handleSelectLocation} lahans={lahans} selectedLocation={selectedLocation} />
         {lahansLoading && (
           <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-md text-xs font-semibold text-text-secondary z-[400]">
             Memuat data lahan...
@@ -109,24 +127,26 @@ const MapPage = () => {
         </div>
       </div>
       
-      <div className="w-[400px] flex-shrink-0 overflow-y-auto pr-2 pb-6 custom-scrollbar" style={{ scrollbarWidth: 'none' }}>
-        {analysisError && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-xl text-sm font-medium">
-            {analysisError}
-          </div>
-        )}
-        <RecommendationPanel 
-          location={selectedLocation} 
-          status={status} 
-          result={recommendationResult} 
-          aiResult={aiResult}
-          aiLoading={aiLoading}
-          aiError={aiError}
-          onAnalyze={handleAnalyze}
-          onAnalyzeAI={handleAnalyzeAI}
-          onDemoMode={handleDemoMode}
-        />
-      </div>
+      {selectedLocation && (
+        <div className="w-[400px] flex-shrink-0 overflow-y-auto pr-2 pb-6 custom-scrollbar animate-slideLeft" style={{ scrollbarWidth: 'none' }}>
+          {analysisError && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-xl text-sm font-medium">
+              {analysisError}
+            </div>
+          )}
+          <RecommendationPanel 
+            location={selectedLocation} 
+            status={status} 
+            result={recommendationResult} 
+            aiResult={aiResult}
+            aiLoading={aiLoading}
+            aiError={aiError}
+            onAnalyze={handleAnalyze}
+            onAnalyzeAI={handleAnalyzeAI}
+            onDemoMode={handleDemoMode}
+          />
+        </div>
+      )}
     </div>
   );
 };

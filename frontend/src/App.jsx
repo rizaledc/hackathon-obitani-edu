@@ -12,6 +12,7 @@ const AdminDashboard = lazy(() => import("./features/admin/AdminDashboard"));
 const UserManagement = lazy(() => import("./features/admin/UserManagement"));
 const HistoryPage = lazy(() => import("./features/history/HistoryPage"));
 const ChatPage = lazy(() => import("./features/chat/ChatPage"));
+const AdminMLOps = lazy(() => import("./features/admin/AdminMLOps"));
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, isAuthenticated } = useAuthStore();
@@ -60,7 +61,7 @@ function App() {
           } />
           <Route path="/admin/mlops" element={
             <ProtectedRoute allowedRoles={["superadmin"]}>
-              <div className="p-6">Dashboard MLOps Placeholder</div>
+              <AdminMLOps />
             </ProtectedRoute>
           } />
         </Route>
