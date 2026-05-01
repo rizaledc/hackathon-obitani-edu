@@ -8,6 +8,10 @@ import useConfirm from '../../hooks/useConfirm';
 
 const Navbar = () => {
   const { user } = useAuthStore();
+  const isSuperadmin = user?.role === 'superadmin';
+  const isAdmin = user?.role === 'admin';
+  const canEdit = isSuperadmin || isAdmin;
+
   const location = useLocation();
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -154,24 +158,36 @@ const Navbar = () => {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">Nama Lengkap</label>
-                <input 
-                  type="text" 
-                  required
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500" 
-                  value={editData.name} 
-                  onChange={e => setEditData({...editData, name: e.target.value})} 
-                  placeholder="Masukkan nama lengkap"
-                />
+                {canEdit ? (
+                  <input 
+                    type="text" 
+                    required
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500" 
+                    value={editData.name} 
+                    onChange={e => setEditData({...editData, name: e.target.value})} 
+                    placeholder="Masukkan nama lengkap"
+                  />
+                ) : (
+                  <div className="w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-sm text-gray-600">
+                    {user?.name || '-'}
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">Email</label>
-                <input 
-                  type="email" 
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500" 
-                  value={editData.email} 
-                  onChange={e => setEditData({...editData, email: e.target.value})} 
-                  placeholder="contoh@email.com"
-                />
+                {canEdit ? (
+                  <input 
+                    type="email" 
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500" 
+                    value={editData.email} 
+                    onChange={e => setEditData({...editData, email: e.target.value})} 
+                    placeholder="contoh@email.com"
+                  />
+                ) : (
+                  <div className="w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2 text-sm text-gray-600">
+                    {user?.email || '-'}
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">Role & Organisasi</label>
@@ -184,12 +200,23 @@ const Navbar = () => {
                   </span>
                 </div>
               </div>
-              <div className="flex items-center justify-end gap-2 pt-4 mt-2 border-t border-gray-100">
-                <button type="button" onClick={() => setShowEditModal(false)} className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Batal</button>
-                <button type="submit" disabled={isSaving} className="px-4 py-2 text-sm font-medium text-white bg-green-700 hover:bg-green-800 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2">
-                  {isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}
-                </button>
-              </div>
+              {canEdit ? (
+                <div className="flex items-center justify-end gap-2 pt-4 mt-2 border-t border-gray-100">
+                  <button type="button" onClick={() => setShowEditModal(false)} className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Batal</button>
+                  <button type="submit" disabled={isSaving} className="px-4 py-2 text-sm font-medium text-white bg-green-700 hover:bg-green-800 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2">
+                    {isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-5 p-3 bg-blue-50 border border-blue-100 rounded-xl text-center">
+                  <p className="text-xs text-blue-600 mb-2 font-medium">
+                    Hubungi admin untuk mengubah profil Anda.
+                  </p>
+                  <button type="button" onClick={() => setShowEditModal(false)} className="px-4 py-1.5 bg-white border border-gray-200 shadow-sm rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                    Tutup
+                  </button>
+                </div>
+              )}
             </form>
           </div>
         </div>
