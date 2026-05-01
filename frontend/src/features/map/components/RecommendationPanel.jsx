@@ -1,4 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { 
+  Leaf, BarChart2, Droplets, Thermometer, 
+  CloudRain, FlaskConical, Sprout, Brain,
+  RefreshCw, ChevronRight, Award, TrendingUp,
+  Activity, MessageSquare, Send, Info
+} from 'lucide-react';
 import api from '../../../services/api';
 import OrbitaniLoader from '../../../components/OrbitaniLoader';
 import { toIndonesian } from '../../../utils/plantNames';
@@ -225,11 +231,11 @@ Pertanyaan: ${aiInput}`
         <button 
           onClick={onAnalyze}
           disabled={isLoading}
-          className="w-full bg-[#16a34a] hover:bg-green-600 text-white font-bold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 shadow-md disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
         >
-          {isLoading ? <OrbitaniLoader status="processing" size="small" /> : (
+          {isLoading ? <OrbitaniLoader status="processing" size="sm" /> : (
             <>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+              <RefreshCw size={14} />
               {hasData ? "Perbarui Analisis" : "Analisis Lahan Sekarang"}
             </>
           )}
@@ -250,14 +256,24 @@ Pertanyaan: ${aiInput}`
             {!hasData ? (
               <>
                 <section>
-                  <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Top Rekomendasi</h3>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-1 h-4 bg-green-600 rounded-full" />
+                    <h4 className="text-sm font-semibold text-gray-700">
+                      Top Rekomendasi
+                    </h4>
+                  </div>
                   <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 text-center">
                     <p className="text-gray-400 font-medium">— Belum ada data —</p>
                   </div>
                 </section>
 
                 <section>
-                  <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Kondisi Biofisik</h3>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-1 h-4 bg-green-600 rounded-full" />
+                    <h4 className="text-sm font-semibold text-gray-700">
+                      Kondisi Biofisik
+                    </h4>
+                  </div>
                   <div className="grid grid-cols-2 gap-2">
                     {['Nitrogen', 'Phosphor', 'Kalium', 'pH Tanah', 'Suhu', 'Curah Hujan'].map((label) => (
                       <div key={label} className="bg-gray-50 p-3 rounded-lg border border-gray-100 flex flex-col">
@@ -269,7 +285,12 @@ Pertanyaan: ${aiInput}`
                 </section>
 
                 <section>
-                  <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Data Titik Sampel</h3>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-1 h-4 bg-green-600 rounded-full" />
+                    <h4 className="text-sm font-semibold text-gray-700">
+                      Data Titik Sampel
+                    </h4>
+                  </div>
                   <div className="bg-gray-50 rounded-xl p-6 border border-gray-100 flex items-center justify-center">
                     <p className="text-gray-400 text-sm font-medium text-center">
                       Analisis lahan untuk melihat data titik sampel
@@ -281,13 +302,18 @@ Pertanyaan: ${aiInput}`
               <>
                 {/* SECTION 3 - REKOMENDASI */}
             <section>
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Top Rekomendasi</h3>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-1 h-4 bg-green-600 rounded-full" />
+                <h4 className="text-sm font-semibold text-gray-700">
+                  Top Rekomendasi
+                </h4>
+              </div>
               <div className="space-y-3">
                 {getRankings().slice(0, 3).map((r, i) => (
                   <div key={i} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
                     <div className="flex justify-between mb-2">
                       <span className="font-bold text-gray-800 text-sm flex items-center gap-2">
-                        {i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} {toIndonesian(r.crop)}
+                        <span className="text-xs font-bold text-gray-500">{i + 1}.</span> {toIndonesian(r.crop)}
                       </span>
                       <span className="text-xs font-bold text-[#16a34a] bg-green-100 px-2 py-0.5 rounded">{r.percentage}%</span>
                     </div>
@@ -301,19 +327,30 @@ Pertanyaan: ${aiInput}`
 
             {/* SECTION 2 - RATA RATA BIOFISIK */}
             <section>
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Kondisi Biofisik (Avg)</h3>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-1 h-4 bg-green-600 rounded-full" />
+                <h4 className="text-sm font-semibold text-gray-700">
+                  Kondisi Biofisik (Avg)
+                </h4>
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { label: 'Nitrogen', val: getAverages().n, unit: 'mg/kg' },
-                  { label: 'Phosphor', val: getAverages().p, unit: 'mg/kg' },
-                  { label: 'Kalium', val: getAverages().k, unit: 'mg/kg' },
-                  { label: 'pH Tanah', val: getAverages().ph, unit: '' },
-                  { label: 'Suhu', val: getAverages().temperature, unit: '°C' },
-                  { label: 'Curah Hujan', val: getAverages().rainfall, unit: 'mm' },
+                  { label: 'Nitrogen', val: getAverages().n, unit: 'mg/kg', icon: <Droplets size={12} className="text-blue-500" /> },
+                  { label: 'Phosphor', val: getAverages().p, unit: 'mg/kg', icon: <FlaskConical size={12} className="text-orange-500" /> },
+                  { label: 'Kalium', val: getAverages().k, unit: 'mg/kg', icon: <Activity size={12} className="text-yellow-500" /> },
+                  { label: 'pH Tanah', val: getAverages().ph, unit: '', icon: <Thermometer size={12} className="text-pink-500" /> },
+                  { label: 'Suhu', val: getAverages().temperature, unit: '°C', icon: <Thermometer size={12} className="text-red-500" /> },
+                  { label: 'Curah Hujan', val: getAverages().rainfall, unit: 'mm', icon: <CloudRain size={12} className="text-cyan-500" /> },
                 ].map((item, i) => (
-                  <div key={i} className="bg-gray-50 p-3 rounded-lg border border-gray-100 flex flex-col">
-                    <span className="text-[10px] text-gray-500 uppercase font-semibold">{item.label}</span>
-                    <span className="text-lg font-bold text-gray-800">{item.val} <span className="text-xs font-normal text-gray-500">{item.unit}</span></span>
+                  <div key={i} className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      {item.icon}
+                      <span className="text-xs text-gray-500 font-medium">{item.label}</span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-base font-bold text-gray-800">{item.val}</p>
+                      {item.unit && <p className="text-xs text-gray-400">{item.unit}</p>}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -321,7 +358,12 @@ Pertanyaan: ${aiInput}`
 
             {/* SECTION 6 - PROFIL BAR CHART */}
             <section>
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Profil Lahan</h3>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-1 h-4 bg-green-600 rounded-full" />
+                <h4 className="text-sm font-semibold text-gray-700">
+                  Profil Lahan
+                </h4>
+              </div>
               <div className="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100">
                 {['n', 'p', 'k', 'ph', 'temperature', 'humidity'].map((key) => {
                   const val = getAverages()[key];
@@ -343,7 +385,12 @@ Pertanyaan: ${aiInput}`
 
             {/* SECTION 5 - STATISTIK */}
             <section>
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Statistik N, P, K</h3>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-1 h-4 bg-green-600 rounded-full" />
+                <h4 className="text-sm font-semibold text-gray-700">
+                  Statistik N, P, K
+                </h4>
+              </div>
               <div className="overflow-hidden border border-gray-100 rounded-xl">
                 <table className="w-full text-xs text-left">
                   <thead className="bg-gray-50 text-gray-500 uppercase">
@@ -375,7 +422,12 @@ Pertanyaan: ${aiInput}`
 
             {/* SECTION 7 - KORELASI */}
             <section>
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Korelasi Variabel (Pearson)</h3>
+              <div className="flex items-center gap-2 mb-3">
+                <Activity size={14} className="text-green-600" />
+                <span className="text-sm font-semibold text-gray-700">
+                  Korelasi Variabel
+                </span>
+              </div>
               <div className="overflow-x-auto border border-gray-100 rounded-xl custom-scrollbar pb-1">
                 {correlationMatrix ? (
                   <table className="w-full text-xs text-center border-collapse bg-white">
@@ -408,7 +460,12 @@ Pertanyaan: ${aiInput}`
 
             {/* SECTION 4 - TABEL TITIK */}
             <section>
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Data Titik Sampel (Max 10)</h3>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-1 h-4 bg-green-600 rounded-full" />
+                <h4 className="text-sm font-semibold text-gray-700">
+                  Data Titik Sampel (Max 10)
+                </h4>
+              </div>
               <div className="overflow-x-auto border border-gray-100 rounded-xl custom-scrollbar pb-2">
                 <table className="w-full text-[10px] text-left whitespace-nowrap bg-white">
                   <thead className="bg-gray-50 text-gray-500">
@@ -450,7 +507,12 @@ Pertanyaan: ${aiInput}`
 
             {/* SECTION 8 - SHAP */}
             <section>
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Feature Importance (SHAP)</h3>
+              <div className="flex items-center gap-2 mb-3">
+                <TrendingUp size={14} className="text-green-600" />
+                <span className="text-sm font-semibold text-gray-700">
+                  Feature Importance
+                </span>
+              </div>
               <div className="space-y-2.5 bg-gray-50 p-4 rounded-xl border border-gray-100">
                 {SHAP_VALUES.map((shap, i) => (
                   <div key={i} className="flex items-center gap-3">
@@ -466,9 +528,12 @@ Pertanyaan: ${aiInput}`
 
             {/* SECTION 9 - KONSULTASI AI */}
             <div className="border-t pt-4 mt-4">
-              <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                ✨ Tanya Pakar AI
-              </h4>
+              <div className="flex items-center gap-2 mb-3">
+                <MessageSquare size={14} className="text-green-600" />
+                <span className="text-sm font-semibold text-gray-700">
+                  Konsultasi Pakar AI
+                </span>
+              </div>
               
               <textarea
                 value={aiInput}
@@ -481,19 +546,29 @@ Pertanyaan: ${aiInput}`
               <button
                 onClick={handleAskAI}
                 disabled={aiLoading || !aiInput.trim()}
-                className={`w-full py-2 rounded-lg text-sm font-medium text-white ${aiLoading || !aiInput.trim() ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
+                className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium text-white ${aiLoading || !aiInput.trim() ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 transition-colors'}`}
               >
-                {aiLoading 
-                  ? <OrbitaniLoader status="processing" size="sm" /> 
-                  : 'Kirim Pertanyaan'}
+                {aiLoading ? (
+                  <OrbitaniLoader status="processing" size="sm" />
+                ) : (
+                  <>
+                    <Send size={14} />
+                    Kirim Pertanyaan
+                  </>
+                )}
               </button>
 
               {aiResponse && (
                 <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-100 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  <p className="text-xs font-semibold text-green-700 mb-1">
-                    ✦ Jawaban AI:
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Brain size={12} className="text-green-600" />
+                    <span className="text-xs font-semibold text-green-700">
+                      Jawaban Pakar AI
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    {aiResponse}
                   </p>
-                  {aiResponse}
                 </div>
               )}
             </div>
