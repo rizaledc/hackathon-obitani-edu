@@ -43,7 +43,11 @@ Jika tersedia data lahan, gunakan format konteks berikut sebelum menjawab:
 Gunakan bahasa Indonesia yang mudah dipahami. Jika data lahan tersedia, 
 jadikan data tersebut sebagai dasar utama jawabanmu. Jangan mengarang data 
 yang tidak ada dalam konteks. Selalu akhiri jawaban dengan satu kalimat 
-motivasi singkat untuk petani/mahasiswa"""
+motivasi singkat untuk petani/mahasiswa.
+
+Jangan gunakan format markdown seperti **, *, #, ##, bullet points dengan -, atau format lainnya. 
+Tulis jawaban dalam paragraf biasa yang mudah dibaca. 
+Gunakan angka 1. 2. 3. untuk penomoran jika diperlukan."""
 
 _gemini_keys = []
 for i in range(1, 6):
