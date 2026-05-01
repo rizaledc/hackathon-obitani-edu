@@ -11,7 +11,7 @@ const AdminOrganizations = () => {
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [currentOrgId, setCurrentOrgId] = useState(null);
-  const [formData, setFormData] = useState({ name: '' });
+  const [formData, setFormData] = useState({ nama: '' });
 
   const fetchData = async () => {
     setLoading(true);
@@ -51,14 +51,14 @@ const AdminOrganizations = () => {
 
   const handleOpenAdd = () => {
     setIsEditing(false);
-    setFormData({ name: '' });
+    setFormData({ nama: '' });
     setCurrentOrgId(null);
     setShowModal(true);
   };
 
   const handleOpenEdit = (org) => {
     setIsEditing(true);
-    setFormData({ name: org.name || '' });
+    setFormData({ nama: org.nama || '' });
     setCurrentOrgId(org.id);
     setShowModal(true);
   };
@@ -75,12 +75,12 @@ const AdminOrganizations = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name.trim()) return;
+    if (!formData.nama.trim()) return;
     try {
       if (isEditing) {
-        await api.put(`/api/organizations/${currentOrgId}`, { name: formData.name });
+        await api.put(`/api/organizations/${currentOrgId}`, { nama: formData.nama });
       } else {
-        await api.post('/api/organizations/', { name: formData.name });
+        await api.post('/api/organizations/', { nama: formData.nama });
       }
       setShowModal(false);
       fetchData();
@@ -156,14 +156,14 @@ const AdminOrganizations = () => {
                       #{org.id}
                     </td>
                     <td className="px-4 py-3 font-bold text-gray-800">
-                      {org.name}
+                      {org.nama}
                     </td>
                     <td className="px-4 py-3 text-gray-600">
                       {formatDate(org.created_at)}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">
-                        {org.user_count !== undefined ? org.user_count : (userCounts[org.id] || 0)}
+                        {users.filter(u => u.organization_id === org.id).length}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -201,8 +201,8 @@ const AdminOrganizations = () => {
                   required 
                   type="text" 
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" 
-                  value={formData.name} 
-                  onChange={e => setFormData({...formData, name: e.target.value})} 
+                  value={formData.nama} 
+                  onChange={e => setFormData({...formData, nama: e.target.value})} 
                   placeholder="PT. Orbitani Makmur" 
                 />
               </div>
