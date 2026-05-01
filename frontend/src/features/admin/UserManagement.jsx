@@ -20,6 +20,7 @@ const UserManagement = () => {
   const [orgName, setOrgName] = useState('-');
 
   const { user: currentUser } = useAuthStore();
+  const isSuperadmin = currentUser?.role === 'superadmin';
   
   // Modal State
   const [showModal, setShowModal] = useState(false);
@@ -29,7 +30,7 @@ const UserManagement = () => {
     email: '',
     password: '',
     role: 'user',
-    organization_id: ''
+    organization_id: currentUser?.organization_id || ''
   });
 
   const { showToast } = useToast();
@@ -352,24 +353,32 @@ const UserManagement = () => {
                 <label className="block text-xs font-medium text-gray-700 mb-1">Password <span className="text-red-500">*</span></label>
                 <input required type="password" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} placeholder="••••••••" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Role</label>
-                  <select className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                  </select>
+              {isSuperadmin && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Role</label>
+                    <select className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Organisasi</label>
+                    <select className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.organization_id} onChange={e => setFormData({...formData, organization_id: e.target.value})}>
+                      <option value="">- Pilih Org -</option>
+                      {orgs.map(o => (
+                        <option key={o.id} value={o.id}>{o.name}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Organisasi</label>
-                  <select className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.organization_id} onChange={e => setFormData({...formData, organization_id: e.target.value})}>
-                    <option value="">- Pilih Org -</option>
-                    {orgs.map(o => (
-                      <option key={o.id} value={o.id}>{o.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+              )}
+              
+              {!isSuperadmin && (
+                <p className="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2">
+                  Pengguna baru akan ditambahkan sebagai <strong> User</strong> di organisasi Anda.
+                </p>
+              )}
               <div className="flex items-center justify-end gap-2 pt-4 mt-2 border-t border-gray-100">
                 <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">Batal</button>
                 <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-green-700 hover:bg-green-800 rounded-lg transition-colors">Simpan Pengguna</button>
