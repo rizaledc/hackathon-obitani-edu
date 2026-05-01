@@ -6,18 +6,25 @@ import logo from '../../assets/logo.webp';
 const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuthStore();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('user');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    login('dummy-token', {
-      id: 1,
-      username: 'Demo User',
-      role: role
-    });
-    navigate('/map');
+    try {
+      await login(username, password);
+      // redirect berdasarkan role
+      const state = useAuthStore.getState();
+      const role = state.user?.role || state.role;
+      if (role === 'superadmin' || role === 'admin') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/map');
+      }
+    } catch (err) {
+      setError('Username atau password salah');
+    }
   };
 
   return (
@@ -33,15 +40,20 @@ const LoginPage = () => {
           <p className="text-text-secondary mb-8">Masuk untuk melanjutkan eksplorasi lahan virtual Anda.</p>
           
           <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="p-3 bg-red-100 text-red-700 rounded-xl text-sm font-medium">
+                {error}
+              </div>
+            )}
             <div>
-              <label className="block text-sm font-semibold mb-2">Alamat Email</label>
+              <label className="block text-sm font-semibold mb-2">Username</label>
               <input 
-                type="email" 
+                type="text" 
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                placeholder="email@sekolah.edu"
+                placeholder="Username"
               />
             </div>
             <div>
@@ -52,20 +64,8 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-                placeholder="••••••••"
+                placeholder="Password"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-semibold mb-2">Pilih Role (Demo)</label>
-              <select 
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-                <option value="superadmin">Super Admin</option>
-              </select>
             </div>
             <button 
               type="submit"
