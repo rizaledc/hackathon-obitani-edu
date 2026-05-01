@@ -7,7 +7,7 @@ class UserCreate(BaseModel):
     password: str = Field(..., min_length=8)
     email: EmailStr
     name: str
-    organization_id: Optional[str] = None
+    organization_id: Optional[int] = None
     role: str
 
 class UserLogin(BaseModel):
@@ -37,7 +37,7 @@ class LahanUpdate(BaseModel):
     deskripsi: Optional[str] = None
 
 class MlFeedbackCreate(BaseModel):
-    lahan_id: str
+    lahan_id: int
     n: float
     p: float
     k: float
@@ -49,8 +49,8 @@ class MlFeedbackCreate(BaseModel):
     rating: int
 
 class MlFeedbackOut(BaseModel):
-    id: str
-    lahan_id: str
+    id: int
+    lahan_id: int
     n: float
     p: float
     k: float
@@ -66,6 +66,6 @@ class OrganizationCreate(BaseModel):
     nama: str
 
 class OrganizationOut(BaseModel):
-    id: str
+    id: int
     nama: str
     created_at: datetime
