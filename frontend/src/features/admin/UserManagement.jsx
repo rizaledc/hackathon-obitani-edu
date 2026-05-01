@@ -151,15 +151,26 @@ const UserManagement = () => {
     e.preventDefault();
     try {
       await api.post('/api/auth/register', {
-        ...formData,
-        organization_id: formData.organization_id ? parseInt(formData.organization_id) : null
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        name: formData.full_name || formData.username,
+        role: isSuperadmin ? formData.role : 'user',
+        organization_id: isSuperadmin 
+          ? (formData.organization_id ? parseInt(formData.organization_id) : null)
+          : (currentUser?.organization_id || null)
       });
       setShowModal(false);
-      setFormData({ username: '', full_name: '', email: '', password: '', role: 'user', organization_id: '' });
+      setFormData({ username: '', full_name: '', email: '', password: '', role: 'user', organization_id: currentUser?.organization_id || '' });
       fetchData();
       showToast('Pengguna berhasil ditambahkan', 'success');
-    } catch (e) {
-      showToast(e.response?.data?.detail || 'Gagal menambahkan pengguna', 'error');
+    } catch (err) {
+      const detail = err.response?.data?.detail;
+      if (Array.isArray(detail)) {
+        showToast(detail[0]?.msg || 'Gagal menambahkan pengguna', 'error');
+      } else {
+        showToast(detail || 'Gagal menambahkan pengguna', 'error');
+      }
     }
   };
 
