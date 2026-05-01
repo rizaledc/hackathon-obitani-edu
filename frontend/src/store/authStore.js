@@ -35,6 +35,21 @@ const useAuthStore = create(
       },
       setUser: (userData) => set({ user: userData }),
       setUnreadChatCount: (n) => set({ unreadChatCount: n }),
+      fetchMe: async () => {
+        try {
+          const token = localStorage.getItem('token')
+          if (!token) return
+          const res = await axios.get(
+            `${import.meta.env.VITE_API_URL || 'https://orbitani-edu-backend-bwbghbeegsf4fwev.indonesiacentral-01.azurewebsites.net'}/api/auth/me`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          )
+          set({ user: res.data, isAuthenticated: true })
+        } catch {
+          // token expired, clear
+          localStorage.removeItem('token')
+          set({ user: null, isAuthenticated: false, token: null })
+        }
+      },
       checkSession: () => {
         const loginTime = localStorage.getItem('login_time')
         const token = localStorage.getItem('token')

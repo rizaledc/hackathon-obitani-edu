@@ -33,6 +33,11 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const { fetchMe } = useAuthStore.getState();
+    fetchMe();
+  }, []);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       const { checkSession, isAuthenticated } = useAuthStore.getState();
       if (isAuthenticated && !checkSession()) {

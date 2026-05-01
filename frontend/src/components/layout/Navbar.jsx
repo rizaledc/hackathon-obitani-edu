@@ -43,7 +43,12 @@ const Navbar = () => {
 
   const getInitials = (name) => {
     if (!name) return 'U';
-    return name.substring(0, 2).toUpperCase();
+    return name
+      .split(' ')
+      .map(w => w[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase();
   };
 
   const handleLogout = () => {
@@ -67,6 +72,7 @@ const Navbar = () => {
       useAuthStore.getState().setUser(res.data);
       setShowEditModal(false);
       setShowProfile(false);
+      alert('Profil berhasil diperbarui!');
     } catch (err) {
       alert(err.response?.data?.detail || 'Gagal menyimpan profil');
     } finally {
