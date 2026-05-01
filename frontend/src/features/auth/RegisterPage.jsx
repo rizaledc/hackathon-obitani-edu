@@ -20,8 +20,8 @@ const RegisterPage = () => {
           <img src={logo} alt="Orbitani Logo" className="w-16 h-16 object-contain hover:scale-105 transition-transform" />
         </div>
         
-        <h2 className="text-3xl font-extrabold mb-2 text-center text-gray-900">Buat Akun</h2>
-        <p className="text-text-secondary mb-8 text-center">Mulai revolusi edukasi agrikultur Anda.</p>
+        <h2 className="text-3xl font-extrabold mb-2 text-center text-gray-900">Daftar Akun Baru</h2>
+        <p className="text-text-secondary mb-8 text-center">Silakan isi data untuk melanjutkan</p>
         
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
@@ -36,7 +36,7 @@ const RegisterPage = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold mb-2">Email</label>
+            <label className="block text-sm font-semibold mb-2">Alamat Email</label>
             <input 
               type="email" 
               required
@@ -47,7 +47,7 @@ const RegisterPage = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold mb-2">Password</label>
+            <label className="block text-sm font-semibold mb-2">Kata Sandi</label>
             <input 
               type="password" 
               required
@@ -59,7 +59,7 @@ const RegisterPage = () => {
           </div>
           <button 
             type="submit"
-            className="w-full bg-primary hover:bg-primary-light text-white font-bold py-3 rounded-xl hover:scale-105 transition-transform shadow-lg shadow-primary/30 mt-4"
+            className="w-full bg-primary text-white font-bold py-3 rounded-xl hover:scale-105 transition-transform shadow-md mt-4"
           >
             Daftar
           </button>

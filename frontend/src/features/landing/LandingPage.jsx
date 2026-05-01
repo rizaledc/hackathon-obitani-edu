@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import bg1 from "../../assets/bg1.png";
-import bg2 from "../../assets/bg2.png";
 import logo from "../../assets/logo.webp";
 import jenistanaman from "../../assets/jenistanaman.png";
 
@@ -33,54 +31,49 @@ const LandingPage = () => {
               Masuk
             </button>
             <button 
-              onClick={() => navigate('/map')}
-              className="bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-lg font-medium text-sm transition-colors"
+              onClick={() => navigate('/register')}
+              className="bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-xl shadow-md hover:scale-105 font-medium text-sm transition"
             >
-              Mulai
+              Daftar
             </button>
           </div>
         </div>
       </nav>
 
       {/* SECTION 1: HERO */}
-      <section 
-        className="relative min-h-screen flex items-center justify-end bg-cover bg-center"
-        style={{ backgroundImage: `url(${bg1})` }}
-      >
-        <div className="absolute inset-0 bg-black/40" />
+      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-white to-green-100 pt-20">
+        <div className="absolute w-72 h-72 bg-green-200 rounded-full blur-3xl opacity-30 top-10 left-10" />
+        <div className="absolute w-96 h-96 bg-green-300 rounded-full blur-3xl opacity-20 bottom-10 right-10" />
         
-        <div className="relative z-10 max-w-6xl mx-auto w-full px-6 flex justify-end items-center">
-          <div className="relative z-10 max-w-2xl mr-16 text-right space-y-6">
-            <div className="bg-black/30 backdrop-blur-md p-8 rounded-2xl flex flex-col items-end space-y-6 animate-fadeIn">
-              <img src={logo} alt="Orbitani Logo" className="w-20 h-20 object-contain" />
-              
-              <h1 className="text-5xl md:text-6xl font-bold leading-tight text-white">
-                Platform Edukasi Pertanian Berbasis AI dan Data Satelit
-              </h1>
-              
-              <p className="text-lg md:text-xl text-white/90">
-                Orbitani Edu membantu siswa dan mahasiswa memahami analisis lahan secara real-time melalui pendekatan interaktif dan berbasis teknologi.
-              </p>
-              
-              <p className="text-sm text-green-200 uppercase tracking-wide">
-                Digunakan untuk pembelajaran agrikultur modern di sekolah dan perguruan tinggi
-              </p>
+        <div className="relative z-10 max-w-3xl text-center space-y-6 px-6 animate-fadeIn">
+          <div className="flex justify-center mb-4">
+            <img src={logo} alt="Orbitani Logo" className="w-24 h-24 object-contain" />
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold leading-tight text-gray-900">
+            Platform Edukasi Pertanian Berbasis Kecerdasan Buatan dan Data Satelit
+          </h1>
+          
+          <p className="text-lg md:text-xl text-gray-600">
+            Orbitani Edu membantu siswa dan mahasiswa memahami analisis lahan secara real-time melalui pendekatan interaktif dan berbasis teknologi.
+          </p>
+          
+          <p className="text-sm text-green-700 uppercase tracking-wide font-bold">
+            Digunakan untuk pembelajaran agrikultur modern di sekolah dan perguruan tinggi
+          </p>
 
-              <div className="flex gap-4 justify-end w-full">
-                <button 
-                  onClick={() => navigate('/map')}
-                  className="bg-primary text-white px-6 py-3 rounded-xl hover:scale-105 transition shadow-lg font-medium"
-                >
-                  Mulai Sekarang
-                </button>
-                <button 
-                  onClick={() => document.getElementById('produk').scrollIntoView()}
-                  className="border border-white/40 text-white px-6 py-3 rounded-xl hover:bg-white/10 transition font-medium"
-                >
-                  Lihat Demo
-                </button>
-              </div>
-            </div>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-6">
+            <button 
+              onClick={() => navigate('/map')}
+              className="bg-primary text-white px-8 py-4 rounded-xl shadow-md hover:scale-105 transition font-bold text-lg w-full sm:w-auto"
+            >
+              Mulai Sekarang
+            </button>
+            <button 
+              onClick={() => document.getElementById('produk').scrollIntoView()}
+              className="bg-white text-primary border border-primary px-8 py-4 rounded-xl shadow-md hover:scale-105 transition font-bold text-lg w-full sm:w-auto"
+            >
+              Gunakan Demo
+            </button>
           </div>
         </div>
       </section>
@@ -118,11 +111,15 @@ const LandingPage = () => {
               </div>
             </div>
             <div className="flex justify-center md:justify-end animate-slideUp" style={{ animationDelay: '0.2s' }}>
-              <img 
-                src={bg2} 
-                alt="Penjelasan Produk Orbitani Edu" 
-                className="rounded-2xl shadow-xl hover:scale-105 transition duration-300 w-full h-auto object-cover"
-              />
+              <div className="w-full aspect-video bg-white rounded-2xl shadow-xl flex items-center justify-center p-8 hover:scale-105 transition duration-300">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <img src={logo} alt="Orbitani Edu" className="w-8 h-8 object-contain" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Platform Interaktif</h3>
+                  <p className="text-gray-500">Visualisasi data satelit dan analisis AI secara real-time.</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -146,7 +143,7 @@ const LandingPage = () => {
             
             <div className="p-6 rounded-2xl bg-green-50 border border-green-100 shadow-md hover:-translate-y-2 hover:shadow-xl transition duration-300 animate-slideUp" style={{ animationDelay: '0.1s' }}>
               <div className="h-1 w-12 bg-primary rounded-full mb-4"></div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Pendamping AI untuk Pembelajaran</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Asisten AI untuk Pembelajaran</h3>
               <p className="text-gray-600 leading-relaxed">
                 Berinteraksi dengan asisten kecerdasan buatan yang bertindak sebagai pakar untuk menjelaskan risiko tanaman dan rekomendasi agrikultur.
               </p>
@@ -263,11 +260,11 @@ const LandingPage = () => {
               onClick={() => navigate('/map')}
               className="bg-primary text-white px-8 py-4 rounded-xl hover:scale-105 transition shadow-lg font-bold text-lg w-full sm:w-auto"
             >
-              Masuk ke Platform
+              Mulai Sekarang
             </button>
             <button 
               onClick={() => navigate('/register')}
-              className="bg-transparent border border-white/40 text-white px-8 py-4 rounded-xl hover:bg-white/10 transition font-bold text-lg w-full sm:w-auto"
+              className="bg-white text-gray-900 border border-gray-200 px-8 py-4 rounded-xl hover:bg-gray-50 transition shadow-lg font-bold text-lg w-full sm:w-auto"
             >
               Daftar Institusi
             </button>

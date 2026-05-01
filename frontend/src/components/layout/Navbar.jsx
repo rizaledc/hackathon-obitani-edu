@@ -8,14 +8,14 @@ const Navbar = () => {
 
   const getPageTitle = (path) => {
     if (path.startsWith('/map')) return 'Eksplorasi Lahan';
-    if (path.startsWith('/chat-live')) return 'Live Chat';
+    if (path.startsWith('/chat-live')) return 'Obrolan Langsung';
     if (path.startsWith('/chat')) return 'Pakar AI';
-    if (path.startsWith('/analytics')) return 'Laporan Analitik';
+    if (path.startsWith('/analytics')) return 'Laporan Analisis';
     if (path.startsWith('/history')) return 'Riwayat Data';
     if (path.startsWith('/admin/users')) return 'Kelola Pengguna';
     if (path.startsWith('/admin/organizations')) return 'Daftar Organisasi';
     if (path.startsWith('/admin/mlops')) return 'Dashboard MLOps';
-    return 'Dashboard';
+    return 'Beranda';
   };
 
   const getInitials = (name) => {
@@ -37,7 +37,7 @@ const Navbar = () => {
       <div className="flex items-center gap-4">
         <div className="flex flex-col items-end">
           <span className="text-sm font-medium text-text-primary">
-            {user?.username || 'Guest User'}
+            {user?.username || 'Pengguna Tamu'}
           </span>
           <span className="text-[10px] text-text-secondary uppercase tracking-wider font-bold bg-gray-100 px-2 py-0.5 rounded-full mt-0.5">
             {user?.role || 'User'}

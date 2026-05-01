@@ -29,9 +29,9 @@ const Sidebar = () => {
     { label: 'UTAMA', type: 'header' },
     { path: '/map', icon: <MapTrifold size={20} />, label: 'Eksplorasi Lahan', roles: ['user', 'admin', 'superadmin'] },
     { path: '/chat', icon: <ChatCircleText size={20} />, label: 'Pakar AI', roles: ['user', 'admin', 'superadmin'] },
-    { path: '/chat-live', icon: <Chats size={20} />, label: 'Live Chat', roles: ['user', 'admin', 'superadmin'], badge: unreadChatCount },
+    { path: '/chat-live', icon: <Chats size={20} />, label: 'Obrolan Langsung', roles: ['user', 'admin', 'superadmin'], badge: unreadChatCount },
     { label: 'ANALISIS', type: 'header' },
-    { path: '/analytics', icon: <ChartLineUp size={20} />, label: 'Laporan Analitik', roles: ['user', 'admin', 'superadmin'] },
+    { path: '/analytics', icon: <ChartLineUp size={20} />, label: 'Laporan Analisis', roles: ['user', 'admin', 'superadmin'] },
     { path: '/history', icon: <ClockCounterClockwise size={20} />, label: 'Riwayat Data', roles: ['user', 'admin', 'superadmin'] },
   ];
 

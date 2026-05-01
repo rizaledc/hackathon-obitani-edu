@@ -29,12 +29,12 @@ const LoginPage = () => {
             <h1 className="text-2xl font-bold tracking-tight">Orbitani Edu</h1>
           </div>
           
-          <h2 className="text-3xl font-extrabold mb-2 text-gray-900">Selamat Datang Kembali</h2>
+          <h2 className="text-3xl font-extrabold mb-2 text-gray-900">Masuk ke Platform</h2>
           <p className="text-text-secondary mb-8">Masuk untuk melanjutkan eksplorasi lahan virtual Anda.</p>
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-semibold mb-2">Email</label>
+              <label className="block text-sm font-semibold mb-2">Alamat Email</label>
               <input 
                 type="email" 
                 required
@@ -45,7 +45,7 @@ const LoginPage = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-2">Password</label>
+              <label className="block text-sm font-semibold mb-2">Kata Sandi</label>
               <input 
                 type="password" 
                 required
@@ -57,7 +57,7 @@ const LoginPage = () => {
             </div>
             <button 
               type="submit"
-              className="w-full bg-primary hover:bg-primary-light text-white font-bold py-3 rounded-xl hover:scale-105 transition-transform shadow-lg shadow-primary/30"
+              className="w-full bg-primary text-white font-bold py-3 rounded-xl hover:scale-105 transition-transform shadow-md"
             >
               Masuk
             </button>
