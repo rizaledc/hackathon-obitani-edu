@@ -102,23 +102,26 @@ const MapPage = () => {
     if (id) {
       const selectedLahan = lahans.find(l => l.id === id);
       const bounds = getBounds(selectedLahan);
-      if (bounds && mapRef.current) {
-        // Hitung offset panel UI agar poligon berada tepat di tengah area yang kosong
-        const leftPadding = showLahanList ? 320 : 50;
-        const rightPadding = 340; // Panel analisis akan terbuka, jadi selalu beri padding kanan
-        
-        mapRef.current.flyToBounds(bounds, { 
-          paddingTopLeft: [leftPadding, 50], 
-          paddingBottomRight: [rightPadding, 50],
-          maxZoom: 18,
-          duration: 1.5 // Animasi lebih halus
-        });
-      } else {
-        const centroid = getCentroid(selectedLahan);
-        if (centroid && mapRef.current) {
-          mapRef.current.flyTo(centroid, 16);
+      
+      // Delay sedikit agar React selesai merender panel kanan dan ukuran container map (flex-1) berubah
+      setTimeout(() => {
+        if (mapRef.current) {
+          mapRef.current.invalidateSize(); // Beritahu leaflet bahwa ukuran layarnya berubah
+          
+          if (bounds) {
+            mapRef.current.flyToBounds(bounds, { 
+              padding: [50, 50], // Padding standar, karena map sudah ada di tengah area flex
+              maxZoom: 18,
+              duration: 1.5 
+            });
+          } else {
+            const centroid = getCentroid(selectedLahan);
+            if (centroid) {
+              mapRef.current.flyTo(centroid, 16, { duration: 1.5 });
+            }
+          }
         }
-      }
+      }, 100);
     }
   };
 
