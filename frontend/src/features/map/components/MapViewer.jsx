@@ -21,7 +21,7 @@ const ClickHandler = ({ onSelectLocation, isDrawingMode }) => {
   return null;
 };
 
-const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, draftPoints = [], isDrawingMode = false, samplePoints = [] }) => {
+const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, draftPoints = [], isDrawingMode = false, samplePoints = [], selectedId }) => {
   const defaultCenter = [-2.5, 118];
   const defaultZoom = 5;
   const bounds = [[-11, 95], [6, 141]];
@@ -57,7 +57,7 @@ const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, dr
   };
 
   return (
-    <div className="w-full h-full bg-gray-100">
+    <div className="w-full h-full bg-gray-100" style={{ height: '100%', width: '100%', position: 'relative' }}>
       <MapContainer 
         ref={mapRef}
         center={defaultCenter} 
@@ -68,6 +68,7 @@ const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, dr
         maxBoundsViscosity={1.0}
         scrollWheelZoom={true} 
         className="w-full h-full z-0"
+        style={{ height: '100%', width: '100%' }}
         onClick={(e) => onSelectLocation(e.latlng.lat, e.latlng.lng)}
       >
         <TileLayer
@@ -91,7 +92,9 @@ const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, dr
 
         {lahans.map((lahan) => renderLahan(lahan))}
 
-        {samplePoints && samplePoints.map((point, i) => {
+        {samplePoints && samplePoints
+          .filter(point => point.lahan_id === selectedId)
+          .map((point, i) => {
           if (!point.latitude || !point.longitude) return null;
           return (
             <CircleMarker

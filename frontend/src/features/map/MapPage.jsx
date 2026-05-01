@@ -348,7 +348,7 @@ const MapPage = () => {
       )}
 
       {/* Map Wrapper */}
-      <div className="flex-1 relative group cursor-crosshair z-0 overflow-hidden">
+      <div className="flex-1 h-full relative group cursor-crosshair z-0 overflow-hidden" style={{ height: '100%' }}>
         <MapViewer 
           onSelectLocation={handleSelectLocation} 
           lahans={lahans} 
@@ -357,6 +357,7 @@ const MapPage = () => {
           draftPoints={draftPoints} 
           isDrawingMode={isDrawingMode} 
           samplePoints={samplePoints}
+          selectedId={selectedLocation?.id}
         />
         
         {/* Navigation & Toolbar (Top Right) */}
@@ -457,7 +458,11 @@ const MapPage = () => {
             onAnalyze={handleAnalyze}
             onAnalyzeAI={handleAnalyzeAI}
             onDemoMode={handleDemoMode}
-            onClose={() => setSelectedLocation(null)}
+            onClose={() => {
+              setSelectedLocation(null);
+              setSamplePoints([]); // reset titik merah
+              setRecommendationResult(null);
+            }}
             selectedLahan={lahans.find(l => l.id === selectedLocation.id)}
           />
         </div>
