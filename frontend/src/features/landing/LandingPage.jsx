@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from "../../assets/logo.webp";
 import jenistanaman from "../../assets/jenistanaman.png";
+import bg2 from "../../assets/bg2.png";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -49,51 +50,37 @@ const LandingPage = () => {
       </nav>
 
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-white to-green-100 pt-20">
-        <div className="absolute w-72 h-72 bg-green-200 rounded-full blur-3xl opacity-30 top-20 left-10" />
-        <div className="absolute w-96 h-96 bg-green-300 rounded-full blur-3xl opacity-20 bottom-10 right-10" />
+      <section className="relative min-h-screen flex items-center justify-start bg-cover bg-center" style={{ backgroundImage: `url(${bg2})` }}>
+        <div className="absolute inset-0 bg-black/50"></div>
         
         <div className="relative z-10 max-w-6xl mx-auto px-6 w-full animate-fadeIn">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-12">
-            
-            {/* KIRI (TEXT BOX) */}
-            <div className="bg-white/80 backdrop-blur p-10 rounded-2xl shadow-xl max-w-xl text-left space-y-6">
-              <div className="inline-block bg-white border border-green-200 text-green-700 font-bold px-4 py-1.5 rounded-full text-sm shadow-sm">
-                AI · Data Satelit · Edukasi Digital
-              </div>
-              
-              <h1 className="text-4xl md:text-5xl font-bold leading-tight text-gray-900">
-                Transformasi Pembelajaran Pertanian dengan Teknologi Geospasial
-              </h1>
-              
-              <p className="text-base text-gray-700 leading-relaxed">
-                Orbitani Edu adalah platform virtual laboratory berbasis kecerdasan buatan dan data satelit yang dirancang untuk membantu siswa, mahasiswa, dan institusi pendidikan memahami analisis lahan secara real-time dan interaktif. Mendukung pembelajaran agrikultur modern melalui pendekatan berbasis data dan teknologi.
-              </p>
-              
-              <div className="flex gap-4 pt-2">
-                <button 
-                  onClick={() => navigate('/map')}
-                  className="bg-primary hover:bg-green-700 text-white px-8 py-4 rounded-xl shadow-lg hover:scale-105 transition font-bold text-lg w-full sm:w-auto text-center"
-                >
-                  Mulai Eksplorasi
-                </button>
-                <button 
-                  onClick={() => document.getElementById('solusi').scrollIntoView()}
-                  className="bg-white text-gray-900 border border-gray-200 px-8 py-4 rounded-xl shadow-sm hover:bg-gray-50 hover:scale-105 transition font-bold text-lg w-full sm:w-auto text-center"
-                >
-                  Lihat Demo
-                </button>
-              </div>
-
-              {/* HIGHLIGHT 22+ */}
-              <div className="mt-6 border-t border-gray-100 pt-6">
-                <h2 className="text-5xl font-bold text-primary">22+</h2>
-                <p className="text-gray-600 font-medium mt-1">Rekomendasi Jenis Tanaman</p>
-              </div>
+          <div className="relative z-10 max-w-2xl bg-white/80 backdrop-blur p-10 rounded-2xl shadow-xl text-left space-y-6 ml-0 md:ml-16 hover:scale-[1.01] transition duration-500">
+            <div className="inline-block bg-white border border-green-200 text-green-700 font-bold px-4 py-1.5 rounded-full text-sm shadow-sm">
+              AI · Data Satelit · Edukasi Digital
             </div>
-
-            {/* KANAN (KOSONG) */}
-            <div className="hidden md:block flex-1"></div>
+            
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight text-gray-900">
+              Transformasi Pembelajaran Pertanian dengan Teknologi Geospasial
+            </h1>
+            
+            <p className="text-base text-gray-700 leading-relaxed">
+              Orbitani Edu adalah platform virtual laboratory berbasis kecerdasan buatan dan data satelit yang dirancang untuk membantu siswa, mahasiswa, dan institusi pendidikan memahami analisis lahan secara real-time dan interaktif. Mendukung pembelajaran agrikultur modern melalui pendekatan berbasis data dan teknologi.
+            </p>
+            
+            <div className="flex gap-4 pt-2">
+              <button 
+                onClick={() => navigate('/map')}
+                className="bg-primary hover:bg-green-700 text-white px-8 py-4 rounded-xl shadow-lg hover:scale-105 transition font-bold text-lg w-full sm:w-auto text-center"
+              >
+                Mulai Eksplorasi
+              </button>
+              <button 
+                onClick={() => document.getElementById('solusi').scrollIntoView()}
+                className="bg-white text-gray-900 border border-gray-200 px-8 py-4 rounded-xl shadow-sm hover:bg-gray-50 hover:scale-105 transition font-bold text-lg w-full sm:w-auto text-center"
+              >
+                Lihat Demo
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -101,22 +88,26 @@ const LandingPage = () => {
       {/* 2. STATISTIK */}
       <section className="py-20 bg-white border-y border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-left animate-slideUp">
-            <div>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 animate-slideUp">
+            <div className="bg-green-50 p-6 rounded-xl text-center shadow-sm border border-green-100">
+              <div className="text-4xl font-extrabold text-primary mb-2">22+</div>
+              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide">Rekomendasi Tanaman</div>
+            </div>
+            <div className="bg-green-50 p-6 rounded-xl text-center shadow-sm border border-green-100">
               <div className="text-4xl font-extrabold text-primary mb-2">10+</div>
-              <div className="text-sm font-bold text-gray-500 uppercase tracking-wide">Wilayah Studi Terintegrasi</div>
+              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide">Wilayah Studi</div>
             </div>
-            <div>
+            <div className="bg-green-50 p-6 rounded-xl text-center shadow-sm border border-green-100">
               <div className="text-4xl font-extrabold text-primary mb-2">Real-time</div>
-              <div className="text-sm font-bold text-gray-500 uppercase tracking-wide">Data Satelit Diproses</div>
+              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide">Data Satelit</div>
             </div>
-            <div>
+            <div className="bg-green-50 p-6 rounded-xl text-center shadow-sm border border-green-100">
               <div className="text-4xl font-extrabold text-primary mb-2">AI</div>
-              <div className="text-sm font-bold text-gray-500 uppercase tracking-wide">Rekomendasi Pembelajaran Cerdas</div>
+              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide">Analisis Cerdas</div>
             </div>
-            <div>
+            <div className="bg-green-50 p-6 rounded-xl text-center shadow-sm border border-green-100">
               <div className="text-4xl font-extrabold text-primary mb-2">99%</div>
-              <div className="text-sm font-bold text-gray-500 uppercase tracking-wide">Stabilitas Sistem</div>
+              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide">Stabilitas Sistem</div>
             </div>
           </div>
         </div>
@@ -126,7 +117,6 @@ const LandingPage = () => {
       <section id="tentang" className="py-20 bg-gray-50">
         <div className="max-w-6xl mx-auto px-6 animate-slideUp">
           <div className="flex flex-col md:flex-row items-center gap-12">
-            
             {/* KIRI (TEXT) */}
             <div className="flex-1 text-left">
               <h2 className="text-3xl font-bold text-gray-900 mb-6">
@@ -311,71 +301,52 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* 9. CTA AKHIR */}
-      <section className="py-20 bg-gray-900 text-left relative overflow-hidden">
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary rounded-full blur-[150px] opacity-20 pointer-events-none"></div>
-        <div className="max-w-6xl mx-auto px-6 relative z-10 animate-slideUp">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight max-w-3xl">
-            Mulai Eksplorasi Pembelajaran Pertanian Digital
-          </h2>
-          <p className="text-xl text-gray-300 mb-10 max-w-2xl">
-            Gunakan teknologi untuk memahami kondisi lahan secara lebih mendalam dan aplikatif.
-          </p>
-          <button 
-            onClick={() => navigate('/map')}
-            className="bg-primary hover:bg-green-700 text-white px-10 py-5 rounded-xl shadow-lg hover:scale-105 transition font-bold text-xl"
-          >
-            Masuk ke Platform
-          </button>
-        </div>
-      </section>
-      
-      {/* 10. FOOTER */}
-      <footer className="bg-gray-950 pt-20 pb-10 border-t border-gray-800 text-left">
+      {/* 9. FOOTER & CTA */}
+      <footer className="bg-gray-900 text-white py-12 border-t border-gray-800 text-left animate-slideUp">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-12 mb-16">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div className="col-span-1 md:col-span-1">
-              <div className="flex items-center gap-2 mb-6">
-                <img src={logo} alt="Orbitani Logo" className="w-8 h-8 object-contain" />
-                <span className="font-bold text-2xl text-white tracking-tight">Orbitani Edu</span>
-              </div>
-              <p className="text-gray-400 leading-relaxed text-sm">
+              <h3 className="text-lg font-semibold mb-2">
+                Mulai Eksplorasi Pembelajaran Pertanian Digital
+              </h3>
+              <p className="text-sm text-gray-300">
                 Platform edukasi berbasis data satelit dan kecerdasan buatan untuk mendukung pembelajaran agrikultur modern.
               </p>
             </div>
             
             <div>
-              <h4 className="text-white font-bold mb-6 tracking-wide">Platform</h4>
-              <ul className="space-y-4 text-sm">
+              <h4 className="text-white font-bold mb-4 tracking-wide">Platform</h4>
+              <ul className="space-y-3 text-sm">
                 <li><button onClick={() => navigate('/map')} className="text-gray-400 hover:text-white transition">Eksplorasi Lahan</button></li>
                 <li><button onClick={() => navigate('/chat')} className="text-gray-400 hover:text-white transition">Asisten AI</button></li>
                 <li><button onClick={() => navigate('/analytics')} className="text-gray-400 hover:text-white transition">Laporan Analisis</button></li>
-                <li><button onClick={() => navigate('/history')} className="text-gray-400 hover:text-white transition">Riwayat Data</button></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="text-white font-bold mb-6 tracking-wide">Navigasi</h4>
-              <ul className="space-y-4 text-sm">
+              <h4 className="text-white font-bold mb-4 tracking-wide">Navigasi</h4>
+              <ul className="space-y-3 text-sm">
                 <li><button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="text-gray-400 hover:text-white transition">Beranda</button></li>
                 <li><button onClick={() => document.getElementById('solusi').scrollIntoView()} className="text-gray-400 hover:text-white transition">Solusi</button></li>
                 <li><button onClick={() => document.getElementById('carakerja').scrollIntoView()} className="text-gray-400 hover:text-white transition">Cara Kerja</button></li>
-                <li><button onClick={() => document.getElementById('tentang').scrollIntoView()} className="text-gray-400 hover:text-white transition">Tentang</button></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="text-white font-bold mb-6 tracking-wide">Bantuan</h4>
-              <ul className="space-y-4 text-sm">
+              <h4 className="text-white font-bold mb-4 tracking-wide">Bantuan</h4>
+              <ul className="space-y-3 text-sm">
                 <li><button className="text-gray-400 hover:text-white transition">Pusat Bantuan</button></li>
-                <li><button onClick={() => navigate('/login')} className="text-gray-400 hover:text-white transition">Login Pengguna</button></li>
+                <li><button onClick={() => navigate('/login')} className="text-gray-400 hover:text-white transition">Masuk</button></li>
               </ul>
             </div>
           </div>
           
           <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-sm">
+            <div className="flex items-center gap-2">
+              <img src={logo} alt="Orbitani Logo" className="w-5 h-5 grayscale opacity-50" />
+              <span className="font-bold tracking-widest uppercase text-gray-400">Orbitani Edu</span>
+            </div>
             <div>&copy; {new Date().getFullYear()} Telkom University - Hackathon Project. Hak Cipta Dilindungi.</div>
-            <div className="font-bold tracking-widest uppercase">Orbitani Edu</div>
           </div>
         </div>
       </footer>
