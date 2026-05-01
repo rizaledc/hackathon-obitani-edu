@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import logo from '../../assets/logo.webp';
 import OrbitaniLoader from '../../components/OrbitaniLoader';
+import PasswordStrength from '../../components/ui/PasswordStrength';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -65,11 +66,12 @@ const LoginPage = () => {
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="Password"
               />
+              <PasswordStrength password={password} />
             </div>
             <button 
               type="submit"
-              disabled={loading}
-              className="w-full bg-primary text-white font-bold py-3 rounded-xl hover:scale-105 transition-transform shadow-md disabled:opacity-50 flex items-center justify-center overflow-hidden relative"
+              disabled={loading || !(password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[a-z]/.test(password))}
+              className="w-full bg-primary text-white font-bold py-3 rounded-xl hover:scale-105 transition-transform shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center overflow-hidden relative"
               style={{ minHeight: '52px' }}
             >
               {loading ? (
