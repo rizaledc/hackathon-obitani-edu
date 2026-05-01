@@ -57,33 +57,21 @@ const RecommendationPanel = ({
   selectedLahan
 }) => {
   const isLoading = status === 'processing';
-  const [chatInput, setChatInput] = useState('');
-  const [isChatLoading, setIsChatLoading] = useState(false);
-  const [chatHistory, setChatHistory] = useState([]);
+  const [aiInput, setAiInput] = useState('');
+  const [aiResponse, setAiResponse] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
 
   useEffect(() => {
-    setChatHistory([]);
-    if (location?.id) {
-      loadChatHistory(location.id);
-    }
+    setAiResponse('');
+    setAiInput('');
   }, [location?.id]);
-
-  const loadChatHistory = async (lahanId) => {
-    try {
-      const res = await api.get(`/api/chat/history?lahan_id=${lahanId}`);
-      const messages = res.data?.data || res.data || [];
-      setChatHistory(messages);
-    } catch {
-      setChatHistory([]);
-    }
-  };
 
   const resultsData = Array.isArray(result) ? result : (result?.results || []);
   const hasData = resultsData.length > 0;
 
-  const handleChat = async () => {
-    if (!chatInput.trim()) return;
-    setIsChatLoading(true);
+  const handleAskAI = async () => {
+    if (!aiInput.trim() || aiLoading) return;
+    setAiLoading(true);
     
     try {
       const avg = (key) => {
@@ -93,14 +81,6 @@ const RecommendationPanel = ({
         return (vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(1);
       };
 
-      const avgN = avg('n');
-      const avgP = avg('p');
-      const avgK = avg('k');
-      const avgPh = avg('ph');
-      const avgTemp = avg('temperature');
-      const avgHumid = avg('humidity');
-      const avgRain = avg('rainfall');
-      
       const cropCount = {};
       resultsData.forEach(r => {
         const crop = r.hasil_rekomendasi;
@@ -108,48 +88,37 @@ const RecommendationPanel = ({
           cropCount[crop] = (cropCount[crop] || 0) + 1;
         }
       });
-      const topCrops = Object.entries(cropCount)
+      const getTopCrops = () => Object.entries(cropCount)
         .sort((a,b) => b[1]-a[1])
         .map(([crop, count]) => `${crop} (${Math.round(count/resultsData.length*100)}%)`)
         .join(', ');
       
       const contextMessage = resultsData.length > 0
         ? `Konteks Lahan "${selectedLahan?.nama || location?.id}":
-- N: ${avgN} mg/kg, P: ${avgP} mg/kg, K: ${avgK} mg/kg
-- pH: ${avgPh}, Suhu: ${avgTemp}°C
-- Kelembaban: ${avgHumid}%, Curah Hujan: ${avgRain}mm
-- Rekomendasi dari ${resultsData.length} titik: ${topCrops}
-
-Pertanyaan: ${chatInput}`
-        : chatInput;
+- N: ${avg('n')} mg/kg, P: ${avg('p')} mg/kg, K: ${avg('k')} mg/kg
+- pH: ${avg('ph')}, Suhu: ${avg('temperature')}°C
+- Kelembaban: ${avg('humidity')}%, Curah Hujan: ${avg('rainfall')}mm
+- Rekomendasi dari ${resultsData.length} titik: ${getTopCrops()}
+Pertanyaan: ${aiInput}`
+        : aiInput;
       
       const res = await api.post('/api/chat/', {
         message: contextMessage,
         lahan_id: location?.id || null,
         session_id: location?.id ? `lahan_${location.id}` : null,
-        session_name: location?.id ? `Chat Lahan ${selectedLahan?.nama || location.id}` : null,
+        session_name: location?.id ? `Chat ${selectedLahan?.nama || location.id}` : null,
         user_api_key: null
       });
 
       const responseText = res.data?.response || res.data?.message || res.data?.data?.reply || res.data?.reply || res.data;
-      
-      setChatHistory(prev => [
-        ...prev,
-        { role: 'user', content: chatInput },
-        { role: 'assistant', content: typeof responseText === 'string' ? responseText : JSON.stringify(responseText) }
-      ]);
-      setChatInput('');
+      const textResponse = typeof responseText === 'string' ? responseText : JSON.stringify(responseText);
+      setAiResponse(stripMarkdown(textResponse));
       
     } catch (err) {
       console.error(err);
-      setChatHistory(prev => [
-        ...prev,
-        { role: 'user', content: chatInput },
-        { role: 'assistant', content: 'Gagal menghubungi Pakar AI. Coba lagi.' }
-      ]);
-      setChatInput('');
+      setAiResponse('Gagal menghubungi Pakar AI. Coba lagi.');
     } finally {
-      setIsChatLoading(false);
+      setAiLoading(false);
     }
   };
 
@@ -496,39 +465,38 @@ Pertanyaan: ${chatInput}`
             </section>
 
             {/* SECTION 9 - KONSULTASI AI */}
-            <section className="mt-4 pt-6 border-t border-gray-100">
-              <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2 mb-3">
-                <Sparkle weight="fill" className="text-yellow-500" /> Tanya Pakar AI
-              </h3>
+            <div className="border-t pt-4 mt-4">
+              <h4 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                ✨ Tanya Pakar AI
+              </h4>
+              
+              <textarea
+                value={aiInput}
+                onChange={e => setAiInput(e.target.value)}
+                placeholder="Tanyakan analisis mendalam tentang lahan ini..."
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-500 mb-2"
+                rows={3}
+              />
+              
+              <button
+                onClick={handleAskAI}
+                disabled={aiLoading || !aiInput.trim()}
+                className={`w-full py-2 rounded-lg text-sm font-medium text-white ${aiLoading || !aiInput.trim() ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'}`}
+              >
+                {aiLoading 
+                  ? <OrbitaniLoader status="processing" size="sm" /> 
+                  : 'Kirim Pertanyaan'}
+              </button>
 
-              {chatHistory.length > 0 && (
-                <div className="mb-3 max-h-60 overflow-y-auto space-y-2 custom-scrollbar">
-                  {chatHistory.map((msg, i) => (
-                    <div key={i} className={`text-xs p-2 rounded-lg ${
-                      msg.role === 'user' 
-                        ? 'bg-gray-100 text-gray-600 ml-8' 
-                        : 'bg-green-50 text-gray-700 mr-8'
-                    }`}>
-                      {stripMarkdown(msg.content)}
-                    </div>
-                  ))}
+              {aiResponse && (
+                <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-100 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                  <p className="text-xs font-semibold text-green-700 mb-1">
+                    ✦ Jawaban AI:
+                  </p>
+                  {aiResponse}
                 </div>
               )}
-
-              <textarea
-                value={chatInput}
-                onChange={e => setChatInput(e.target.value)}
-                placeholder="Tanyakan analisis mendalam tentang lahan ini..."
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-[#16a34a] focus:border-[#16a34a] mb-3 resize-none h-24"
-              />
-              <button
-                onClick={handleChat}
-                disabled={isChatLoading || !chatInput.trim()}
-                className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2 rounded-lg text-sm transition-colors border border-gray-800 shadow-sm disabled:opacity-50"
-              >
-                {isChatLoading ? 'Menganalisis...' : 'Kirim Pertanyaan'}
-              </button>
-            </section>
+            </div>
           </>
         )}
       </div>
