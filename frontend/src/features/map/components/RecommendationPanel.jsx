@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import api from '../../../services/api';
 import OrbitaniLoader from '../../../components/OrbitaniLoader';
 import { toIndonesian } from '../../../utils/plantNames';
@@ -14,8 +14,17 @@ const pearson = (arr1, arr2) => {
     arr1.reduce((s,v) => s + Math.pow(v-avg1, 2), 0) *
     arr2.reduce((s,v) => s + Math.pow(v-avg2, 2), 0)
   );
-  return den === 0 ? 0 : (num/den).toFixed(2);
+  return den === 0 ? 0 : parseFloat((num/den).toFixed(2));
 };
+
+const CORR_VARIABLES = [
+  { key: 'n', label: 'N' },
+  { key: 'p', label: 'P' },
+  { key: 'k', label: 'K' },
+  { key: 'ph', label: 'pH' },
+  { key: 'temperature', label: 'Suhu' },
+  { key: 'humidity', label: 'Hum' },
+];
 
 const SHAP_VALUES = [
   { feature: 'Humidity', value: 0.0317 },
@@ -26,6 +35,18 @@ const SHAP_VALUES = [
   { feature: 'Temperature', value: 0.0098 },
   { feature: 'pH', value: 0.0046 }
 ];
+
+const stripMarkdown = (text) => {
+  if (!text) return '';
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1')  // bold
+    .replace(/\*(.*?)\*/g, '$1')       // italic
+    .replace(/#{1,6}\s/g, '')          // headers
+    .replace(/`{1,3}(.*?)`{1,3}/g, '$1') // code
+    .replace(/^\s*[-*+]\s/gm, '• ')   // bullets
+    .replace(/\[KONTEKS LAHAN\][\s\S]*?\[\/KONTEKS LAHAN\]/g, '') // hapus konteks
+    .trim();
+};
 
 const RecommendationPanel = ({ 
   location, 
@@ -44,18 +65,64 @@ const RecommendationPanel = ({
   const hasData = resultsData.length > 0;
 
   const handleChat = async () => {
-    if (!chatInput.trim() || !location?.id) return;
+    if (!chatInput.trim()) return;
     setIsChatLoading(true);
+    setAiResponse('');
+    
     try {
-      const res = await api.post('/api/chat/', {
-        message: chatInput,
-        lahan_id: location.id
+      const avg = (key) => {
+        if (!resultsData || resultsData.length === 0) return 0;
+        const vals = resultsData.map(r => r[key]).filter(v => v != null);
+        if (vals.length === 0) return 0;
+        return (vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(1);
+      };
+
+      const avgN = avg('n');
+      const avgP = avg('p');
+      const avgK = avg('k');
+      const avgPh = avg('ph');
+      const avgTemp = avg('temperature');
+      const avgHumid = avg('humidity');
+      const avgRain = avg('rainfall');
+      
+      const cropCount = {};
+      resultsData.forEach(r => {
+        const crop = r.hasil_rekomendasi;
+        if (crop && crop !== 'Unknown') {
+          cropCount[crop] = (cropCount[crop] || 0) + 1;
+        }
       });
-      setAiResponse(res.data.data?.reply || res.data.reply || res.data);
-    } catch (e) {
-      setAiResponse("Maaf, terjadi kesalahan saat menghubungi pakar AI.");
+      const topCrops = Object.entries(cropCount)
+        .sort((a,b) => b[1]-a[1])
+        .map(([crop, count]) => `${crop} (${Math.round(count/resultsData.length*100)}%)`)
+        .join(', ');
+      
+      const contextMessage = resultsData.length > 0
+        ? `Konteks Lahan "${selectedLahan?.nama || location?.id}":
+- N: ${avgN} mg/kg, P: ${avgP} mg/kg, K: ${avgK} mg/kg
+- pH: ${avgPh}, Suhu: ${avgTemp}°C
+- Kelembaban: ${avgHumid}%, Curah Hujan: ${avgRain}mm
+- Rekomendasi dari ${resultsData.length} titik: ${topCrops}
+
+Pertanyaan: ${chatInput}`
+        : chatInput;
+      
+      const res = await api.post('/api/chat/', {
+        message: contextMessage,
+        lahan_id: location?.id || null,
+        session_id: null,
+        session_name: null,
+        user_api_key: null
+      });
+      
+      const responseText = res.data?.response || res.data?.message || res.data?.data?.reply || res.data?.reply || res.data;
+      setAiResponse(responseText);
+      
+    } catch (err) {
+      setAiResponse('Gagal menghubungi Pakar AI. Coba lagi.');
     } finally {
       setIsChatLoading(false);
+      setChatInput('');
     }
   };
 
@@ -97,16 +164,22 @@ const RecommendationPanel = ({
       .map(([crop, c]) => ({ crop, count: c, percentage: Math.round((c/resultsData.length)*100) }));
   };
 
-  const getCorrelationMatrix = () => {
-    if (!hasData) return [];
-    const vars = ['n', 'p', 'k', 'ph', 'temperature', 'humidity'];
-    return vars.map(v1 => 
-      vars.map(v2 => {
-        const arr1 = resultsData.map(r => r[v1]);
-        const arr2 = resultsData.map(r => r[v2]);
-        return pearson(arr1, arr2);
+  const correlationMatrix = useMemo(() => {
+    if (!resultsData || resultsData.length < 2) return null;
+    const getColumn = (key) => resultsData.map(r => r[key] || 0);
+    return CORR_VARIABLES.map(v1 => 
+      CORR_VARIABLES.map(v2 => {
+        if (v1.key === v2.key) return 1.00;
+        return pearson(getColumn(v1.key), getColumn(v2.key));
       })
     );
+  }, [resultsData]);
+
+  const getCellColor = (val) => {
+    const abs = Math.abs(val);
+    if (abs >= 0.7) return val > 0 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+    if (abs >= 0.4) return 'bg-yellow-50 text-yellow-700';
+    return 'bg-gray-50 text-gray-400';
   };
 
   const getNormalization = (key, val) => {
@@ -118,13 +191,7 @@ const RecommendationPanel = ({
     return pct;
   };
 
-  const renderCorrelationColor = (val) => {
-    const r = parseFloat(val);
-    if (r === 1) return 'bg-gray-100 text-gray-400'; // diagonal
-    if (r >= 0.5) return 'bg-green-100 text-green-700 font-bold';
-    if (r <= -0.5) return 'bg-red-100 text-red-700 font-bold';
-    return 'bg-white text-gray-500';
-  };
+
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
@@ -314,26 +381,32 @@ const RecommendationPanel = ({
             <section>
               <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Korelasi Variabel (Pearson)</h3>
               <div className="overflow-x-auto border border-gray-100 rounded-xl custom-scrollbar pb-1">
-                <table className="w-full text-[10px] text-center border-collapse bg-white">
-                  <thead>
-                    <tr>
-                      <th className="p-1 bg-gray-50 border-b border-r border-gray-100"></th>
-                      {['N', 'P', 'K', 'pH', 'Suhu', 'Hum'].map(h => <th key={h} className="p-2 bg-gray-50 border-b border-gray-100 text-gray-500 font-bold">{h}</th>)}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {getCorrelationMatrix().map((row, i) => (
-                      <tr key={i}>
-                        <th className="p-2 bg-gray-50 border-r border-gray-100 text-gray-500 font-bold">{['N', 'P', 'K', 'pH', 'Suhu', 'Hum'][i]}</th>
-                        {row.map((val, j) => (
-                          <td key={j} className={`p-2 font-mono ${renderCorrelationColor(val)}`}>
-                            {val}
-                          </td>
+                {correlationMatrix ? (
+                  <table className="w-full text-xs text-center border-collapse bg-white">
+                    <thead>
+                      <tr>
+                        <th className="p-1 bg-gray-50 border-b border-r border-gray-100"></th>
+                        {CORR_VARIABLES.map(v => (
+                          <th key={v.key} className="p-2 bg-gray-50 border-b border-gray-100 text-gray-500 font-bold">{v.label}</th>
                         ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {CORR_VARIABLES.map((v1, i) => (
+                        <tr key={v1.key}>
+                          <th className="p-2 bg-gray-50 border-r border-gray-100 text-gray-600 font-semibold">{v1.label}</th>
+                          {correlationMatrix[i].map((val, j) => (
+                            <td key={j} className={`p-2 font-mono rounded-sm border border-white ${getCellColor(val)}`}>
+                              {val === 1 ? '—' : val.toFixed(2)}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div className="p-4 text-center text-gray-500 text-xs">Data tidak cukup untuk menghitung korelasi</div>
+                )}
               </div>
             </section>
 
@@ -415,9 +488,13 @@ const RecommendationPanel = ({
               </button>
               
               {aiResponse && (
-                <div className="mt-4 bg-[#f0fdf4] border border-[#16a34a]/30 p-4 rounded-xl text-sm text-gray-700 leading-relaxed">
+                <div className="mt-3 p-3 bg-green-50 rounded-lg border border-green-100 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
                   <div className="font-bold text-[#16a34a] mb-1 flex items-center gap-1"><Sparkle size={14} weight="fill"/> Jawaban AI:</div>
-                  {aiResponse}
+                  {stripMarkdown(
+                    typeof aiResponse === 'string' 
+                      ? aiResponse 
+                      : aiResponse?.response || aiResponse?.message || ''
+                  )}
                 </div>
               )}
             </section>

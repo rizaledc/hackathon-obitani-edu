@@ -75,7 +75,9 @@ const MapPage = () => {
       try {
         setLahansLoading(true);
         const res = await api.get('/api/lahan/');
-        setLahans(res.data.data || res.data || []);
+        const data = res.data.data || res.data || [];
+        const sorted = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setLahans(sorted);
       } catch (err) {
         console.error('Gagal memuat lahan', err);
       } finally {
@@ -220,7 +222,9 @@ const MapPage = () => {
       
       // Refresh daftar lahan
       const resLahans = await api.get('/api/lahan/');
-      setLahans(resLahans.data.data || resLahans.data || []);
+      const data = resLahans.data.data || resLahans.data || [];
+      const sorted = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      setLahans(sorted);
       
       setShowSaveModal(false);
       setNewLahanName('');
