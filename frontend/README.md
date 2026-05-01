@@ -1,16 +1,69 @@
-# React + Vite
+# Orbitani Edu — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Platform edukasi pertanian berbasis AI dan data satelit untuk membantu siswa, mahasiswa, dan institusi memahami analisis lahan secara interaktif.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Fitur Utama
 
-## React Compiler
+* Eksplorasi Lahan berbasis WebGIS
+* Rekomendasi Tanaman berbasis AI
+* Asisten Pembelajaran AI
+* Analisis Data Satelit
+* Mode Terang & Gelap (Dark Mode)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🧠 Teknologi
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* React + Vite
+* Tailwind CSS
+* Zustand
+* React Router
+* Leaflet (Map)
+* Axios
+
+---
+
+## 📂 Struktur Folder
+
+src/
+├── assets/
+├── components/
+├── features/
+├── services/
+├── store/
+└── utils/
+
+---
+
+## ⚙️ Instalasi
+
+```bash
+npm install
+npm run dev
+```
+
+---
+
+## 🌐 Akses
+
+http://localhost:5173/
+
+---
+
+## 🎯 Tujuan
+
+Mendukung pembelajaran agrikultur modern berbasis data dan teknologi untuk meningkatkan pemahaman kondisi lahan secara nyata.
+
+---
+
+## 👨💻 Tim
+
+Hackathon Project — Telkom University
+
+---
+
+## 📜 Lisensi
+
+© 2026 Orbitani Edu

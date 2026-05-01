@@ -25,16 +25,16 @@ const LandingPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-900 overflow-x-hidden">
+    <div className="min-h-screen bg-white dark:bg-gray-900 font-sans text-gray-900 dark:text-white overflow-x-hidden transition-all duration-300">
       {/* NAVBAR */}
-      <nav className="fixed w-full top-0 bg-white/90 backdrop-blur-md border-b border-gray-100 z-50">
+      <nav className="fixed w-full top-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 z-50 transition-all duration-300">
         <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
           <div 
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             <img src={logo} alt="Orbitani Logo" className="w-8 h-8 object-contain" />
-            <span className="font-bold text-xl tracking-tight text-gray-900">Orbitani Edu</span>
+            <span className="font-bold text-xl tracking-tight text-gray-900 dark:text-white">Orbitani Edu</span>
           </div>
           
           <div className="hidden md:flex items-center gap-8 font-medium text-sm text-gray-600">
