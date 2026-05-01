@@ -21,14 +21,30 @@ async def create_lahan(lahan: LahanCreate, current_user: dict = Depends(get_curr
     return response.data[0]
 
 @router.get("/")
-async def list_lahan(current_user: dict = Depends(get_current_user)) -> Any:
-    organization_id = current_user.get("organization_id")
-    if not organization_id:
-        response = supabase.table("lahan").select("*").eq("user_id", current_user["id"]).execute()
+async def list_lahan(current_user: dict = Depends(get_current_user)):
+    
+    if current_user["role"] == "superadmin":
+        result = supabase.table("lahan")\
+            .select("*")\
+            .order("created_at", desc=True)\
+            .execute()
+    
+    elif current_user["role"] == "admin":
+        result = supabase.table("lahan")\
+            .select("*")\
+            .eq("organization_id", current_user["organization_id"])\
+            .order("created_at", desc=True)\
+            .execute()
+    
     else:
-        response = supabase.table("lahan").select("*").eq("organization_id", organization_id).execute()
-        
-    return response.data
+        # User biasa hanya lihat lahannya sendiri
+        result = supabase.table("lahan")\
+            .select("*")\
+            .eq("user_id", current_user["id"])\
+            .order("created_at", desc=True)\
+            .execute()
+    
+    return result.data
 
 @router.get("/{lahan_id}")
 async def get_lahan(lahan_id: str, current_user: dict = Depends(get_current_user)) -> Any:
