@@ -1,5 +1,6 @@
 import ee
 import os
+import json
 import random
 from dotenv import load_dotenv
 
@@ -7,17 +8,15 @@ load_dotenv()
 
 def initialize_gee():
     if not ee.data._credentials:
-        key_path = os.getenv("GEE_KEY_FILE", "backend/gee-key.json")
-        if not os.path.isabs(key_path):
-            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-            key_path = os.path.join(base_dir, os.path.basename(key_path))
-            
-        account = os.getenv("GEE_SERVICE_ACCOUNT")
-        if account and os.path.exists(key_path):
-            credentials = ee.ServiceAccountCredentials(account, key_path)
-            ee.Initialize(credentials)
-        else:
-            print(f"Warning: Missing GEE credentials or key file at {key_path}. Using fallback mock data.")
+        service_account = os.getenv("GEE_SERVICE_ACCOUNT")
+        key_json_str = os.getenv("GEE_KEY_JSON")
+        
+        if not service_account or not key_json_str:
+            raise ValueError("GEE_SERVICE_ACCOUNT atau GEE_KEY_JSON tidak ditemukan di environment variables")
+        
+        key_data = json.loads(key_json_str)
+        credentials = ee.ServiceAccountCredentials(service_account, key_data=key_data)
+        ee.Initialize(credentials)
 
 def analyze_lahan(polygon_geojson, lahan_id):
     try:
