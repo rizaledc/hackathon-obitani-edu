@@ -24,9 +24,9 @@ const RecommendationPanel = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col min-h-full">
+    <div className="flex flex-col min-h-full w-full">
       {/* Sticky Header */}
-      <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center sticky top-0 z-10 rounded-t-2xl">
+      <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center sticky top-0 z-10">
          <div className="flex items-center gap-2">
            <h2 className="text-lg font-bold text-gray-800">Hasil Analisis</h2>
            {status === 'done' && <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded border border-green-200 uppercase tracking-widest font-bold">Rekomendasi Utama</span>}

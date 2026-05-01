@@ -188,11 +188,11 @@ const MapPage = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-100px)] gap-6 w-full relative animate-fadeIn">
+    <div className="flex h-[calc(100vh-64px)] w-full relative animate-fadeIn bg-white">
       
       {/* Panel Daftar Lahan Kiri */}
       {showLahanList && (
-        <div className="w-[300px] flex-shrink-0 bg-white rounded-2xl shadow-sm border border-gray-200 flex flex-col overflow-hidden h-full animate-slideRight">
+        <div className="w-[300px] flex-shrink-0 bg-white shadow-[2px_0_10px_rgba(0,0,0,0.05)] border-r border-gray-200 flex flex-col h-full animate-slideRight z-20">
            <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
               <h2 className="font-bold text-gray-800 text-sm">Daftar Lahan</h2>
               <div className="flex items-center gap-2">
@@ -228,7 +228,8 @@ const MapPage = () => {
         </div>
       )}
 
-      <div className="flex-1 rounded-2xl overflow-hidden shadow-sm border border-gray-200 relative group cursor-crosshair">
+      {/* Map Wrapper */}
+      <div className="flex-1 relative group cursor-crosshair z-0 overflow-hidden">
         <MapViewer 
           onSelectLocation={handleSelectLocation} 
           lahans={lahans} 
@@ -320,7 +321,7 @@ const MapPage = () => {
       </div>
       
       {selectedLocation && (
-        <div className="w-[320px] flex-shrink-0 overflow-y-auto pr-2 pb-6 custom-scrollbar animate-slideLeft" style={{ scrollbarWidth: 'none' }}>
+        <div className="w-[320px] flex-shrink-0 bg-white shadow-[-2px_0_10px_rgba(0,0,0,0.05)] border-l border-gray-200 overflow-y-auto animate-slideLeft custom-scrollbar flex flex-col h-full z-20" style={{ scrollbarWidth: 'none' }}>
           {analysisError && (
             <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-xl text-sm font-medium">
               {analysisError}
