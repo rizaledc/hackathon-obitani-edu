@@ -43,7 +43,7 @@ async def get_lahan(lahan_id: str, current_user: dict = Depends(get_current_user
         
     return lahan
 
-@router.delete("/{lahan_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{lahan_id}", status_code=status.HTTP_200_OK)
 async def delete_lahan(lahan_id: str, current_user: dict = Depends(get_current_user)) -> Any:
     response = supabase.table("lahan").select("*").eq("id", lahan_id).execute()
     if not response.data:

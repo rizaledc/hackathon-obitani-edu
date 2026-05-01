@@ -65,7 +65,7 @@ async def update_user(user_id: str, payload: UserUpdate, current_user: dict = De
         raise HTTPException(status_code=500, detail="Failed to update user")
     return res.data[0]
 
-@router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{user_id}", status_code=status.HTTP_200_OK)
 async def delete_user(user_id: str, current_user: dict = Depends(get_current_user)) -> Any:
     if user_id == current_user["id"]:
         raise HTTPException(status_code=400, detail="Cannot delete yourself")
