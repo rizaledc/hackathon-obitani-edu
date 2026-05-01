@@ -62,12 +62,17 @@ const AdminMLOps = () => {
     );
   }
 
-  const formatDate = (dateStr) => {
-    if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('id-ID', {
-      day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-    }) + ' WIB';
-  };
+  const fileName = mlopsData.model_info?.file_name || '-';
+  const sizeKb = mlopsData.model_info?.size_bytes 
+    ? (mlopsData.model_info.size_bytes / 1024).toFixed(1) 
+    : '0';
+  const modifiedAt = mlopsData.model_info?.modified_at
+    ? new Date(mlopsData.model_info.modified_at)
+      .toLocaleDateString('id-ID', {
+        day: 'numeric', month: 'long', year: 'numeric'
+      })
+    : '-';
+  const totalPredictions = mlopsData.total_predictions || 0;
 
   return (
     <div className="flex-1 p-6 lg:px-8 bg-[#FAFAFA] font-sans h-[calc(100vh-64px)] overflow-y-auto">
@@ -102,10 +107,10 @@ const AdminMLOps = () => {
         {/* SECTION 2 — Info Model ML */}
         <SectionHeader title="Info Model ML" icon={<Brain size={18} />} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <InfoCard title="Nama Model" value={mlopsData.model_name || '-'} icon={<FileText size={18} />} />
-          <InfoCard title="Ukuran File" value={`${mlopsData.model_size_kb || 0} KB`} icon={<Database size={18} />} />
-          <InfoCard title="Total Prediksi" value={mlopsData.total_predictions || 0} icon={<BarChart2 size={18} />} />
-          <InfoCard title="Tanggal Modified" value={formatDate(mlopsData.modified_at)} icon={<CheckCircle size={18} />} />
+          <InfoCard title="Nama Model" value={fileName} icon={<FileText size={18} />} />
+          <InfoCard title="Ukuran File" value={`${sizeKb} KB`} icon={<Database size={18} />} />
+          <InfoCard title="Total Prediksi" value={totalPredictions} icon={<BarChart2 size={18} />} />
+          <InfoCard title="Tanggal Modified" value={modifiedAt} icon={<CheckCircle size={18} />} />
           <InfoCard title="Algoritma" value="Random Forest Classifier" icon={<Cpu size={18} />} />
           <InfoCard title="Dataset" value="Crop Recommendation - 22 Label Tanaman" icon={<Database size={18} />} />
           <InfoCard title="Akurasi Training" value=">99%" icon={<Zap size={18} className="text-amber-500" />} valueColor="text-green-600" />
