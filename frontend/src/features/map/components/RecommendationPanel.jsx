@@ -1,152 +1,389 @@
 import React, { useState } from 'react';
+import api from '../../../services/api';
 import OrbitaniLoader from '../../../components/OrbitaniLoader';
 import { toIndonesian } from '../../../utils/plantNames';
-import AIExplanationCard from '../../chat/components/AIExplanationCard';
 import { Sparkle } from '@phosphor-icons/react';
+
+const pearson = (arr1, arr2) => {
+  const n = arr1.length;
+  if (n === 0) return 0;
+  const avg1 = arr1.reduce((a,b) => a+b, 0) / n;
+  const avg2 = arr2.reduce((a,b) => a+b, 0) / n;
+  const num = arr1.reduce((s,v,i) => s + (v-avg1)*(arr2[i]-avg2), 0);
+  const den = Math.sqrt(
+    arr1.reduce((s,v) => s + Math.pow(v-avg1, 2), 0) *
+    arr2.reduce((s,v) => s + Math.pow(v-avg2, 2), 0)
+  );
+  return den === 0 ? 0 : (num/den).toFixed(2);
+};
+
+const SHAP_VALUES = [
+  { feature: 'Humidity', value: 0.0317 },
+  { feature: 'N', value: 0.0267 },
+  { feature: 'K', value: 0.0252 },
+  { feature: 'Rainfall', value: 0.0251 },
+  { feature: 'P', value: 0.0229 },
+  { feature: 'Temperature', value: 0.0098 },
+  { feature: 'pH', value: 0.0046 }
+];
 
 const RecommendationPanel = ({ 
   location, 
   status, 
   result, 
-  aiResult, 
-  aiLoading, 
-  aiError, 
   onAnalyze,
-  onAnalyzeAI,
-  onDemoMode,
-  onClose
+  onClose,
+  selectedLahan
 }) => {
-  const isLoading = status !== 'idle' && status !== 'done';
-  const [contextInput, setContextInput] = useState("");
+  const isLoading = status === 'processing';
+  const [chatInput, setChatInput] = useState('');
+  const [aiResponse, setAiResponse] = useState(null);
+  const [isChatLoading, setIsChatLoading] = useState(false);
 
-  const handleAIAnalysis = () => {
-    if (onAnalyzeAI) onAnalyzeAI(contextInput);
+  const resultsData = Array.isArray(result) ? result : (result?.results || []);
+  const hasData = resultsData.length > 0;
+
+  const handleChat = async () => {
+    if (!chatInput.trim() || !location?.id) return;
+    setIsChatLoading(true);
+    try {
+      const res = await api.post('/api/chat/', {
+        message: chatInput,
+        lahan_id: location.id
+      });
+      setAiResponse(res.data.data?.reply || res.data.reply || res.data);
+    } catch (e) {
+      setAiResponse("Maaf, terjadi kesalahan saat menghubungi pakar AI.");
+    } finally {
+      setIsChatLoading(false);
+    }
   };
 
+  const calculateStats = (key) => {
+    if (!hasData) return { min: 0, avg: 0, max: 0, std: 0 };
+    const values = resultsData.map(r => r[key]).filter(v => v != null);
+    if (values.length === 0) return { min: 0, avg: 0, max: 0, std: 0 };
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const avg = values.reduce((a,b) => a+b, 0) / values.length;
+    const std = Math.sqrt(values.reduce((s,v) => s + Math.pow(v - avg, 2), 0) / values.length);
+    return { 
+      min: min.toFixed(1), 
+      avg: avg.toFixed(1), 
+      max: max.toFixed(1), 
+      std: std.toFixed(1) 
+    };
+  };
+
+  const getAverages = () => ({
+    n: calculateStats('n').avg,
+    p: calculateStats('p').avg,
+    k: calculateStats('k').avg,
+    ph: calculateStats('ph').avg,
+    temperature: calculateStats('temperature').avg,
+    humidity: calculateStats('humidity').avg,
+    rainfall: calculateStats('rainfall').avg,
+  });
+
+  const getRankings = () => {
+    if (!hasData) return [];
+    const count = {};
+    resultsData.forEach(r => {
+      const c = r.hasil_rekomendasi;
+      if (c && c !== 'Unknown') count[c] = (count[c] || 0) + 1;
+    });
+    return Object.entries(count)
+      .sort((a,b) => b[1] - a[1])
+      .map(([crop, c]) => ({ crop, count: c, percentage: Math.round((c/resultsData.length)*100) }));
+  };
+
+  const getCorrelationMatrix = () => {
+    if (!hasData) return [];
+    const vars = ['n', 'p', 'k', 'ph', 'temperature', 'humidity'];
+    return vars.map(v1 => 
+      vars.map(v2 => {
+        const arr1 = resultsData.map(r => r[v1]);
+        const arr2 = resultsData.map(r => r[v2]);
+        return pearson(arr1, arr2);
+      })
+    );
+  };
+
+  const getNormalization = (key, val) => {
+    const ranges = {
+      n: [0, 140], p: [5, 145], k: [5, 205], ph: [0, 14], temperature: [0, 50], humidity: [0, 100]
+    };
+    const [min, max] = ranges[key] || [0, 100];
+    const pct = Math.max(0, Math.min(100, ((val - min) / (max - min)) * 100));
+    return pct;
+  };
+
+  const renderCorrelationColor = (val) => {
+    const r = parseFloat(val);
+    if (r === 1) return 'bg-[#1a1a2e] text-gray-500'; // diagonal
+    if (r >= 0.5) return 'bg-green-500/20 text-green-400';
+    if (r <= -0.5) return 'bg-red-500/20 text-red-400';
+    return 'bg-gray-800 text-gray-400';
+  };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+  };
+
+  if (!location) {
+    return (
+      <div className="flex flex-col min-h-full w-full bg-[#1a1a2e] text-white font-sans p-6 items-center justify-center text-center">
+        <span className="text-4xl mb-4">🌍</span>
+        <p className="text-gray-400">Pilih lahan dari daftar atau peta untuk melihat analisis</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col min-h-full w-full">
-      {/* Sticky Header */}
-      <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center sticky top-0 z-10">
-         <div className="flex items-center gap-2">
-           <h2 className="text-lg font-bold text-gray-800">Hasil Analisis</h2>
-           {status === 'done' && <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded border border-green-200 uppercase tracking-widest font-bold">Rekomendasi Utama</span>}
-         </div>
-         {onClose && (
-           <button 
-             onClick={onClose}
-             className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-             title="Tutup Panel"
-           >
-             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-           </button>
-         )}
+    <div className="flex flex-col min-h-full w-full bg-[#1a1a2e] text-gray-200 font-sans border-l border-gray-800 shadow-2xl overflow-y-auto custom-scrollbar" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+      
+      {/* HEADER (SECTION 1) */}
+      <div className="sticky top-0 bg-[#1a1a2e]/95 backdrop-blur-md z-20 p-5 border-b border-gray-800 flex flex-col gap-3">
+        <div className="flex justify-between items-start">
+          <div>
+            <h2 className="text-xl font-bold text-white mb-1">{selectedLahan?.nama || 'Lahan Tanpa Nama'}</h2>
+            {hasData && (
+              <p className="text-xs text-gray-400">Analisis: {formatDate(resultsData[0]?.created_at) || 'Baru Saja'}</p>
+            )}
+          </div>
+          {onClose && (
+            <button onClick={onClose} className="p-1.5 text-gray-500 hover:text-white rounded-md transition-colors bg-gray-800/50 hover:bg-gray-700">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          )}
+        </div>
+        <button 
+          onClick={onAnalyze}
+          disabled={isLoading}
+          className="w-full bg-[#16a34a] hover:bg-green-500 text-white font-bold py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 shadow-lg shadow-green-900/20 disabled:opacity-50"
+        >
+          {isLoading ? <OrbitaniLoader status="processing" size="small" /> : (
+            <>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+              {hasData ? "Perbarui Analisis" : "Analisis Lahan Sekarang"}
+            </>
+          )}
+        </button>
       </div>
 
-      <div className="p-4 pt-3 flex-1 flex flex-col">
-      {!location && (
-        <div className="flex-1 flex flex-col items-center justify-center text-center text-text-secondary opacity-70 animate-fadeIn">
-          <svg className="w-16 h-16 mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <p className="text-sm mb-6">Klik peta untuk memulai analisis lahan</p>
-          <button 
-            onClick={onDemoMode}
-            className="text-xs font-bold text-primary bg-primary-pale hover:bg-primary-light hover:text-white px-4 py-2 rounded-lg transition-colors shadow-sm"
-          >
-            Gunakan Demo Data
-          </button>
-        </div>
-      )}
-
-      {location && status === 'idle' && (
-        <div className="mb-4 p-3 bg-primary-pale rounded-xl border border-primary/20 animate-slideUp">
-          <p className="text-[11px] font-semibold text-text-secondary mb-1">Koordinat Lahan</p>
-          <div className="flex justify-between items-center text-xs font-medium text-text-primary mb-3">
-            <span>Lat: {location.lat.toFixed(4)}</span>
-            <span>Lng: {location.lng.toFixed(4)}</span>
+      <div className="p-5 flex flex-col gap-8 pb-10">
+        
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center py-12">
+            <OrbitaniLoader status="processing" />
+            <p className="text-sm text-gray-400 mt-4 animate-pulse">Menjalankan 10 titik sampel & MLOps...</p>
           </div>
-          <button 
-            onClick={onAnalyze}
-            className="w-full bg-primary text-white font-bold py-2 text-sm rounded-lg hover:bg-primary-dark transition-colors shadow-sm"
-          >
-            Analisis Lahan
-          </button>
-        </div>
-      )}
+        )}
 
-      {isLoading && (
-        <div className="flex-1 flex flex-col items-center justify-center py-10 animate-fadeIn">
-          <OrbitaniLoader status="processing" />
-        </div>
-      )}
-
-      {status === 'done' && result && (
-        <div className="flex-1 flex flex-col animate-slideUp pb-2">
-          <div className="flex flex-col items-center justify-center py-6 border-b border-gray-100 mb-6">
-            <div className="w-24 h-24 bg-primary-pale rounded-full flex items-center justify-center mb-4 border-4 border-white shadow-sm">
-              <span className="text-4xl">🌱</span>
-            </div>
-            <h3 className="text-3xl font-bold text-text-primary mb-4 capitalize">
-              {toIndonesian(result.plant)}
-            </h3>
-            
-            <div className="w-full px-4">
-              <div className="flex justify-between text-xs font-bold mb-1.5">
-                <span className="text-text-secondary uppercase tracking-wider">Confidence Score</span>
-                <span className="text-primary">{(result.confidence * 100).toFixed(0)}%</span>
+        {!isLoading && hasData && (
+          <>
+            {/* SECTION 3 - REKOMENDASI */}
+            <section>
+              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Top Rekomendasi</h3>
+              <div className="space-y-3">
+                {getRankings().slice(0, 3).map((r, i) => (
+                  <div key={i} className="bg-gray-800/50 rounded-xl p-3 border border-gray-700/50">
+                    <div className="flex justify-between mb-2">
+                      <span className="font-bold text-white text-sm flex items-center gap-2">
+                        {i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉'} {toIndonesian(r.crop)}
+                      </span>
+                      <span className="text-xs font-bold text-[#16a34a] bg-green-900/30 px-2 py-0.5 rounded">{r.percentage}%</span>
+                    </div>
+                    <div className="w-full bg-gray-700 rounded-full h-1.5">
+                      <div className="bg-[#16a34a] h-1.5 rounded-full" style={{ width: `${r.percentage}%` }}></div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-primary h-2 rounded-full transition-all duration-1000 ease-out" 
-                  style={{ width: `${result.confidence * 100}%` }}
-                ></div>
+            </section>
+
+            {/* SECTION 2 - RATA RATA BIOFISIK */}
+            <section>
+              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Kondisi Biofisik (Avg)</h3>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { label: 'Nitrogen', val: getAverages().n, unit: 'mg/kg' },
+                  { label: 'Phosphor', val: getAverages().p, unit: 'mg/kg' },
+                  { label: 'Kalium', val: getAverages().k, unit: 'mg/kg' },
+                  { label: 'pH Tanah', val: getAverages().ph, unit: '' },
+                  { label: 'Suhu', val: getAverages().temperature, unit: '°C' },
+                  { label: 'Curah Hujan', val: getAverages().rainfall, unit: 'mm' },
+                ].map((item, i) => (
+                  <div key={i} className="bg-gray-800/30 p-3 rounded-lg border border-gray-700/30 flex flex-col">
+                    <span className="text-[10px] text-gray-500 uppercase">{item.label}</span>
+                    <span className="text-lg font-bold text-white">{item.val} <span className="text-xs font-normal text-gray-400">{item.unit}</span></span>
+                  </div>
+                ))}
               </div>
-            </div>
-          </div>
-          
-          <div className="bg-gray-50 p-5 rounded-xl mb-6 border border-gray-100">
-            <p className="text-xs font-bold text-text-secondary uppercase mb-2">Analisis Sistem</p>
-            <p className="text-sm text-text-primary leading-relaxed">
-              {result.reason}
-            </p>
-          </div>
-          
-          <div className="mt-auto space-y-4">
-            <div className="pt-4 border-t border-gray-100">
-              <label className="block text-xs font-bold text-text-secondary uppercase mb-2">
-                Tanya Pakar AI (Opsional)
-              </label>
-              <input 
-                type="text" 
-                placeholder="Misal: Lahan sering tergenang air..."
-                value={contextInput}
-                onChange={(e) => setContextInput(e.target.value)}
-                className="w-full text-sm p-3 border border-gray-200 rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-text-primary bg-gray-50 focus:bg-white transition-colors"
+            </section>
+
+            {/* SECTION 6 - PROFIL BAR CHART */}
+            <section>
+              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Profil Lahan</h3>
+              <div className="space-y-3 bg-gray-800/30 p-4 rounded-xl border border-gray-700/30">
+                {['n', 'p', 'k', 'ph', 'temperature', 'humidity'].map((key) => {
+                  const val = getAverages()[key];
+                  const pct = getNormalization(key, val);
+                  return (
+                    <div key={key}>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-gray-400 uppercase">{key}</span>
+                        <span className="text-white font-medium">{val}</span>
+                      </div>
+                      <div className="w-full bg-gray-700 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-gradient-to-r from-green-600 to-[#16a34a] h-1.5" style={{ width: `${pct}%` }}></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* SECTION 5 - STATISTIK */}
+            <section>
+              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Statistik N, P, K</h3>
+              <div className="overflow-hidden border border-gray-700/50 rounded-xl">
+                <table className="w-full text-xs text-left">
+                  <thead className="bg-gray-800 text-gray-400 uppercase">
+                    <tr>
+                      <th className="px-3 py-2">Var</th>
+                      <th className="px-3 py-2">Min</th>
+                      <th className="px-3 py-2">Avg</th>
+                      <th className="px-3 py-2">Max</th>
+                      <th className="px-3 py-2">Std</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700/50">
+                    {['n', 'p', 'k'].map(v => {
+                      const st = calculateStats(v);
+                      return (
+                        <tr key={v} className="bg-gray-800/20">
+                          <td className="px-3 py-2 font-bold uppercase text-white">{v}</td>
+                          <td className="px-3 py-2">{st.min}</td>
+                          <td className="px-3 py-2 text-[#16a34a] font-bold">{st.avg}</td>
+                          <td className="px-3 py-2">{st.max}</td>
+                          <td className="px-3 py-2 text-gray-500">{st.std}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            {/* SECTION 7 - KORELASI */}
+            <section>
+              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Korelasi Variabel (Pearson)</h3>
+              <div className="overflow-x-auto border border-gray-700/50 rounded-xl custom-scrollbar pb-1">
+                <table className="w-full text-[10px] text-center border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="p-1 bg-gray-800 border-b border-r border-gray-700/50"></th>
+                      {['N', 'P', 'K', 'pH', 'Suhu', 'Hum'].map(h => <th key={h} className="p-2 bg-gray-800 border-b border-gray-700/50 text-gray-400 font-medium">{h}</th>)}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {getCorrelationMatrix().map((row, i) => (
+                      <tr key={i}>
+                        <th className="p-2 bg-gray-800 border-r border-gray-700/50 text-gray-400 font-medium">{['N', 'P', 'K', 'pH', 'Suhu', 'Hum'][i]}</th>
+                        {row.map((val, j) => (
+                          <td key={j} className={`p-2 font-mono ${renderCorrelationColor(val)}`}>
+                            {val}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            {/* SECTION 8 - SHAP */}
+            <section>
+              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Feature Importance (SHAP)</h3>
+              <div className="space-y-2.5 bg-gray-800/30 p-4 rounded-xl border border-gray-700/30">
+                {SHAP_VALUES.map((shap, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <span className="text-[10px] uppercase text-gray-400 w-16 truncate">{shap.feature}</span>
+                    <div className="flex-1 bg-gray-700 h-2 rounded-full overflow-hidden">
+                      <div className="bg-purple-500 h-2 rounded-full" style={{ width: `${(shap.value / SHAP_VALUES[0].value) * 100}%` }}></div>
+                    </div>
+                    <span className="text-[10px] font-mono text-gray-300 w-10 text-right">{shap.value}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* SECTION 4 - TABEL TITIK */}
+            <section>
+              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 border-l-2 border-[#16a34a] pl-2">Data Titik Sampel</h3>
+              <div className="overflow-x-auto border border-gray-700/50 rounded-xl custom-scrollbar pb-2">
+                <table className="w-full text-[10px] text-left whitespace-nowrap">
+                  <thead className="bg-gray-800 text-gray-400">
+                    <tr>
+                      <th className="p-2">No</th>
+                      <th className="p-2">Lat</th>
+                      <th className="p-2">Lng</th>
+                      <th className="p-2 text-center">N</th>
+                      <th className="p-2 text-center">P</th>
+                      <th className="p-2 text-center">K</th>
+                      <th className="p-2 text-center">pH</th>
+                      <th className="p-2">Rekomendasi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-700/50">
+                    {resultsData.map((r, i) => (
+                      <tr key={i} className="bg-gray-800/20 hover:bg-gray-700/30">
+                        <td className="p-2">{i+1}</td>
+                        <td className="p-2 font-mono">{r.latitude?.toFixed(4) || '-'}</td>
+                        <td className="p-2 font-mono">{r.longitude?.toFixed(4) || '-'}</td>
+                        <td className="p-2 text-center text-blue-400">{r.n}</td>
+                        <td className="p-2 text-center text-orange-400">{r.p}</td>
+                        <td className="p-2 text-center text-yellow-400">{r.k}</td>
+                        <td className="p-2 text-center text-pink-400">{r.ph}</td>
+                        <td className="p-2 font-bold text-[#16a34a]">{toIndonesian(r.hasil_rekomendasi)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            {/* SECTION 9 - KONSULTASI AI */}
+            <section className="mt-4 pt-6 border-t border-gray-800">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-3">
+                <Sparkle weight="fill" className="text-yellow-400" /> Tanya Pakar AI
+              </h3>
+              <textarea
+                value={chatInput}
+                onChange={e => setChatInput(e.target.value)}
+                placeholder="Tanyakan analisis mendalam tentang lahan ini..."
+                className="w-full bg-gray-800/50 border border-gray-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#16a34a] focus:border-[#16a34a] mb-3 resize-none h-24"
               />
-              <button 
-                onClick={handleAIAnalysis}
-                disabled={aiLoading}
-                className="w-full flex items-center justify-center gap-2 bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 rounded-xl transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed group"
+              <button
+                onClick={handleChat}
+                disabled={isChatLoading || !chatInput.trim()}
+                className="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-2 rounded-lg text-sm transition-colors border border-gray-700 disabled:opacity-50"
               >
-                <Sparkle size={20} weight="fill" className={aiLoading ? 'animate-pulse text-primary' : 'text-primary group-hover:scale-110 transition-transform'} />
-                <span>{aiLoading ? 'Memproses AI...' : 'Dapatkan Insight AI'}</span>
+                {isChatLoading ? 'Menganalisis...' : 'Kirim Pertanyaan'}
               </button>
-            </div>
-          </div>
-          
-          {aiLoading && (
-            <div className="mt-6 py-4 animate-fadeIn">
-              <OrbitaniLoader status="processing" />
-            </div>
-          )}
-
-          {(aiResult || aiError) && !aiLoading && (
-            <AIExplanationCard data={aiResult} error={aiError} />
-          )}
-          
-        </div>
-      )}
+              
+              {aiResponse && (
+                <div className="mt-4 bg-[#16a34a]/10 border border-[#16a34a]/30 p-4 rounded-xl text-sm text-gray-300 leading-relaxed">
+                  <div className="font-bold text-[#16a34a] mb-1 flex items-center gap-1"><Sparkle size={14}/> Jawaban AI:</div>
+                  {aiResponse}
+                </div>
+              )}
+            </section>
+          </>
+        )}
       </div>
     </div>
   );

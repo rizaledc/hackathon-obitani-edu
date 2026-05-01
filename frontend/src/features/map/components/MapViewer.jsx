@@ -40,15 +40,11 @@ const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, dr
       return (
         <React.Fragment key={lahan.id}>
           <Polygon positions={positions} 
-            pathOptions={{color: '#047857', fillColor: '#10b981', fillOpacity: 0.4}} 
-            eventHandlers={{ click: (e) => {
-              onSelectLocation(lat, lng, lahan.id);
-            }}} />
-          <CircleMarker center={[lat, lng]} radius={selectedLocation?.id === lahan.id ? 8 : 6}
             pathOptions={{
-              color: selectedLocation?.id === lahan.id ? '#10b981' : '#dc2626', 
-              fillColor: selectedLocation?.id === lahan.id ? '#10b981' : '#ef4444', 
-              fillOpacity: 1
+               color: selectedLocation?.id === lahan.id ? '#059669' : '#047857', 
+               fillColor: selectedLocation?.id === lahan.id ? '#34d399' : '#10b981', 
+               fillOpacity: selectedLocation?.id === lahan.id ? 0.6 : 0.4,
+               weight: selectedLocation?.id === lahan.id ? 3 : 2
             }} 
             eventHandlers={{ click: (e) => {
               onSelectLocation(lat, lng, lahan.id);

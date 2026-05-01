@@ -17,14 +17,7 @@ const LoginPage = () => {
     setLoading(true);
     try {
       await login(username, password);
-      // redirect berdasarkan role
-      const state = useAuthStore.getState();
-      const role = state.user?.role || state.role;
-      if (role === 'superadmin' || role === 'admin') {
-        navigate('/admin/dashboard');
-      } else {
-        navigate('/map');
-      }
+      navigate('/map');
     } catch (err) {
       setError('Username atau password salah');
     } finally {

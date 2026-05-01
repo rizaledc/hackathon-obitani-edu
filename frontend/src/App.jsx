@@ -8,7 +8,6 @@ const LandingPage = lazy(() => import("./features/landing/LandingPage"));
 const MapPage = lazy(() => import("./features/map/MapPage"));
 const LoginPage = lazy(() => import("./features/auth/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/RegisterPage"));
-const AdminDashboard = lazy(() => import("./features/admin/AdminDashboard"));
 const UserManagement = lazy(() => import("./features/admin/UserManagement"));
 const HistoryPage = lazy(() => import("./features/history/HistoryPage"));
 const ChatPage = lazy(() => import("./features/chat/ChatPage"));
@@ -39,7 +38,6 @@ function App() {
         {/* Dashboard Routes wrapped in MainLayout and ProtectedRoute */}
         <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
           <Route path="/map" element={<MapPage />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/chat-live" element={<div className="p-6">Live Chat Page Placeholder</div>} />
           <Route path="/analytics" element={<div className="p-6">Analytics Page Placeholder</div>} />
@@ -61,6 +59,9 @@ function App() {
             </ProtectedRoute>
           } />
         </Route>
+        
+        {/* Catch all unmatched routes */}
+        <Route path="*" element={<Navigate to="/map" replace />} />
       </Routes> 
     </Suspense> 
   );

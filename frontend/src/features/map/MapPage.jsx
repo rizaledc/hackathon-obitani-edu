@@ -84,6 +84,23 @@ const MapPage = () => {
     fetchLahans();
   }, []);
 
+  const loadLastAnalysis = async (lahanId) => {
+    try {
+      const res = await api.get(`/api/history/${lahanId}`);
+      if (res.data && res.data.length > 0) {
+        setRecommendationResult(res.data);
+        setSamplePoints(res.data);
+        setStatus('done');
+      } else {
+        setRecommendationResult(null);
+        setSamplePoints([]);
+      }
+    } catch {
+      setRecommendationResult(null);
+      setSamplePoints([]);
+    }
+  };
+
   const handleSelectLocation = (lat, lng, id) => {
     if (isDrawingMode) {
       setDraftPoints(prev => [...prev, [lat, lng]]);
@@ -102,6 +119,7 @@ const MapPage = () => {
     setAnalysisError('');
 
     if (id) {
+      loadLastAnalysis(id);
       const selectedLahan = lahans.find(l => l.id === id);
       const bounds = getBounds(selectedLahan);
       
@@ -422,7 +440,7 @@ const MapPage = () => {
       </div>
       
       {selectedLocation && (
-        <div className="w-[320px] flex-shrink-0 bg-white shadow-[-2px_0_10px_rgba(0,0,0,0.05)] border-l border-gray-200 overflow-y-auto animate-slideLeft custom-scrollbar flex flex-col h-full z-20" style={{ scrollbarWidth: 'none' }}>
+        <div className="w-[400px] flex-shrink-0 bg-[#1a1a2e] border-l border-gray-800 overflow-y-auto animate-slideLeft custom-scrollbar flex flex-col h-full z-20 shadow-2xl" style={{ scrollbarWidth: 'none' }}>
           {analysisError && (
             <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-xl text-sm font-medium">
               {analysisError}
@@ -439,6 +457,7 @@ const MapPage = () => {
             onAnalyzeAI={handleAnalyzeAI}
             onDemoMode={handleDemoMode}
             onClose={() => setSelectedLocation(null)}
+            selectedLahan={lahans.find(l => l.id === selectedLocation.id)}
           />
         </div>
       )}
