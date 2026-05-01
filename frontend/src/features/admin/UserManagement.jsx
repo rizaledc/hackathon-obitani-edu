@@ -7,6 +7,7 @@ import {
 import api from '../../services/api';
 import useToast from '../../hooks/useToast';
 import useConfirm from '../../hooks/useConfirm';
+import useAuthStore from '../../store/authStore';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
