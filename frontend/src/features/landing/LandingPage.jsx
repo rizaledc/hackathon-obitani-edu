@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from "../../assets/logo.webp";
-import jenistanaman from "../../assets/jenistanaman.png";
-import bg2 from "../../assets/bg2.png";
+import jenistanaman from "../../assets/jenistanaman.webp";
+import bg2 from "../../assets/bg2.webp";
 
 const LandingPage = () => {
   const navigate = useNavigate();
