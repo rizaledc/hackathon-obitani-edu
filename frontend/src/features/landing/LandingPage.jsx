@@ -3,7 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import logo from "../../assets/logo.webp";
 import jenistanaman from "../../assets/jenistanaman.webp";
 import bg2 from "../../assets/bg2.webp";
-
+import {
+  Leaf,
+  Brain,
+  GlobeHemisphereWest,
+  Users,
+  ChartLineUp,
+  Cloud,
+  Cpu,
+  Database,
+  MapTrifold,
+  Globe,
+  ShieldCheck
+} from "@phosphor-icons/react";
 const LandingPage = () => {
   const navigate = useNavigate();
 
@@ -63,7 +75,7 @@ const LandingPage = () => {
           </h1>
           
           <p className="text-base text-gray-700 leading-relaxed">
-            Orbitani Edu adalah platform virtual laboratory berbasis kecerdasan buatan dan data satelit yang dirancang untuk membantu siswa, mahasiswa, dan institusi pendidikan memahami analisis lahan secara real-time dan interaktif. Mendukung pembelajaran agrikultur modern melalui pendekatan berbasis data dan teknologi.
+            Orbitani Edu adalah platform pembelajaran berbasis kecerdasan buatan dan data satelit yang membantu siswa dan mahasiswa memahami kondisi lahan secara nyata, interaktif, dan mudah dipahami. Belajar tidak lagi hanya teori, tetapi berbasis data langsung dari lapangan.
           </p>
           
           <div className="flex gap-4 pt-2">
@@ -87,25 +99,30 @@ const LandingPage = () => {
       <section className="py-20 bg-white border-y border-gray-100">
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6 animate-slideUp">
-            <div className="bg-green-50 p-6 rounded-xl text-center shadow-sm border border-green-100">
-              <div className="text-4xl font-extrabold text-primary mb-2">22+</div>
-              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide">Rekomendasi Tanaman</div>
+            <div className="bg-green-50 p-6 rounded-xl border border-green-100 shadow-sm flex flex-col items-center">
+              <Leaf size={28} className="text-green-600 mb-2" />
+              <h2 className="text-2xl font-bold text-gray-900">22+</h2>
+              <p className="text-sm text-gray-600 text-center">Rekomendasi Tanaman</p>
             </div>
-            <div className="bg-green-50 p-6 rounded-xl text-center shadow-sm border border-green-100">
-              <div className="text-4xl font-extrabold text-primary mb-2">10+</div>
-              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide">Wilayah Studi</div>
+            <div className="bg-green-50 p-6 rounded-xl border border-green-100 shadow-sm flex flex-col items-center">
+              <GlobeHemisphereWest size={28} className="text-green-600 mb-2" />
+              <h2 className="text-2xl font-bold text-gray-900">10+</h2>
+              <p className="text-sm text-gray-600 text-center">Wilayah Studi</p>
             </div>
-            <div className="bg-green-50 p-6 rounded-xl text-center shadow-sm border border-green-100">
-              <div className="text-4xl font-extrabold text-primary mb-2">Real-time</div>
-              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide">Data Satelit</div>
+            <div className="bg-green-50 p-6 rounded-xl border border-green-100 shadow-sm flex flex-col items-center">
+              <ChartLineUp size={28} className="text-green-600 mb-2" />
+              <h2 className="text-2xl font-bold text-gray-900">Real-time</h2>
+              <p className="text-sm text-gray-600 text-center">Data Satelit</p>
             </div>
-            <div className="bg-green-50 p-6 rounded-xl text-center shadow-sm border border-green-100">
-              <div className="text-4xl font-extrabold text-primary mb-2">AI</div>
-              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide">Analisis Cerdas</div>
+            <div className="bg-green-50 p-6 rounded-xl border border-green-100 shadow-sm flex flex-col items-center">
+              <Brain size={28} className="text-green-600 mb-2" />
+              <h2 className="text-2xl font-bold text-gray-900">AI</h2>
+              <p className="text-sm text-gray-600 text-center">Analisis Cerdas</p>
             </div>
-            <div className="bg-green-50 p-6 rounded-xl text-center shadow-sm border border-green-100">
-              <div className="text-4xl font-extrabold text-primary mb-2">99%</div>
-              <div className="text-xs font-bold text-gray-500 uppercase tracking-wide">Stabilitas Sistem</div>
+            <div className="bg-green-50 p-6 rounded-xl border border-green-100 shadow-sm flex flex-col items-center">
+              <Cloud size={28} className="text-green-600 mb-2" />
+              <h2 className="text-2xl font-bold text-gray-900">99%</h2>
+              <p className="text-sm text-gray-600 text-center">Stabilitas Sistem</p>
             </div>
           </div>
         </div>
@@ -121,7 +138,7 @@ const LandingPage = () => {
                 Membangun Masa Depan Edukasi Pertanian Digital
               </h2>
               <p className="text-gray-600 leading-relaxed text-lg">
-                Orbitani Edu dikembangkan sebagai solusi pembelajaran berbasis teknologi untuk menjawab tantangan keterbatasan akses terhadap alat analisis pertanian modern. Dengan memanfaatkan data satelit dan kecerdasan buatan, platform ini menghadirkan pengalaman belajar yang lebih kontekstual, interaktif, dan relevan dengan kondisi nyata di lapangan.
+                Orbitani Edu hadir untuk menjembatani kesenjangan antara teori dan praktik dalam pembelajaran pertanian. Dengan bantuan data satelit dan kecerdasan buatan, pengguna dapat memahami kondisi lahan secara lebih nyata tanpa harus selalu turun langsung ke lapangan.
               </p>
             </div>
 
@@ -144,33 +161,44 @@ const LandingPage = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-3">Nilai Utama Pembelajaran</h2>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 text-left animate-slideUp">
-            <div className="bg-green-50 rounded-2xl p-8 border border-green-100 hover:-translate-y-2 transition duration-300">
-              <div className="h-2 w-12 bg-primary rounded-full mb-6"></div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Berkelanjutan</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Mendorong pemanfaatan sumber daya secara efisien untuk pembelajaran pertanian yang berkelanjutan.
-              </p>
+            <div className="flex items-start gap-4">
+              <Leaf size={24} className="text-green-600 mt-1 shrink-0" />
+              <div>
+                <h4 className="font-semibold text-gray-900 text-lg mb-2">Berkelanjutan</h4>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Pembelajaran yang mendorong penggunaan sumber daya secara efisien.
+                </p>
+              </div>
             </div>
-            <div className="bg-green-50 rounded-2xl p-8 border border-green-100 hover:-translate-y-2 transition duration-300">
-              <div className="h-2 w-12 bg-primary rounded-full mb-6"></div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Inovatif</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Menggunakan pendekatan kecerdasan buatan untuk meningkatkan kualitas pemahaman mahasiswa.
-              </p>
+            
+            <div className="flex items-start gap-4">
+              <Brain size={24} className="text-green-600 mt-1 shrink-0" />
+              <div>
+                <h4 className="font-semibold text-gray-900 text-lg mb-2">Inovatif</h4>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Menggunakan pendekatan kecerdasan buatan untuk meningkatkan kualitas pemahaman mahasiswa.
+                </p>
+              </div>
             </div>
-            <div className="bg-green-50 rounded-2xl p-8 border border-green-100 hover:-translate-y-2 transition duration-300">
-              <div className="h-2 w-12 bg-primary rounded-full mb-6"></div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Berbasis Data</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Menggunakan data satelit untuk memberikan gambaran kondisi lahan secara nyata.
-              </p>
+            
+            <div className="flex items-start gap-4">
+              <Database size={24} className="text-green-600 mt-1 shrink-0" />
+              <div>
+                <h4 className="font-semibold text-gray-900 text-lg mb-2">Berbasis Data</h4>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Menggunakan data satelit untuk memberikan gambaran kondisi lahan secara nyata.
+                </p>
+              </div>
             </div>
-            <div className="bg-green-50 rounded-2xl p-8 border border-green-100 hover:-translate-y-2 transition duration-300">
-              <div className="h-2 w-12 bg-primary rounded-full mb-6"></div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Kolaboratif</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Mendukung penggunaan oleh institusi pendidikan, dosen, dan mahasiswa secara bersama.
-              </p>
+            
+            <div className="flex items-start gap-4">
+              <Users size={24} className="text-green-600 mt-1 shrink-0" />
+              <div>
+                <h4 className="font-semibold text-gray-900 text-lg mb-2">Kolaboratif</h4>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Mendukung penggunaan oleh institusi pendidikan, dosen, dan mahasiswa secara bersama.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -185,24 +213,27 @@ const LandingPage = () => {
           </div>
           
           <div className="grid md:grid-cols-3 gap-6 animate-slideUp">
-            <div className="bg-green-50 p-6 rounded-xl border border-green-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition text-left">
+            <div className="bg-white p-8 rounded-2xl border border-green-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition text-left">
+              <MapTrifold size={32} className="text-primary mb-4" />
               <h3 className="font-semibold text-lg text-gray-900 mb-3">Analisis Lahan Interaktif</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Melakukan eksplorasi dan pemetaan lahan menggunakan WebGIS berbasis data satelit secara real-time.
+                Melihat dan memahami kondisi lahan secara langsung melalui peta interaktif berbasis data satelit.
               </p>
             </div>
             
-            <div className="bg-green-50 p-6 rounded-xl border border-green-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition text-left" style={{ animationDelay: '0.1s' }}>
+            <div className="bg-white p-8 rounded-2xl border border-green-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition text-left" style={{ animationDelay: '0.1s' }}>
+              <Brain size={32} className="text-primary mb-4" />
               <h3 className="font-semibold text-lg text-gray-900 mb-3">Asisten Pembelajaran Berbasis AI</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Menyediakan penjelasan kontekstual mengenai kondisi lahan dan rekomendasi tanaman secara edukatif.
+                Mendapatkan penjelasan sederhana dan rekomendasi tanaman dari sistem kecerdasan buatan.
               </p>
             </div>
             
-            <div className="bg-green-50 p-6 rounded-xl border border-green-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition text-left" style={{ animationDelay: '0.2s' }}>
+            <div className="bg-white p-8 rounded-2xl border border-green-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition text-left" style={{ animationDelay: '0.2s' }}>
+              <ShieldCheck size={32} className="text-primary mb-4" />
               <h3 className="font-semibold text-lg text-gray-900 mb-3">Infrastruktur Aman & Terintegrasi</h3>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Seluruh data diproses dalam sistem cloud yang stabil dan terstruktur untuk kebutuhan pembelajaran.
+                Sistem stabil dan aman untuk mendukung proses pembelajaran tanpa hambatan.
               </p>
             </div>
           </div>
@@ -217,33 +248,37 @@ const LandingPage = () => {
             <p className="text-gray-600">Langkah mudah mengeksplorasi platform</p>
           </div>
           
-          <div className="flex flex-col md:flex-row items-center justify-between mt-10 gap-6 animate-slideUp text-center">
-            <div className="max-w-xs">
-              <div className="text-3xl font-bold text-primary mb-3">01</div>
+          <div className="flex flex-col md:flex-row items-center justify-between mt-12 gap-6 animate-slideUp text-center">
+            <div className="max-w-xs flex flex-col items-center">
+              <MapTrifold size={28} className="text-green-500 mb-2" />
+              <div className="text-2xl font-bold text-primary mb-2">01</div>
               <h3 className="font-semibold text-gray-900 mb-2">Eksplorasi Lahan</h3>
               <p className="text-sm text-gray-600">Pengguna memilih lokasi melalui peta interaktif.</p>
             </div>
             
             <div className="hidden md:block w-16 h-[2px] bg-green-200"></div>
             
-            <div className="max-w-xs">
-              <div className="text-3xl font-bold text-primary mb-3">02</div>
+            <div className="max-w-xs flex flex-col items-center">
+              <Database size={28} className="text-green-500 mb-2" />
+              <div className="text-2xl font-bold text-primary mb-2">02</div>
               <h3 className="font-semibold text-gray-900 mb-2">Integrasi Data</h3>
               <p className="text-sm text-gray-600">Sistem mengambil data satelit seperti vegetasi, curah hujan, dan kondisi tanah.</p>
             </div>
             
             <div className="hidden md:block w-16 h-[2px] bg-green-200"></div>
             
-            <div className="max-w-xs">
-              <div className="text-3xl font-bold text-primary mb-3">03</div>
+            <div className="max-w-xs flex flex-col items-center">
+              <Cpu size={28} className="text-green-500 mb-2" />
+              <div className="text-2xl font-bold text-primary mb-2">03</div>
               <h3 className="font-semibold text-gray-900 mb-2">Analisis AI</h3>
               <p className="text-sm text-gray-600">Model AI memproses data untuk menghasilkan rekomendasi tanaman.</p>
             </div>
             
             <div className="hidden md:block w-16 h-[2px] bg-green-200"></div>
             
-            <div className="max-w-xs">
-              <div className="text-3xl font-bold text-primary mb-3">04</div>
+            <div className="max-w-xs flex flex-col items-center">
+              <ChartLineUp size={28} className="text-green-500 mb-2" />
+              <div className="text-2xl font-bold text-primary mb-2">04</div>
               <h3 className="font-semibold text-gray-900 mb-2">Insight Edukatif</h3>
               <p className="text-sm text-gray-600">Pengguna mendapatkan penjelasan dan hasil analisis sebagai bahan pembelajaran.</p>
             </div>
@@ -260,17 +295,21 @@ const LandingPage = () => {
           </p>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="bg-white p-4 rounded-xl border border-gray-200 text-center shadow-sm hover:shadow-md transition">
-              <div className="font-bold text-gray-700">Google Earth Engine</div>
+            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col items-center">
+              <Globe size={32} className="text-green-600 mb-3" />
+              <p className="font-medium text-gray-900 text-center">Google Earth Engine</p>
             </div>
-            <div className="bg-white p-4 rounded-xl border border-gray-200 text-center shadow-sm hover:shadow-md transition">
-              <div className="font-bold text-gray-700">Microsoft Azure Cloud</div>
+            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col items-center">
+              <Cloud size={32} className="text-green-600 mb-3" />
+              <p className="font-medium text-gray-900 text-center">Microsoft Azure Cloud</p>
             </div>
-            <div className="bg-white p-4 rounded-xl border border-gray-200 text-center shadow-sm hover:shadow-md transition">
-              <div className="font-bold text-gray-700">Model Machine Learning</div>
+            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col items-center">
+              <Cpu size={32} className="text-green-600 mb-3" />
+              <p className="font-medium text-gray-900 text-center">Machine Learning</p>
             </div>
-            <div className="bg-white p-4 rounded-xl border border-gray-200 text-center shadow-sm hover:shadow-md transition">
-              <div className="font-bold text-gray-700">Integrasi AI Generatif</div>
+            <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition flex flex-col items-center">
+              <Brain size={32} className="text-green-600 mb-3" />
+              <p className="font-medium text-gray-900 text-center">Integrasi AI Generatif</p>
             </div>
           </div>
         </div>
@@ -278,10 +317,14 @@ const LandingPage = () => {
 
       {/* 8. TARGET PENGGUNA */}
       <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-6 text-left animate-slideUp">
-          <h2 className="text-3xl font-bold text-gray-900 mb-10">
-            Dirancang untuk Dunia Pendidikan
-          </h2>
+        <div className="max-w-6xl mx-auto px-6 animate-slideUp">
+          <div className="text-center md:text-left mb-10">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Dirancang untuk Dunia Pendidikan
+            </h2>
+            <p className="text-gray-600">Platform ini dirancang untuk mendukung proses belajar bagi:</p>
+          </div>
+          
           <div className="grid md:grid-cols-4 gap-6 text-center">
             <div className="bg-green-50 px-6 py-8 rounded-2xl shadow-sm border border-green-100 font-bold text-gray-800 text-lg hover:-translate-y-2 transition">
               Siswa SMK Pertanian
@@ -293,7 +336,7 @@ const LandingPage = () => {
               Dosen dan Peneliti
             </div>
             <div className="bg-green-50 px-6 py-8 rounded-2xl shadow-sm border border-green-100 font-bold text-gray-800 text-lg hover:-translate-y-2 transition">
-              Institusi Pendidikan dan Dinas
+              Instansi Pendidikan dan Pemerintah
             </div>
           </div>
         </div>
