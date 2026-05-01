@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, Plus, MapPin, Clock, MessageSquare, Settings, ChevronDown, X, Brain } from 'lucide-react';
+import { Send, Plus, Clock, MessageSquare, Settings, ChevronDown, X, Brain, MapPin, Pencil, Trash2 } from 'lucide-react';
 import api from '../../services/api';
 
 const ChatPage = () => {
@@ -13,6 +13,8 @@ const ChatPage = () => {
   const [currentSessionId, setCurrentSessionId] = useState(`session_${Date.now()}`);
   const [sessionName, setSessionName] = useState('');
   const [chatSessions, setChatSessions] = useState([]);
+  const [editingSession, setEditingSession] = useState(null);
+  const [editName, setEditName] = useState('');
 
   // Fetch lahan list
   useEffect(() => {
@@ -72,6 +74,40 @@ const ChatPage = () => {
     setSessionName('');
     setMessages([]);
     setSelectedLahan(null);
+  };
+
+  const handleSaveSessionName = (session) => {
+    setChatSessions(prev => prev.map(s => 
+      s.session_id === session.session_id 
+        ? { ...s, session_name: editName } 
+        : s
+    ));
+    setEditingSession(null);
+  };
+
+  const handleDeleteSession = async (sessionId) => {
+    if (!window.confirm('Hapus percakapan ini?')) return;
+    try {
+      await api.delete('/api/chat/history', {
+        params: { session_id: sessionId }
+      });
+      setChatSessions(prev => prev.filter(s => s.session_id !== sessionId));
+      if (currentSessionId === sessionId) {
+        handleNewChat();
+      }
+    } catch {
+      setChatSessions(prev => prev.filter(s => s.session_id !== sessionId));
+      if (currentSessionId === sessionId) handleNewChat();
+    }
+  };
+
+  const formatTime = (dateStr) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) return 'Hari ini, ' + date.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+    if (diffDays === 1) return 'Kemarin';
+    return date.toLocaleDateString('id-ID', {day:'numeric', month:'short'});
   };
 
   // Load analysis data saat pilih lahan
@@ -176,49 +212,72 @@ const ChatPage = () => {
         </div>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar">
-          {/* Section: KONTEKS LAHAN */}
-          <div className="p-4 border-b border-gray-100">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Konteks Lahan</h3>
-            <div className="space-y-1">
-              <button
-                onClick={() => handleSelectLahan(null)}
-                className={`w-full flex items-center gap-2 p-2 rounded-lg text-sm text-left transition-colors ${!selectedLahan ? 'bg-green-50 text-green-700 font-semibold border-l-2 border-green-600' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                <MessageSquare size={14} className={!selectedLahan ? 'text-green-600' : 'text-gray-400'} />
-                <span className="truncate">Obrolan Umum</span>
-              </button>
-              {lahanList.map(lahan => (
-                <button
-                  key={lahan.id}
-                  onClick={() => handleSelectLahan(lahan)}
-                  className={`w-full flex items-center gap-2 p-2 rounded-lg text-sm text-left transition-colors ${selectedLahan?.id === lahan.id ? 'bg-green-50 text-green-700 font-semibold border-l-2 border-green-600' : 'text-gray-600 hover:bg-gray-100'}`}
-                >
-                  <MapPin size={14} className={selectedLahan?.id === lahan.id ? 'text-green-600' : 'text-gray-400'} />
-                  <span className="truncate">{lahan.nama || 'Lahan Tanpa Nama'}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Section: RIWAYAT PERCAKAPAN */}
           <div className="p-4">
             <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Riwayat Percakapan</h3>
             <div className="space-y-1">
               {chatSessions.map(session => (
-                <button
-                  key={session.session_id}
-                  onClick={() => handleLoadSession(session)}
-                  className={`w-full flex flex-col p-2.5 rounded-lg text-left transition-colors border border-transparent ${currentSessionId === session.session_id ? 'bg-white border-gray-200 shadow-sm' : 'hover:bg-gray-100'}`}
+                <div key={session.session_id}
+                  className={`group flex items-center gap-2 px-3 py-2.5 
+                    rounded-lg cursor-pointer transition-colors
+                    ${currentSessionId === session.session_id 
+                      ? 'bg-green-50 border-l-2 border-green-600' 
+                      : 'hover:bg-gray-50'}`}
                 >
-                  <div className="flex items-center gap-2 mb-1">
-                    <MessageSquare size={12} className="text-gray-400" />
-                    <span className="text-sm font-semibold text-gray-800 truncate">{session.session_name}</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-[10px] text-gray-400 pl-5">
-                    <Clock size={10} />
-                    <span>{new Date(session.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'})}</span>
-                  </div>
-                </button>
+                  {editingSession === session.session_id ? (
+                    // Mode edit nama
+                    <input
+                      className="flex-1 text-sm border border-green-400 
+                        rounded px-2 py-0.5 focus:outline-none"
+                      value={editName}
+                      onChange={e => setEditName(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') handleSaveSessionName(session)
+                        if (e.key === 'Escape') setEditingSession(null)
+                      }}
+                      autoFocus
+                    />
+                  ) : (
+                    <div className="flex-1 min-w-0"
+                      onClick={() => handleLoadSession(session)}>
+                      <p className="text-sm text-gray-700 truncate font-medium">
+                        {session.session_name || 'Percakapan'}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {formatTime(session.created_at)}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Tombol edit & hapus - muncul saat hover */}
+                  {editingSession !== session.session_id && (
+                    <div className="hidden group-hover:flex items-center gap-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setEditingSession(session.session_id)
+                          setEditName(session.session_name || '')
+                        }}
+                        className="p-1 text-gray-400 hover:text-green-600 
+                          rounded transition-colors"
+                        title="Edit nama"
+                      >
+                        <Pencil size={12} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleDeleteSession(session.session_id)
+                        }}
+                        className="p-1 text-gray-400 hover:text-red-500 
+                          rounded transition-colors"
+                        title="Hapus percakapan"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           </div>
