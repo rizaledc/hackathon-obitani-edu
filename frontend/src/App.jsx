@@ -12,6 +12,7 @@ const UserManagement = lazy(() => import("./features/admin/UserManagement"));
 const HistoryPage = lazy(() => import("./features/history/HistoryPage"));
 const ChatPage = lazy(() => import("./features/chat/ChatPage"));
 const AdminMLOps = lazy(() => import("./features/admin/AdminMLOps"));
+const AnalyticsPage = lazy(() => import("./features/analytics/AnalyticsPage"));
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, isAuthenticated } = useAuthStore();
@@ -52,7 +53,7 @@ function App() {
           <Route path="/map" element={<MapPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/chat-live" element={<div className="p-6">Live Chat Page Placeholder</div>} />
-          <Route path="/analytics" element={<div className="p-6">Analytics Page Placeholder</div>} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/history" element={<HistoryPage />} />
           
           <Route path="/admin/users" element={
