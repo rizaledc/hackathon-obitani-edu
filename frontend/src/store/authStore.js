@@ -11,19 +11,19 @@ const useAuthStore = create(
       unreadChatCount: 0,
       
       login: async (username, password) => {
-        const formData = new FormData()
-        formData.append('username', username)
-        formData.append('password', password)
+        const params = new URLSearchParams()
+        params.append('username', username)
+        params.append('password', password)
         
         const response = await axios.post(
           `${import.meta.env.VITE_API_URL || 'https://orbitani-edu-backend-bwbghbeegsf4fwev.indonesiacentral-01.azurewebsites.net'}/api/auth/login`,
-          formData,
+          params,
           { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
         )
         
         const { access_token, role } = response.data
         localStorage.setItem('token', access_token)
-        set({ token: access_token, user: { username, role }, isAuthenticated: true })
+        set({ token: access_token, role, user: { username, role }, isAuthenticated: true })
       },
       logout: () => set({ token: null, user: null, isAuthenticated: false }),
       setUnreadChatCount: (n) => set({ unreadChatCount: n }),

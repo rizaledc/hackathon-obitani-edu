@@ -43,13 +43,21 @@ const MapViewer = ({ onSelectLocation, lahans = [] }) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {lahans.map((lahan) => (
-          <Marker 
-            key={lahan.id} 
-            position={[lahan.lat, lahan.lng]} 
-            eventHandlers={{ click: () => onSelectLocation(lahan.lat, lahan.lng, lahan.id) }} 
-          />
-        ))}
+        {lahans.map((lahan) => {
+          if (!lahan.koordinat || !lahan.koordinat.coordinates) return null;
+          
+          const coords = lahan.koordinat.coordinates[0];
+          const lat = coords.reduce((s, c) => s + c[1], 0) / coords.length;
+          const lng = coords.reduce((s, c) => s + c[0], 0) / coords.length;
+          
+          return (
+            <Marker 
+              key={lahan.id} 
+              position={[lat, lng]} 
+              eventHandlers={{ click: () => onSelectLocation(lat, lng, lahan.id) }} 
+            />
+          );
+        })}
         <LocationMarker onSelectLocation={onSelectLocation} />
       </MapContainer>
     </div>

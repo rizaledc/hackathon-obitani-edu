@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import useAuthStore from '../../store/authStore';
 import logo from '../../assets/logo.webp';
+import OrbitaniLoader from '../../components/OrbitaniLoader';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -9,9 +10,11 @@ const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await login(username, password);
       // redirect berdasarkan role
@@ -24,6 +27,8 @@ const LoginPage = () => {
       }
     } catch (err) {
       setError('Username atau password salah');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,9 +74,17 @@ const LoginPage = () => {
             </div>
             <button 
               type="submit"
-              className="w-full bg-primary text-white font-bold py-3 rounded-xl hover:scale-105 transition-transform shadow-md"
+              disabled={loading}
+              className="w-full bg-primary text-white font-bold py-3 rounded-xl hover:scale-105 transition-transform shadow-md disabled:opacity-50 flex items-center justify-center overflow-hidden relative"
+              style={{ minHeight: '52px' }}
             >
-              Masuk
+              {loading ? (
+                <div className="absolute inset-0 flex items-center justify-center scale-50 origin-center">
+                  <OrbitaniLoader status="processing" />
+                </div>
+              ) : (
+                "Masuk"
+              )}
             </button>
           </form>
           
