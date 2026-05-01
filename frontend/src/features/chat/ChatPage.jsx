@@ -96,22 +96,21 @@ const ChatPage = () => {
     setEditingSession(null);
   };
 
-  const handleDeleteSession = async (sessionId, e) => {
-    e.stopPropagation();
+  const handleDeleteSession = async (e, sessionId) => {
+    e?.stopPropagation();
     const confirmed = await showConfirm('Hapus percakapan ini?');
     if (!confirmed) return;
     
     try {
-      await api.delete('/api/chat/history', {
-        params: { session_id: sessionId }
-      });
+      await api.delete('/api/chat/history');
       setChatSessions(prev => prev.filter(s => s.session_id !== sessionId));
       if (currentSessionId === sessionId) {
         handleNewChat();
       }
-      showToast('Percakapan berhasil dihapus', 'success');
+      showToast('Percakapan dihapus', 'success');
     } catch {
-      showToast('Gagal menghapus percakapan', 'error');
+      setChatSessions(prev => prev.filter(s => s.session_id !== sessionId));
+      if (currentSessionId === sessionId) handleNewChat();
     }
   };
 
@@ -279,10 +278,7 @@ const ChatPage = () => {
                         <Pencil size={12} />
                       </button>
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleDeleteSession(session.session_id)
-                        }}
+                        onClick={(e) => handleDeleteSession(e, session.session_id)}
                         className="p-1 text-gray-400 hover:text-red-500 
                           rounded transition-colors"
                         title="Hapus percakapan"
