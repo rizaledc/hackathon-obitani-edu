@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import api from '../../../services/api';
 import OrbitaniLoader from '../../../components/OrbitaniLoader';
 import { toIndonesian } from '../../../utils/plantNames';
@@ -60,6 +60,33 @@ const RecommendationPanel = ({
   const [chatInput, setChatInput] = useState('');
   const [aiResponse, setAiResponse] = useState(null);
   const [isChatLoading, setIsChatLoading] = useState(false);
+  const [chatHistory, setChatHistory] = useState([]);
+
+  useEffect(() => {
+    setAiResponse('');
+    setChatHistory([]);
+    if (location?.id) {
+      loadChatHistory(location.id);
+    }
+  }, [location?.id]);
+
+  const loadChatHistory = async (lahanId) => {
+    try {
+      const res = await api.get(`/api/chat/history?lahan_id=${lahanId}`);
+      const messages = res.data?.data || res.data || [];
+      setChatHistory(messages);
+      
+      const lastAI = messages.filter(m => m.role === 'assistant').pop();
+      if (lastAI) {
+        setAiResponse(lastAI.content);
+      } else {
+        setAiResponse('');
+      }
+    } catch {
+      setChatHistory([]);
+      setAiResponse('');
+    }
+  };
 
   const resultsData = Array.isArray(result) ? result : (result?.results || []);
   const hasData = resultsData.length > 0;
@@ -110,13 +137,17 @@ Pertanyaan: ${chatInput}`
       const res = await api.post('/api/chat/', {
         message: contextMessage,
         lahan_id: location?.id || null,
-        session_id: null,
-        session_name: null,
+        session_id: location?.id ? `lahan_${location.id}` : null,
+        session_name: location?.id ? `Chat Lahan ${selectedLahan?.nama || location.id}` : null,
         user_api_key: null
       });
-      
+
       const responseText = res.data?.response || res.data?.message || res.data?.data?.reply || res.data?.reply || res.data;
       setAiResponse(responseText);
+      
+      if (location?.id) {
+        loadChatHistory(location.id);
+      }
       
     } catch (err) {
       setAiResponse('Gagal menghubungi Pakar AI. Coba lagi.');
@@ -473,6 +504,21 @@ Pertanyaan: ${chatInput}`
               <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2 mb-3">
                 <Sparkle weight="fill" className="text-yellow-500" /> Tanya Pakar AI
               </h3>
+
+              {chatHistory.length > 0 && (
+                <div className="mb-3 max-h-40 overflow-y-auto space-y-2 custom-scrollbar">
+                  {chatHistory.map((msg, i) => (
+                    <div key={i} className={`text-xs p-2 rounded-lg ${
+                      msg.role === 'user' 
+                        ? 'bg-gray-100 text-gray-600 text-right' 
+                        : 'bg-green-50 text-gray-700'
+                    }`}>
+                      {stripMarkdown(msg.content)}
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <textarea
                 value={chatInput}
                 onChange={e => setChatInput(e.target.value)}
