@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { UserCog, LogOut } from 'lucide-react';
+import { UserCog, LogOut, Copy } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import api from '../../services/api';
 import useToast from '../../hooks/useToast';
 import useConfirm from '../../hooks/useConfirm';
+
+const encodeOrgId = (id) => 'ORB-' + String(id).padStart(5, '0');
 
 const Navbar = () => {
   const { user } = useAuthStore();
@@ -200,6 +202,28 @@ const Navbar = () => {
                   </span>
                 </div>
               </div>
+
+              {(isSuperadmin || isAdmin) && user?.organization_id && (
+                <div className="mt-3 p-3 bg-green-50 rounded-xl border border-green-100">
+                  <p className="text-xs font-medium text-gray-500 mb-1">
+                    Kode Undangan Organisasi
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <code className="font-mono font-bold text-green-700">
+                      {encodeOrgId(user.organization_id)}
+                    </code>
+                    <button type="button" onClick={() => {
+                      navigator.clipboard.writeText(encodeOrgId(user.organization_id));
+                      showToast('Kode disalin!', 'success');
+                    }}>
+                      <Copy size={14} className="text-gray-400 hover:text-green-600 transition-colors" />
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Bagikan kode ini ke pengguna untuk bergabung
+                  </p>
+                </div>
+              )}
               {canEdit ? (
                 <div className="flex items-center justify-end gap-2 pt-4 mt-2 border-t border-gray-100">
                   <button type="button" onClick={() => setShowEditModal(false)} className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Batal</button>
