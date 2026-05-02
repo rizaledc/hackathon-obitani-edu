@@ -4,8 +4,10 @@ import api from '../../services/api';
 import ChatMessage from './components/ChatMessage';
 import useToast from '../../hooks/useToast';
 import useConfirm from '../../hooks/useConfirm';
+import useAuthStore from '../../store/authStore';
 
 const ChatPage = () => {
+  const { user } = useAuthStore();
   const { showToast } = useToast();
   const { showConfirm } = useConfirm();
   const [messages, setMessages] = useState([]);
@@ -23,8 +25,10 @@ const ChatPage = () => {
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [showApiKey, setShowApiKey] = useState(false);
+  
+  const storageKey = `gemini_api_key_${user?.id}`;
   const [savedApiKey, setSavedApiKey] = useState(
-    localStorage.getItem('gemini_api_key') || ''
+    localStorage.getItem(storageKey) || ''
   );
 
   // Fetch lahan list
@@ -522,7 +526,7 @@ const ChatPage = () => {
               <div className="flex items-center justify-between mt-5">
                 <button
                   onClick={() => {
-                    localStorage.removeItem('gemini_api_key');
+                    localStorage.removeItem(storageKey);
                     setSavedApiKey('');
                     setApiKeyInput('');
                   }}
@@ -533,7 +537,7 @@ const ChatPage = () => {
                 </button>
                 <button
                   onClick={() => {
-                    localStorage.setItem('gemini_api_key', apiKeyInput);
+                    localStorage.setItem(storageKey, apiKeyInput);
                     setSavedApiKey(apiKeyInput);
                     setShowApiKeyModal(false);
                   }}
