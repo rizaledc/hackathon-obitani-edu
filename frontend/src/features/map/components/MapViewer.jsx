@@ -24,10 +24,14 @@ const ClickHandler = ({ onSelectLocation, isDrawingMode }) => {
 function MapResizer() {
   const map = useMap();
   React.useEffect(() => {
-    const timer = setTimeout(() => {
-      map.invalidateSize();
-    }, 100);
-    return () => clearTimeout(timer);
+    const timer1 = setTimeout(() => map.invalidateSize(), 100);
+    const timer2 = setTimeout(() => map.invalidateSize(), 500);
+    const timer3 = setTimeout(() => map.invalidateSize(), 1000);
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
   }, [map]);
   return null;
 }

@@ -393,7 +393,7 @@ const MapPage = () => {
           </span>
         </div>
 
-        <div className="flex-1 relative w-full h-full z-0 overflow-hidden" style={{ height: 'calc(100vh - 104px)' }}>
+        <div className="flex-1 relative w-full h-full z-0 overflow-hidden" style={{ height: 'calc(100vh - 56px)' }}>
           <MapViewer 
             onSelectLocation={handleSelectLocation} 
             lahans={lahans} 
