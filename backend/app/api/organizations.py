@@ -31,19 +31,7 @@ async def create_organization(org: OrganizationCreate, current_user: dict = Depe
     return response.data[0]
 
 @router.get("/{org_id}")
-def get_organization(
-    org_id: int,
-    current_user: dict = Depends(get_current_user)
-):
-    # Superadmin bisa akses semua
-    if current_user["role"] != "superadmin":
-        # Admin/user hanya bisa akses org sendiri
-        if current_user.get("organization_id") != org_id:
-            raise HTTPException(
-                status_code=403,
-                detail="Tidak punya akses ke organisasi ini"
-            )
-    
+def get_organization(org_id: int):  # hapus current_user
     result = supabase.table("organizations")\
         .select("*")\
         .eq("id", org_id)\
