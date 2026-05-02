@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Plus, Clock, MessageSquare, Settings, ChevronDown, X, Brain, MapPin, Pencil, Trash2, KeyRound, Eye, EyeOff } from 'lucide-react';
+import { Send, Plus, Clock, MessageSquare, Settings, ChevronDown, X, Brain, MapPin, Pencil, Trash2, KeyRound, Eye, EyeOff, Menu } from 'lucide-react';
 import api from '../../services/api';
 import ChatMessage from './components/ChatMessage';
 import useToast from '../../hooks/useToast';
@@ -12,6 +12,7 @@ const ChatPage = () => {
   const { showConfirm } = useConfirm();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [showHistory, setShowHistory] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedLahan, setSelectedLahan] = useState(null);
   const [lahanList, setLahanList] = useState([]);
@@ -81,6 +82,7 @@ const ChatPage = () => {
       content: stripMarkdown(m.content)
     })));
     setSelectedLahan(null);
+    setShowHistory(false); // Close history on mobile when session selected
   };
 
   // Percakapan baru
@@ -89,6 +91,7 @@ const ChatPage = () => {
     setSessionName('');
     setMessages([]);
     setSelectedLahan(null);
+    setShowHistory(false); // Close history on mobile when new chat selected
   };
 
   const handleSaveSessionName = (session) => {
@@ -214,11 +217,30 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-64px)] w-full bg-white font-sans" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
+    <div className="flex h-[calc(100vh-64px)] w-full bg-white font-sans relative overflow-hidden" style={{ fontFamily: '"Plus Jakarta Sans", sans-serif' }}>
       
+      {/* Overlay Mobile */}
+      {showHistory && (
+        <div 
+          className="md:hidden absolute inset-0 bg-black/40 z-[400] animate-fadeIn" 
+          onClick={() => setShowHistory(false)}
+        />
+      )}
+
       {/* SIDEBAR KIRI */}
-      <div className="w-72 flex-shrink-0 border-r border-gray-200 bg-gray-50 flex flex-col">
-        <div className="p-4 border-b border-gray-200">
+      <div className={`absolute md:relative z-[401] md:z-auto h-full w-72 flex-shrink-0 border-r border-gray-200 bg-white flex flex-col transition-transform duration-300 shadow-2xl md:shadow-none ${showHistory ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+        <div className="p-4 border-b border-gray-200 flex flex-col gap-3">
+          {/* Header Mobile Only */}
+          <div className="flex md:hidden items-center justify-between">
+            <span className="font-bold text-gray-700 text-sm">Menu Percakapan</span>
+            <button 
+              onClick={() => setShowHistory(false)} 
+              className="text-gray-500 hover:text-gray-800 hover:bg-gray-200 p-1.5 rounded-lg transition-colors"
+            >
+              <X size={18} weight="bold" />
+            </button>
+          </div>
+
           <button 
             onClick={handleNewChat}
             className="w-full flex items-center justify-center gap-2 bg-[#16a34a] hover:bg-green-700 text-white font-medium py-2.5 rounded-lg transition-colors shadow-sm"
@@ -299,16 +321,22 @@ const ChatPage = () => {
       </div>
 
       {/* MAIN AREA */}
-      <div className="flex-1 flex flex-col bg-white overflow-hidden relative">
+      <div className="flex-1 flex flex-col bg-white overflow-hidden relative z-0 w-full max-w-full">
         {/* Header */}
-        <div className="h-16 flex-shrink-0 border-b border-gray-100 flex items-center justify-between px-6 bg-white/95 backdrop-blur-sm z-10">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-600">
+        <div className="h-16 flex-shrink-0 border-b border-gray-100 flex items-center justify-between px-4 md:px-6 bg-white/95 backdrop-blur-sm z-10">
+          <div className="flex items-center gap-2 md:gap-3">
+            <button 
+              onClick={() => setShowHistory(true)} 
+              className="md:hidden p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors flex-shrink-0"
+            >
+              <Menu size={20} />
+            </button>
+            <div className="hidden md:flex w-10 h-10 rounded-full bg-green-50 items-center justify-center text-green-600 flex-shrink-0">
               <Brain size={20} />
             </div>
-            <div>
-              <h1 className="font-bold text-gray-800">Asisten Praktikum AI</h1>
-              <p className="text-xs text-gray-500">Asisten Analisis & Rekomendasi Pintar</p>
+            <div className="min-w-0">
+              <h1 className="font-bold text-gray-800 text-sm md:text-base truncate">Asisten Praktikum AI</h1>
+              <p className="text-[10px] md:text-xs text-gray-500 truncate">Analisis & Rekomendasi</p>
             </div>
           </div>
           <button 
@@ -433,7 +461,7 @@ const ChatPage = () => {
               <button 
                 onClick={handleSend}
                 disabled={!input.trim() || loading}
-                className="p-2.5 bg-[#16a34a] text-white rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex-shrink-0 mb-0.5"
+                className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center bg-[#16a34a] text-white rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex-shrink-0 mb-0.5"
               >
                 <Send size={18} className={input.trim() && !loading ? 'translate-x-0.5 -translate-y-0.5' : ''} />
               </button>
