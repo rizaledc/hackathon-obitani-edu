@@ -13,9 +13,9 @@ const encodeOrgId = (id) => {
 };
 
 const decodeOrgCode = (code) => {
-  const match = code.match(/^ORB-(\d+)$/);
+  const match = code.match(/^ORB-0*(\d+)$/);
   if (!match) return null;
-  return parseInt(match[1]);
+  return parseInt(match[1], 10);
 };
 
 const RegisterPage = () => {
@@ -36,13 +36,11 @@ const RegisterPage = () => {
       return;
     }
     
-    const match = upper.match(/^ORB-(\d+)$/);
-    if (!match) {
+    const orgId = decodeOrgCode(upper);
+    if (!orgId || orgId <= 0) {
       setOrgCodeStatus('invalid');
       return;
     }
-    
-    const orgId = parseInt(match[1]);
     
     try {
       // Gunakan fetch biasa tanpa auth token
