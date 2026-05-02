@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+supabase
+python-jose[cryptography]
+passlib==1.7.4
+bcrypt==4.0.1
+earthengine-api
+google-generativeai
+scikit-learn==1.6.1
+pandas
+numpy
+python-dotenv
+httpx
+pydantic[email]
+python-multipart==0.0.9

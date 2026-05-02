@@ -1,4 +1,5 @@
 {
+  "ignoreCommand": "[ \"$VERCEL_GIT_COMMIT_REF\" != \"frontend\" ] && exit 0; exit 1",
   "rewrites": [
     {
       "source": "/(.*)",
