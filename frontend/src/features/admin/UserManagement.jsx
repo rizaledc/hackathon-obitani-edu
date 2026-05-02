@@ -336,7 +336,7 @@ const UserManagement = () => {
                             <ChevronDown size={12} /> User
                           </button>
                         )}
-                        {u.role !== 'superadmin' && (
+                        {u.id !== currentUser?.id && u.role !== 'superadmin' && (
                           <button onClick={() => handleDelete(u)} className="p-1.5 text-gray-400 hover:text-red-500 rounded transition-colors" title="Hapus">
                             <Trash2 size={14} />
                           </button>
