@@ -99,25 +99,25 @@ const LandingPage = () => {
       </nav>
 
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-white to-gray-50 px-6 pt-24 lg:pt-0 overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-white to-gray-50 px-4 sm:px-6 pt-32 pb-16 lg:pt-0 lg:pb-0 overflow-hidden">
         {/* Dekorasi Latar Belakang Halus */}
         <div className="absolute top-0 right-0 -mr-40 -mt-40 w-[500px] h-[500px] rounded-full bg-primary/10 blur-[80px]"></div>
         <div className="absolute bottom-0 left-0 -ml-40 -mb-40 w-[400px] h-[400px] rounded-full bg-blue-500/5 blur-[80px]"></div>
 
-        <div className="relative z-10 max-w-6xl w-full mx-auto grid lg:grid-cols-2 gap-12 lg:gap-8 items-center mt-12 lg:mt-0">
+        <div className="relative z-10 max-w-6xl w-full mx-auto grid lg:grid-cols-2 gap-10 lg:gap-8 items-center mt-4 lg:mt-0">
 
           {/* SISI KIRI (Teks & CTA) */}
-          <div className="text-left space-y-6 animate-slideUp">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.15] text-gray-900 tracking-tight">
-              Infrastruktur Agrikultur Digital untuk <span className="text-primary">Generasi Emas</span> Indonesia
+          <div className="text-center lg:text-left space-y-6 animate-slideUp">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.15] text-gray-900 tracking-tight">
+              Infrastruktur Agrikultur Digital untuk <span className="text-primary block sm:inline">Generasi Emas</span> Indonesia
             </h1>
 
-            <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg">
+            <p className="text-base sm:text-lg text-gray-600 leading-relaxed max-w-lg mx-auto lg:mx-0">
               Dengan teknologi satelit real-time dari Google Earth Engine, kami menghadirkan pengalaman praktikum tanpa sensor, tanpa batas, dan tanpa hambatan.
             </p>
 
             {/* Jarak ekstra (White Space) yang proporsional */}
-            <div className="pt-8">
+            <div className="pt-4 sm:pt-8 flex justify-center lg:justify-start">
               <button
                 onClick={() => navigate('/register')}
                 className="bg-primary hover:bg-green-700 text-white px-8 py-4 rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 font-bold text-lg w-full sm:w-auto text-center"
