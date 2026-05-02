@@ -21,6 +21,7 @@ const decodeOrgCode = (code) => {
 const RegisterPage = () => {
   const navigate = useNavigate();
   const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -62,10 +63,10 @@ const RegisterPage = () => {
     e.preventDefault();
     try {
       await api.post('/api/auth/register', {
-        username: email.split('@')[0],
-        email: email,
-        password: password,
-        name: name,
+        username,
+        email,
+        password,
+        name,
         role: 'user',
         organization_id: orgCodeStatus?.id || null
       });
@@ -99,6 +100,20 @@ const RegisterPage = () => {
                 onChange={(e) => setName(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="Budi Santoso"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold mb-2">
+                Username <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={username}
+                onChange={e => setUsername(e.target.value)}
+                placeholder="contoh: budi_santoso"
+                autoComplete="username"
+                required
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
               />
             </div>
             <div>
@@ -162,7 +177,7 @@ const RegisterPage = () => {
             </div>
             <button 
               type="submit"
-              disabled={!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) || !(password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[a-z]/.test(password))}
+              disabled={!(username && name && email && (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) && (password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password) && /[a-z]/.test(password)))}
               className="w-full bg-primary text-white font-bold py-3 rounded-xl hover:scale-105 transition-transform shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center overflow-hidden relative"
               style={{ minHeight: '52px' }}
             >
