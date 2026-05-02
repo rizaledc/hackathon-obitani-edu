@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import logo from '../../assets/logo.webp';
 import PasswordStrength from '../../components/ui/PasswordStrength';
 import EmailValidator from '../../components/ui/EmailValidator';
@@ -79,8 +79,16 @@ const RegisterPage = () => {
 
   return (
     <div className="min-h-screen flex bg-white font-sans text-text-primary">
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-24">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 lg:px-24 py-12 lg:py-0">
         <div className="max-w-md w-full mx-auto animate-fadeIn">
+          <button 
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-text-secondary hover:text-primary transition-colors mb-8 w-fit bg-gray-50 px-4 py-2 rounded-full border border-gray-200 shadow-sm hover:shadow-md"
+          >
+            <ArrowLeft size={16} />
+            <span className="font-medium text-sm">Kembali ke Beranda</span>
+          </button>
+
           <div className="flex items-center gap-3 mb-8 cursor-pointer" onClick={() => navigate('/')}>
             <img src={logo} alt="Orbitani Logo" className="w-12 h-12 object-contain hover:scale-105 transition-transform" />
             <h1 className="text-2xl font-bold tracking-tight">Orbitani Edu</h1>
