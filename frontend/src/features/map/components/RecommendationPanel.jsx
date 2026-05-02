@@ -244,17 +244,15 @@ Pertanyaan: ${aiInput}`
 
       <div className="p-5 flex flex-col gap-8 pb-10">
         
-        {isLoading && (
+        {isLoading ? (
           <div className="flex items-center justify-center py-6">
             <OrbitaniLoader status="processing" size="sm" 
               text="Menjalankan 10 titik sampel & MLOps..." />
           </div>
-        )}
-
-        {!isLoading && (
-          <>
+        ) : (
+          <div className="flex flex-col gap-8 w-full">
             {!hasData ? (
-              <>
+              <div className="flex flex-col gap-8 w-full">
                 <section>
                   <div className="flex items-center gap-2 mb-3">
                     <div className="w-1 h-4 bg-green-600 rounded-full" />
@@ -297,9 +295,9 @@ Pertanyaan: ${aiInput}`
                     </p>
                   </div>
                 </section>
-              </>
+              </div>
             ) : (
-              <>
+              <div className="flex flex-col gap-8 w-full">
                 {/* SECTION 3 - REKOMENDASI */}
             <section>
               <div className="flex items-center gap-2 mb-3">
@@ -502,7 +500,7 @@ Pertanyaan: ${aiInput}`
               </div>
             </section>
 
-              </>
+              </div>
             )}
 
             {/* SECTION 8 - SHAP */}
@@ -572,7 +570,7 @@ Pertanyaan: ${aiInput}`
                 </div>
               )}
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>
