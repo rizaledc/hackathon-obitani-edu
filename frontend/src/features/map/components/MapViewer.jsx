@@ -1,8 +1,6 @@
 import React from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents, Polygon, CircleMarker, Polyline, useMap, LayersControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, Polygon, CircleMarker, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
-
-const { BaseLayer, Overlay } = LayersControl;
 
 // Fix Leaflet's default icon path issues in React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -38,10 +36,13 @@ function MapResizer() {
   return null;
 }
 
-const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, draftPoints = [], isDrawingMode = false, samplePoints = [], selectedId }) => {
+const MapViewer = ({ mapType, showBoundary, onSelectLocation, lahans = [], selectedLocation, mapRef, draftPoints = [], isDrawingMode = false, samplePoints = [], selectedId }) => {
   const defaultCenter = [-2.5, 118];
   const defaultZoom = 5;
   const bounds = [[-11, 95], [6, 141]];
+
+  const satelliteUrl = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
+  const roadUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
   const renderLahan = (lahan) => {
     try {
@@ -95,27 +96,17 @@ const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, dr
         style={{ height: '100%', width: '100%' }}
         onClick={(e) => onSelectLocation(e.latlng.lat, e.latlng.lng)}
       >
-        <LayersControl position="topright">
-          <BaseLayer checked name="Satelit">
-            <TileLayer
-              attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            />
-          </BaseLayer>
-          <BaseLayer name="Peta Jalan">
-            <TileLayer
-              attribution="OpenStreetMap"
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          </BaseLayer>
-          <Overlay checked name="Batas Wilayah">
-            <TileLayer
-              opacity={0.3}
-              attribution="OpenStreetMap"
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          </Overlay>
-        </LayersControl>
+        <TileLayer 
+          url={mapType === 'satellite' ? satelliteUrl : roadUrl}
+          attribution={mapType === 'satellite' ? 'Tiles &copy; Esri' : 'OpenStreetMap'}
+        />
+        {showBoundary && mapType === 'satellite' && (
+          <TileLayer
+            url={roadUrl}
+            opacity={0.3}
+            attribution="OpenStreetMap"
+          />
+        )}
         <MapResizer />
         <ClickHandler onSelectLocation={onSelectLocation} isDrawingMode={isDrawingMode} />
         

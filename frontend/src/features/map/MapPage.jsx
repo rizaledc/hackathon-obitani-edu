@@ -3,7 +3,7 @@ import MapViewer from './components/MapViewer';
 import RecommendationPanel from './components/RecommendationPanel';
 import api from '../../services/api';
 import { getAIExplanation } from '../../services/aiService';
-import { Pencil, Trash2, Menu, Compass, ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Pencil, Trash2, Menu, Compass, ChevronUp, ChevronDown, ChevronLeft, ChevronRight, Layers, Map } from 'lucide-react';
 import useToast from '../../hooks/useToast';
 import useConfirm from '../../hooks/useConfirm';
 
@@ -59,6 +59,8 @@ const MapPage = () => {
   const [draftPoints, setDraftPoints] = useState([]);
   const [showLahanList, setShowLahanList] = useState(false);
   const [showNavPad, setShowNavPad] = useState(false);
+  const [mapType, setMapType] = useState('satellite');
+  const [showBoundary, setShowBoundary] = useState(true);
 
   const [editModal, setEditModal] = useState(false);
   const [editData, setEditData] = useState({ nama: '', deskripsi: '' });
@@ -393,6 +395,21 @@ const MapPage = () => {
             title="Toggle Nav Pad">
             <Compass size={18} />
           </button>
+          
+          <button 
+            onClick={() => setMapType(mapType === 'satellite' ? 'road' : 'satellite')}
+            className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+            title={mapType === 'satellite' ? 'Peta Jalan' : 'Satelit'}>
+            <Layers size={18} />
+          </button>
+          
+          <button
+            onClick={() => setShowBoundary(!showBoundary)}
+            className={`p-2 rounded-lg transition-colors ${showBoundary ? 'bg-green-100 text-green-700' : 'hover:bg-gray-100 text-gray-400'}`}
+            title="Batas Wilayah">
+            <Map size={18} />
+          </button>
+
           <div className="w-px h-5 bg-gray-200 mx-1" />
           <span className="text-xs text-gray-400">
             {isDrawingMode ? 'Klik peta untuk membuat polygon (min 3 titik)' : 'Klik pensil untuk menggambar lahan baru'}
@@ -401,6 +418,8 @@ const MapPage = () => {
 
         <div className="flex-1 relative w-full h-full z-0 overflow-hidden" style={{ height: 'calc(100vh - 56px)' }}>
           <MapViewer 
+            mapType={mapType}
+            showBoundary={showBoundary}
             onSelectLocation={handleSelectLocation} 
             lahans={lahans} 
             selectedLocation={selectedLocation} 
