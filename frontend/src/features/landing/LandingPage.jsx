@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import logo from "../../assets/logo.webp";
 import jenistanaman from "../../assets/jenistanaman.webp";
@@ -25,10 +25,13 @@ import {
   InstagramLogo,
   LinkedinLogo,
   FacebookLogo,
-  TwitterLogo
+  TwitterLogo,
+  List,
+  X
 } from "@phosphor-icons/react";
 const LandingPage = () => {
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.add('scroll-smooth');
@@ -55,7 +58,7 @@ const LandingPage = () => {
             <button onClick={() => document.getElementById('carakerja').scrollIntoView()} className="hover:text-primary transition-colors">Cara Kerja</button>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="hidden md:flex items-center gap-3">
             <button
               onClick={() => navigate('/login')}
               className="bg-primary hover:bg-green-700 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 font-bold text-sm transition-all duration-300"
@@ -69,7 +72,30 @@ const LandingPage = () => {
               Daftar
             </button>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button 
+            className="md:hidden text-gray-800 p-2 focus:outline-none"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X size={28} weight="bold" /> : <List size={28} weight="bold" />}
+          </button>
         </div>
+
+        {/* Mobile Dropdown Menu */}
+        {isMobileMenuOpen && (
+          <div className="absolute top-full mt-2 w-[calc(100%-2rem)] left-4 bg-white/95 backdrop-blur-xl border border-gray-100 shadow-2xl rounded-2xl p-6 flex flex-col gap-4 md:hidden animate-slideUp">
+            <button onClick={() => { setIsMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-left font-bold text-gray-800 py-3 border-b border-gray-50 text-lg">Beranda</button>
+            <button onClick={() => { setIsMobileMenuOpen(false); document.getElementById('tentang').scrollIntoView(); }} className="text-left font-bold text-gray-800 py-3 border-b border-gray-50 text-lg">Tentang Platform</button>
+            <button onClick={() => { setIsMobileMenuOpen(false); document.getElementById('solusi').scrollIntoView(); }} className="text-left font-bold text-gray-800 py-3 border-b border-gray-50 text-lg">Solusi</button>
+            <button onClick={() => { setIsMobileMenuOpen(false); document.getElementById('carakerja').scrollIntoView(); }} className="text-left font-bold text-gray-800 py-3 border-b border-gray-50 text-lg">Cara Kerja</button>
+            
+            <div className="flex flex-col gap-3 mt-4">
+              <button onClick={() => navigate('/login')} className="bg-green-50 hover:bg-green-100 text-primary border border-green-100 px-5 py-4 rounded-xl font-bold w-full text-center transition-colors">Masuk</button>
+              <button onClick={() => navigate('/register')} className="bg-primary hover:bg-green-700 text-white px-5 py-4 rounded-xl shadow-md font-bold w-full text-center transition-colors">Daftar</button>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* 1. HERO SECTION */}

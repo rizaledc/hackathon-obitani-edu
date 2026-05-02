@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft, Globe } from 'lucide-react';
 import logo from '../../assets/logo.webp';
 import PasswordStrength from '../../components/ui/PasswordStrength';
 import EmailValidator from '../../components/ui/EmailValidator';
@@ -205,8 +205,29 @@ const RegisterPage = () => {
         </div>
       </div>
       
-      <div className="hidden lg:flex w-1/2 bg-primary-pale items-center justify-center relative overflow-hidden">
-        <div className="absolute w-[150%] h-[150%] bg-gradient-to-tr from-green-100 to-white rounded-full -top-1/4 -right-1/4 blur-3xl opacity-60"></div>
+      <div className="hidden lg:flex w-1/2 bg-green-50 items-center justify-center relative overflow-hidden">
+        {/* Dot Matrix Pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.15]" 
+          style={{
+            backgroundImage: `radial-gradient(circle, #22c55e 2px, transparent 2px)`,
+            backgroundSize: '24px 24px'
+          }}
+        ></div>
+        
+        {/* Soft background glow */}
+        <div className="absolute w-[150%] h-[150%] bg-gradient-to-tr from-green-100/50 to-transparent rounded-full -top-1/4 -right-1/4 blur-3xl opacity-60"></div>
+
+        {/* Floating Glassmorphism Card */}
+        <div className="relative z-10 p-10 bg-white/40 backdrop-blur-lg border border-white/60 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-3xl max-w-md animate-float mx-8">
+          <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-green-600 mb-6 shadow-sm">
+            <Globe size={28} />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-4 tracking-tight">Praktikum Tanpa Batas</h3>
+          <p className="text-gray-700 leading-relaxed font-medium">
+            "Didukung oleh data satelit real-time dari Google Earth Engine, kami membawa laboratorium agrikultur langsung ke layar Anda."
+          </p>
+        </div>
       </div>
     </div>
   );
