@@ -37,13 +37,30 @@ function App() {
   const navigate = useNavigate();
   const { toast, hideToast } = useToast();
   const { confirmState, handleConfirm, handleCancel } = useConfirm();
+  const [ready, setReady] = React.useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      useAuthStore.getState().fetchMe();
-    }
+    const init = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        await useAuthStore.getState().fetchMe();
+      }
+      setReady(true);
+    };
+    init();
   }, []);
+
+  if (!ready) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-[#FAFAFA]">
+        <div className="flex gap-2">
+          <div className="w-3 h-3 bg-green-500 rounded-full animate-bounce"/>
+          <div className="w-3 h-3 bg-green-500 rounded-full animate-bounce" style={{animationDelay:'0.2s'}}/>
+          <div className="w-3 h-3 bg-green-500 rounded-full animate-bounce" style={{animationDelay:'0.4s'}}/>
+        </div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {

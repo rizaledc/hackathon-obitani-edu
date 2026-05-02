@@ -26,7 +26,14 @@ const useAuthStore = create(
         const { access_token, role } = response.data
         localStorage.setItem('token', access_token)
         localStorage.setItem('login_time', Date.now().toString())
-        set({ token: access_token, role, user: { username, role }, isAuthenticated: true })
+        set({ token: access_token, role, isAuthenticated: true })
+
+        // Langsung fetch data user lengkap
+        const userRes = await axios.get(
+          `${import.meta.env.VITE_API_URL || 'https://orbitani-edu-backend-bwbghbeegsf4fwev.indonesiacentral-01.azurewebsites.net'}/api/auth/me`,
+          { headers: { Authorization: `Bearer ${access_token}` } }
+        )
+        set({ user: userRes.data })
       },
       logout: () => {
         localStorage.removeItem('token')
