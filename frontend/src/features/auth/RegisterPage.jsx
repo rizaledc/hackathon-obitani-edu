@@ -28,22 +28,32 @@ const RegisterPage = () => {
   const [orgCodeStatus, setOrgCodeStatus] = useState(null);
 
   const handleOrgCode = async (val) => {
-    setOrgCode(val.toUpperCase());
-    if (!val) {
+    const upper = val.toUpperCase();
+    setOrgCode(upper);
+    
+    if (!upper) {
       setOrgCodeStatus(null);
       return;
     }
     
-    const orgId = decodeOrgCode(val.toUpperCase());
-    if (!orgId) {
+    const match = upper.match(/^ORB-(\d+)$/);
+    if (!match) {
       setOrgCodeStatus('invalid');
       return;
     }
     
+    const orgId = parseInt(match[1]);
+    
     try {
-      const res = await api.get(`/api/organizations/${orgId}`);
-      if (res.data?.nama || res.data?.name) {
-        setOrgCodeStatus({ id: orgId, nama: res.data.nama || res.data.name });
+      // Gunakan fetch biasa tanpa auth token
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL || 'https://orbitani-edu-backend-bwbghbeegsf4fwev.indonesiacentral-01.azurewebsites.net'}/api/organizations/${orgId}`
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setOrgCodeStatus({ id: orgId, nama: data.nama || data.name });
+      } else {
+        setOrgCodeStatus('invalid');
       }
     } catch {
       setOrgCodeStatus('invalid');
