@@ -94,6 +94,12 @@ const MapPage = () => {
     fetchLahans();
   }, []);
 
+  useEffect(() => {
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
+  }, [showLahanList, selectedLocation]);
+
   const loadLastAnalysis = async (lahanId) => {
     try {
       const res = await api.get(`/api/history/${lahanId}`);
