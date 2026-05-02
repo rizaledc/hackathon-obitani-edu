@@ -504,6 +504,8 @@ const ChatPage = () => {
               <div className="relative">
                 <input
                   type={showApiKey ? 'text' : 'password'}
+                  autoComplete="off"
+                  name="gemini-api-key"
                   value={apiKeyInput}
                   onChange={e => setApiKeyInput(e.target.value)}
                   placeholder="AIza... Tempelkan kunci Anda di sini"
