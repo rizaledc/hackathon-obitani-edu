@@ -70,23 +70,7 @@ const Navbar = ({ onMenuClick }) => {
     navigate('/login');
   };
 
-  const handleSaveProfile = async (e) => {
-    e.preventDefault();
-    if (!user?.id) return;
-    setIsSaving(true);
-    try {
-      await api.put(`/api/users/${user.id}`, { name: editData.name, email: editData.email });
-      const res = await api.get('/api/auth/me');
-      useAuthStore.getState().setUser(res.data);
-      setShowEditModal(false);
-      setShowProfile(false);
-      showToast('Profil berhasil diperbarui!', 'success');
-    } catch (err) {
-      showToast(err.response?.data?.detail || 'Gagal menyimpan profil', 'error');
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  // Removed handleSaveProfile since profile is view-only
 
 
 
@@ -127,7 +111,7 @@ const Navbar = ({ onMenuClick }) => {
               <button onClick={() => { setShowEditModal(true); setShowProfile(false); }}
                 className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-t-xl transition-colors">
                 <UserCog size={15} />
-                Edit Profil
+                Profil Pengguna
               </button>
               <div className="border-t border-gray-100" />
               <button onClick={handleLogout}
@@ -146,11 +130,11 @@ const Navbar = ({ onMenuClick }) => {
             <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50/50">
               <h3 className="font-semibold text-gray-800 flex items-center gap-2">
                 <UserCog size={18} className="text-primary" />
-                Edit Profil
+                Profil Pengguna
               </h3>
               <button onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-gray-600 font-bold px-2 py-1 text-lg leading-none">&times;</button>
             </div>
-            <form onSubmit={handleSaveProfile} className="p-5 space-y-4">
+            <div className="p-5 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">Username (Read Only)</label>
                 <input 
@@ -164,21 +148,18 @@ const Navbar = ({ onMenuClick }) => {
                 <label className="block text-xs font-semibold text-gray-700 mb-1">Nama Lengkap</label>
                 <input 
                   type="text" 
-                  required
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500" 
+                  disabled
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-100 text-gray-500 cursor-not-allowed" 
                   value={editData.name} 
-                  onChange={e => setEditData({...editData, name: e.target.value})} 
-                  placeholder="Masukkan nama lengkap"
                 />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 mb-1">Email</label>
                 <input 
                   type="email" 
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500" 
+                  disabled
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-100 text-gray-500 cursor-not-allowed" 
                   value={editData.email} 
-                  onChange={e => setEditData({...editData, email: e.target.value})} 
-                  placeholder="contoh@email.com"
                 />
               </div>
               <div>
@@ -215,12 +196,9 @@ const Navbar = ({ onMenuClick }) => {
                 </div>
               )}
               <div className="flex items-center justify-end gap-2 pt-4 mt-2 border-t border-gray-100">
-                <button type="button" onClick={() => setShowEditModal(false)} className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">Batal</button>
-                <button type="submit" disabled={isSaving} className="px-4 py-2 text-sm font-medium text-white bg-green-700 hover:bg-green-800 rounded-lg transition-colors disabled:opacity-50 flex items-center gap-2">
-                  {isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}
-                </button>
+                <button type="button" onClick={() => setShowEditModal(false)} className="px-5 py-2 text-sm font-bold text-white bg-gray-600 hover:bg-gray-700 rounded-xl transition-colors">Tutup</button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}
