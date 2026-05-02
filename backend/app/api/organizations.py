@@ -11,8 +11,16 @@ class OrganizationUpdate(BaseModel):
     nama: str
 
 @router.get("/")
-async def list_organizations(current_user: dict = Depends(require_roles(["superadmin"]))) -> Any:
-    response = supabase.table("organizations").select("*").execute()
+async def list_organizations(current_user: dict = Depends(require_roles(["superadmin", "admin"]))) -> Any:
+    if current_user["role"] == "admin":
+        response = supabase.table("organizations")\
+            .select("*")\
+            .eq("id", current_user["organization_id"])\
+            .execute()
+    else:
+        response = supabase.table("organizations")\
+            .select("*")\
+            .execute()
     return response.data
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
