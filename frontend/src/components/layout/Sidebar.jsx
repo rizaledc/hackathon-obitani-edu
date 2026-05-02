@@ -10,11 +10,12 @@ import {
   Users, 
   Buildings, 
   Cpu, 
-  SignOut
+  SignOut,
+  X
 } from '@phosphor-icons/react';
 import logo from "../../assets/logo.webp";
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, setIsOpen }) => {
   const { user, unreadChatCount, logout } = useAuthStore();
   const navigate = useNavigate();
 
@@ -45,17 +46,22 @@ const Sidebar = () => {
   }
 
   return (
-    <div className="w-64 h-screen bg-white border-r border-gray-200 flex flex-col fixed left-0 top-0 z-20">
-      <div className="flex items-center gap-3 px-6 py-6 group cursor-pointer">
-        <img src={logo} alt="Orbitani Logo" className="w-10 h-10 object-contain group-hover:scale-105 transition-transform" />
-        <div>
-          <h1 className="text-lg font-bold text-text-primary tracking-tight">
-            Orbitani Edu
-          </h1>
-          <p className="text-[10px] text-text-secondary uppercase tracking-widest font-bold">
-            Precision Agriculture Lab
-          </p>
+    <div className={`w-64 h-screen bg-white border-r border-gray-200 flex flex-col fixed left-0 top-0 z-[60] md:z-20 transition-transform duration-300 shadow-xl md:shadow-none ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+      <div className="flex items-center justify-between px-6 py-6 border-b md:border-none border-gray-100">
+        <div className="flex items-center gap-3 group cursor-pointer">
+          <img src={logo} alt="Orbitani Logo" className="w-10 h-10 object-contain group-hover:scale-105 transition-transform" />
+          <div>
+            <h1 className="text-lg font-bold text-text-primary tracking-tight">
+              Orbitani Edu
+            </h1>
+            <p className="text-[10px] text-text-secondary uppercase tracking-widest font-bold">
+              Precision Agriculture Lab
+            </p>
+          </div>
         </div>
+        <button onClick={() => setIsOpen && setIsOpen(false)} className="md:hidden text-gray-500 hover:text-gray-800 hover:bg-gray-100 p-1 rounded-lg">
+          <X size={20} weight="bold" />
+        </button>
       </div>
       
       <div className="flex-1 overflow-y-auto px-4 flex flex-col gap-1 pb-4">
@@ -74,6 +80,7 @@ const Sidebar = () => {
             <NavLink
               key={item.path}
               to={item.path}
+              onClick={() => setIsOpen && setIsOpen(false)}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors font-medium text-sm ${
                   isActive 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { UserCog, LogOut, Copy } from 'lucide-react';
+import { UserCog, LogOut, Copy, ChevronRight } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import api from '../../services/api';
 import useToast from '../../hooks/useToast';
@@ -8,7 +8,7 @@ import useConfirm from '../../hooks/useConfirm';
 
 const encodeOrgId = (id) => 'ORB-' + String(id).padStart(5, '0');
 
-const Navbar = () => {
+const Navbar = ({ onMenuClick }) => {
   const { user } = useAuthStore();
   const isSuperadmin = user?.role === 'superadmin';
   const isAdmin = user?.role === 'admin';
@@ -91,12 +91,15 @@ const Navbar = () => {
 
 
   return (
-    <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-6 sticky top-0 z-[50] transition-all duration-300">
-      <div className="flex items-center gap-3">
-        <h1 className="text-xl font-semibold text-text-primary dark:text-white">
+    <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between px-4 md:px-6 sticky top-0 z-[50] transition-all duration-300">
+      <div className="flex items-center gap-2 md:gap-3">
+        <button onClick={onMenuClick} className="md:hidden p-1.5 -ml-1 text-gray-600 hover:bg-gray-100 rounded-lg">
+          <ChevronRight size={22} />
+        </button>
+        <h1 className="text-lg md:text-xl font-semibold text-text-primary dark:text-white truncate max-w-[150px] sm:max-w-xs">
           {getPageTitle(location.pathname)}
         </h1>
-        <span className="text-[10px] font-bold px-2 py-0.5 bg-gray-100 text-text-secondary rounded-md border border-gray-200 uppercase tracking-wide">
+        <span className="hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 bg-gray-100 text-text-secondary rounded-md border border-gray-200 uppercase tracking-wide">
           Orbitani Edu v1.0
         </span>
       </div>

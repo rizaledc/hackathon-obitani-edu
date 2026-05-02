@@ -317,11 +317,15 @@ const MapPage = () => {
   };
 
   return (
-    <div className="flex h-[calc(100vh-64px)] w-full relative animate-fadeIn bg-white">
+    <div className="flex h-[calc(100vh-64px)] w-full relative animate-fadeIn bg-white overflow-hidden">
       
       {/* Panel Daftar Lahan Kiri */}
       {showLahanList && (
-        <div className="w-[20%] min-w-[250px] flex-shrink-0 bg-white shadow-[2px_0_10px_rgba(0,0,0,0.05)] border-r border-gray-200 flex flex-col h-full animate-slideRight z-20">
+        <>
+          {/* Overlay Mobile */}
+          <div className="md:hidden absolute inset-0 bg-black/40 z-[400] animate-fadeIn" onClick={() => setShowLahanList(false)}></div>
+          
+          <div className="absolute inset-y-0 left-0 w-[80%] max-w-[320px] md:relative md:w-[20%] md:min-w-[250px] flex-shrink-0 bg-white shadow-2xl md:shadow-[2px_0_10px_rgba(0,0,0,0.05)] border-r border-gray-200 flex flex-col h-full animate-slideRight z-[401] md:z-20">
            <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
               <h2 className="font-bold text-gray-800 text-sm">Daftar Lahan</h2>
               <div className="flex items-center gap-2">
@@ -373,45 +377,46 @@ const MapPage = () => {
               )}
            </div>
         </div>
+        </>
       )}
 
       {/* Map Wrapper */}
       <div className="flex-1 h-full flex flex-col relative group z-0 overflow-hidden" style={{ height: '100%' }}>
         
         {/* Horizontal Toolbar */}
-        <div className="flex items-center gap-2 px-4 py-2 border-b border-gray-100 bg-white z-[400] relative shadow-sm">
+        <div className="flex items-center gap-2 px-3 md:px-4 py-2 border-b border-gray-100 bg-white z-[300] relative shadow-sm overflow-x-auto custom-scrollbar">
           <button onClick={() => setShowLahanList(!showLahanList)}
-            className={`p-2 rounded-lg hover:bg-gray-100 transition-colors ${showLahanList ? 'text-primary bg-primary/10' : 'text-gray-600'}`}
+            className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors ${showLahanList ? 'text-primary bg-primary/10' : 'text-gray-600'}`}
             title="Toggle Daftar Lahan">
-            <Menu size={18} />
+            <Menu size={20} />
           </button>
           <button onClick={isDrawingMode ? cancelDrawing : startDrawing}
-            className={`p-2 rounded-lg hover:bg-gray-100 transition-colors ${isDrawingMode ? 'text-primary bg-primary/10' : 'text-gray-600'}`}
+            className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors ${isDrawingMode ? 'text-primary bg-primary/10' : 'text-gray-600'}`}
             title="Gambar Lahan Baru">
-            <Pencil size={18} />
+            <Pencil size={20} />
           </button>
           <button onClick={() => setShowNavPad(!showNavPad)}
-            className={`p-2 rounded-lg hover:bg-gray-100 transition-colors ${showNavPad ? 'text-primary bg-primary/10' : 'text-gray-600'}`}
+            className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors ${showNavPad ? 'text-primary bg-primary/10' : 'text-gray-600'}`}
             title="Toggle Nav Pad">
-            <Compass size={18} />
+            <Compass size={20} />
           </button>
           
           <button 
             onClick={() => setMapType(mapType === 'satellite' ? 'road' : 'satellite')}
-            className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
+            className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-600 transition-colors"
             title={mapType === 'satellite' ? 'Peta Jalan' : 'Satelit'}>
-            <Layers size={18} />
+            <Layers size={20} />
           </button>
           
           <button
             onClick={() => setShowBoundary(!showBoundary)}
-            className={`p-2 rounded-lg transition-colors ${showBoundary ? 'bg-green-100 text-green-700' : 'hover:bg-gray-100 text-gray-400'}`}
+            className={`w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-lg transition-colors ${showBoundary ? 'bg-green-100 text-green-700' : 'hover:bg-gray-100 text-gray-400'}`}
             title="Batas Wilayah">
-            <Map size={18} />
+            <Map size={20} />
           </button>
 
-          <div className="w-px h-5 bg-gray-200 mx-1" />
-          <span className="text-xs text-gray-400">
+          <div className="hidden md:block w-px h-5 bg-gray-200 mx-1 flex-shrink-0" />
+          <span className="hidden md:block text-xs text-gray-400 whitespace-nowrap">
             {isDrawingMode ? 'Klik peta untuk membuat polygon (min 3 titik)' : 'Klik pensil untuk menggambar lahan baru'}
           </span>
         </div>
@@ -514,30 +519,44 @@ const MapPage = () => {
       </div>
       
       {selectedLocation && (
-        <div className="w-[20%] min-w-[300px] flex-shrink-0 bg-white border-l border-gray-200 overflow-y-auto animate-slideLeft custom-scrollbar flex flex-col h-full z-20 shadow-2xl" style={{ scrollbarWidth: 'none' }}>
-          {analysisError && (
-            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-xl text-sm font-medium">
-              {analysisError}
+        <>
+          {/* Overlay Mobile untuk menutup panel saat area peta diklik */}
+          <div className="md:hidden absolute inset-0 bg-black/20 z-[400] animate-fadeIn" onClick={() => setSelectedLocation(null)}></div>
+          
+          <div className="absolute bottom-0 left-0 right-0 h-[65vh] md:relative md:h-full md:w-[25%] md:min-w-[340px] flex-shrink-0 bg-white border-t md:border-t-0 md:border-l border-gray-200 overflow-y-auto animate-slideUp md:animate-slideLeft custom-scrollbar flex flex-col z-[401] md:z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.1)] md:shadow-2xl rounded-t-3xl md:rounded-none" style={{ scrollbarWidth: 'none' }}>
+            
+            {/* Drag Handle Header (Mobile Only) */}
+            <div className="md:hidden w-full flex justify-center py-3 bg-white sticky top-0 z-50 rounded-t-3xl border-b border-gray-100 shadow-sm" onClick={() => setSelectedLocation(null)}>
+              <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
             </div>
-          )}
-          <RecommendationPanel 
-            location={selectedLocation} 
-            status={status} 
-            result={recommendationResult} 
-            aiResult={aiResult}
-            aiLoading={aiLoading}
-            aiError={aiError}
-            onAnalyze={handleAnalyze}
-            onAnalyzeAI={handleAnalyzeAI}
-            onDemoMode={handleDemoMode}
-            onClose={() => {
-              setSelectedLocation(null);
-              setSamplePoints([]); // reset titik merah
-              setRecommendationResult(null);
-            }}
-            selectedLahan={lahans.find(l => l.id === selectedLocation.id)}
-          />
-        </div>
+
+            {analysisError && (
+              <div className="m-4 mb-0 p-3 bg-red-100 text-red-700 rounded-xl text-sm font-medium">
+                {analysisError}
+              </div>
+            )}
+            
+            <div className="flex-1 relative pb-6 md:pb-0">
+              <RecommendationPanel 
+                location={selectedLocation} 
+                status={status} 
+                result={recommendationResult} 
+                aiResult={aiResult}
+                aiLoading={aiLoading}
+                aiError={aiError}
+                onAnalyze={handleAnalyze}
+                onAnalyzeAI={handleAnalyzeAI}
+                onDemoMode={handleDemoMode}
+                onClose={() => {
+                  setSelectedLocation(null);
+                  setSamplePoints([]); // reset titik merah
+                  setRecommendationResult(null);
+                }}
+                selectedLahan={lahans.find(l => l.id === selectedLocation.id)}
+              />
+            </div>
+          </div>
+        </>
       )}
 
       {showSaveModal && (
