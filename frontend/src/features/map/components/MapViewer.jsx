@@ -1,6 +1,8 @@
 import React from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents, Polygon, CircleMarker, Polyline, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, Polygon, CircleMarker, Polyline, useMap, LayersControl } from 'react-leaflet';
 import L from 'leaflet';
+
+const { BaseLayer, Overlay } = LayersControl;
 
 // Fix Leaflet's default icon path issues in React
 delete L.Icon.Default.prototype._getIconUrl;
@@ -93,10 +95,27 @@ const MapViewer = ({ onSelectLocation, lahans = [], selectedLocation, mapRef, dr
         style={{ height: '100%', width: '100%' }}
         onClick={(e) => onSelectLocation(e.latlng.lat, e.latlng.lng)}
       >
-        <TileLayer
-          attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-        />
+        <LayersControl position="topright">
+          <BaseLayer checked name="Satelit">
+            <TileLayer
+              attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            />
+          </BaseLayer>
+          <BaseLayer name="Peta Jalan">
+            <TileLayer
+              attribution="OpenStreetMap"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          </BaseLayer>
+          <Overlay checked name="Batas Wilayah">
+            <TileLayer
+              opacity={0.3}
+              attribution="OpenStreetMap"
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          </Overlay>
+        </LayersControl>
         <MapResizer />
         <ClickHandler onSelectLocation={onSelectLocation} isDrawingMode={isDrawingMode} />
         
