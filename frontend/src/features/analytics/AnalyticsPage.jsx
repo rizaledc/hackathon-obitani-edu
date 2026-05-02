@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { MapPin, Activity, Users, Building2, BarChart2 } from 'lucide-react';
+import useAuthStore from '../../store/authStore';
 import {
   BarChart, Bar, Cell, ScatterChart, Scatter,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
@@ -32,6 +33,8 @@ const AnalyticsPage = () => {
   const [stats, setStats] = useState({});
   const [historyData, setHistoryData] = useState([]);
   const [lahanMap, setLahanMap] = useState({});
+  const { user } = useAuthStore();
+  const isPrivileged = user?.role === 'admin' || user?.role === 'superadmin';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -133,32 +136,34 @@ const AnalyticsPage = () => {
       </h1>
 
       {/* SECTION 1 — Kartu Statistik Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard 
-          title="Total Lahan" 
-          value={stats.total_lahan ?? lahanMap ? Object.keys(lahanMap).length : 0} 
-          icon={<MapPin className="text-blue-600" size={20} />} 
-          bg="bg-blue-50" 
-        />
-        <StatCard 
-          title="Total Analisis" 
-          value={stats.total_analisis ?? historyData.length} 
-          icon={<Activity className="text-green-600" size={20} />} 
-          bg="bg-green-50" 
-        />
-        <StatCard 
-          title="Total User" 
-          value={stats.total_user ?? stats.total_users ?? 0} 
-          icon={<Users className="text-amber-600" size={20} />} 
-          bg="bg-amber-50" 
-        />
-        <StatCard 
-          title="Total Organisasi" 
-          value={stats.total_organisasi ?? stats.total_organizations ?? 0} 
-          icon={<Building2 className="text-purple-600" size={20} />} 
-          bg="bg-purple-50" 
-        />
-      </div>
+      {isPrivileged && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <StatCard 
+            title="Total Lahan" 
+            value={stats.total_lahan ?? lahanMap ? Object.keys(lahanMap).length : 0} 
+            icon={<MapPin className="text-blue-600" size={20} />} 
+            bg="bg-blue-50" 
+          />
+          <StatCard 
+            title="Total Analisis" 
+            value={stats.total_analisis ?? historyData.length} 
+            icon={<Activity className="text-green-600" size={20} />} 
+            bg="bg-green-50" 
+          />
+          <StatCard 
+            title="Total User" 
+            value={stats.total_user ?? stats.total_users ?? 0} 
+            icon={<Users className="text-amber-600" size={20} />} 
+            bg="bg-amber-50" 
+          />
+          <StatCard 
+            title="Total Organisasi" 
+            value={stats.total_organisasi ?? stats.total_organizations ?? 0} 
+            icon={<Building2 className="text-purple-600" size={20} />} 
+            bg="bg-purple-50" 
+          />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-6">
         {/* SECTION 2 — Top 3 Rekomendasi Tanaman (BarChart) */}
