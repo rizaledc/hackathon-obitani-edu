@@ -91,7 +91,9 @@ const RegisterPage = () => {
           
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-semibold mb-2">Nama Lengkap</label>
+              <label className="block text-sm font-semibold mb-2">
+                Nama Lengkap <span className="text-red-500">*</span>
+              </label>
               <input 
                 type="text" 
                 required
@@ -117,7 +119,9 @@ const RegisterPage = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-2">Alamat Email</label>
+              <label className="block text-sm font-semibold mb-2">
+                Alamat Email <span className="text-red-500">*</span>
+              </label>
               <input 
                 type="email" 
                 required
@@ -154,7 +158,9 @@ const RegisterPage = () => {
               )}
             </div>
             <div>
-              <label className="block text-sm font-semibold mb-2">Kata Sandi</label>
+              <label className="block text-sm font-semibold mb-2">
+                Kata Sandi <span className="text-red-500">*</span>
+              </label>
               <div className="relative">
                 <input 
                   type={showPassword ? 'text' : 'password'} 
