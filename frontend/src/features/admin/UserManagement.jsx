@@ -365,12 +365,12 @@ const UserManagement = () => {
                 <input required type="text" autoComplete="username" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.username} onChange={e => setFormData({...formData, username: e.target.value})} placeholder="johndoe" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                <input type="text" autoComplete="name" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.full_name} onChange={e => setFormData({...formData, full_name: e.target.value})} placeholder="John Doe" />
+                <label className="block text-xs font-medium text-gray-700 mb-1">Nama Lengkap <span className="text-red-500">*</span></label>
+                <input required type="text" autoComplete="name" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.full_name} onChange={e => setFormData({...formData, full_name: e.target.value})} placeholder="John Doe" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" autoComplete="email" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="john@example.com" />
+                <label className="block text-xs font-medium text-gray-700 mb-1">Email <span className="text-red-500">*</span></label>
+                <input required type="email" autoComplete="email" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="john@example.com" />
                 <EmailValidator email={formData.email} />
               </div>
               <div>
@@ -390,15 +390,15 @@ const UserManagement = () => {
               {isSuperadmin && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Role</label>
-                    <select className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Role <span className="text-red-500">*</span></label>
+                    <select required className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
                       <option value="user">User</option>
                       <option value="admin">Admin</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Organisasi</label>
-                    <select className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.organization_id || ''} onChange={e => setFormData({...formData, organization_id: parseInt(e.target.value) || null})}>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Organisasi <span className="text-red-500">*</span></label>
+                    <select required className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" value={formData.organization_id || ''} onChange={e => setFormData({...formData, organization_id: parseInt(e.target.value) || null})}>
                       <option value="">- Pilih Org -</option>
                       {orgList.map(org => (
                         <option key={org.id} value={org.id}>{org.nama}</option>
